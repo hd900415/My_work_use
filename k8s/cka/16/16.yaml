@@ -1,0 +1,132 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: f8f5982c70b225348bc39b76b9725a775a2a63d70c7d6b07134551480a65750c
+    cni.projectcalico.org/podIP: 10.254.86.203/32
+    cni.projectcalico.org/podIPs: 10.254.86.203/32
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"Pod","metadata":{"annotations":{},"labels":{"app":"legacy-app-sidecar-log","name":"cpu-user"},"name":"legacy-app","namespace":"default"},"spec":{"containers":[{"args":["-c","while true;do\n  sleep 5\n  ID=${RANDOM}\n  if [ $((ID%5)) -eq 2 ];then\n     echo \"datetime: $(date +%s)\" \u003e\u003e/var/log/legacy-app.log\n  fi\ndone\n"],"command":["/bin/sh"],"image":"busybox","name":"legacy-app"}],"restartPolicy":"Always","terminationGracePeriodSeconds":1}}
+  creationTimestamp: "2022-01-19T13:32:06Z"
+  labels:
+    app: legacy-app-sidecar-log
+    name: cpu-user
+  name: legacy-app
+  namespace: default
+  resourceVersion: "5049"
+  uid: c8a589e6-9e2a-468a-86d7-68df58e40a7d
+spec:
+  containers:
+  - args:
+    - -c
+    - |
+      while true;do
+        sleep 5
+        ID=${RANDOM}
+        if [ $((ID%5)) -eq 2 ];then
+           echo "datetime: $(date +%s)" >>/var/log/legacy-app.log
+        fi
+      done
+    command:
+    - /bin/sh
+    image: busybox
+    imagePullPolicy: Always
+    name: legacy-app
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - name: logs 
+      mountPath: /var/log
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-wzjh4
+      readOnly: true
+  - name: sidecar
+    image: busybox
+    volumeMounts:
+    - name: logs
+      mountPath: /var/log
+    command:
+    - /bin/sh
+    args: 
+    - -c 
+    - |
+      tail -n +1 -f /var/log/legacy-app.log
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: ynode2
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 1
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: logs
+    emptyDir: {}
+  - name: kube-api-access-wzjh4
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-01-19T13:32:06Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-10-10T02:02:12Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-10-10T02:02:12Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-01-19T13:32:06Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: containerd://3441b82c555d7f6b2f6ac8ac876459ec8e642cacf5b6eadcd5c9e6f630e5000f
+    image: docker.io/library/busybox:latest
+    imageID: docker.io/library/busybox@sha256:d8e8390b6c83bff6e4456c9861825655add0fcefa1c212d09955c5ff3c76b02f
+    lastState: {}
+    name: legacy-app
+    ready: true
+    restartCount: 1
+    started: true
+    state:
+      running:
+        startedAt: "2022-10-10T02:02:11Z"
+  hostIP: 192.168.255.32
+  phase: Running
+  podIP: 10.254.86.203
+  podIPs:
+  - ip: 10.254.86.203
+  qosClass: BestEffort
+  startTime: "2022-01-19T13:32:06Z"

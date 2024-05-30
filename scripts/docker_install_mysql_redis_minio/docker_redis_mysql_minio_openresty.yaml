@@ -1,0 +1,47 @@
+# docker run -d --name=openresty --network=host --restart=always  \
+#   -v /data/docker/openresty/conf:/usr/local/openresty/nginx/conf \
+#   -v /data/docker/openresty/conf/waf:/usr/local/openresty/nginx/conf/waf \
+#   -v /data/docker/openresty/conf/lua-resty-core:/usr/local/openresty/nginx/conf/lua-resty-core \
+#   -v /data/docker/openresty/vhost:/usr/local/openresty/nginx/conf/vhost \
+#   -v /data/docker/openresty/conf.d:/usr/local/openresty/nginx/conf/conf.d \
+#   -v /data/docker/openresty/www:/var/www/html:ro \
+#   -v /data/docker/openresty/logs:/usr/local/openresty/nginx/logs   \
+#   -v /etc/localtime:/etc/localtime \
+#   openresty/openresty:latest 
+
+# docker run -d --name=openresty --network=host --restart=always  \
+#   -v /data/front/openresty/conf:/usr/local/openresty/nginx/conf \
+#   -v /data/front/openresty/conf/waf:/usr/local/openresty/nginx/conf/waf \
+#   -v /data/front/openresty/conf/lua-resty-core:/usr/local/openresty/nginx/conf/lua-resty-core \
+#   -v /data/front/openresty/vhost:/usr/local/openresty/nginx/conf/vhost \
+#   -v /data/front/openresty/conf.d:/usr/local/openresty/nginx/conf/conf.d \
+#   -v /data/front/openresty/www:/var/www/html:ro \
+#   -v /data/front/openresty/logs:/usr/local/openresty/nginx/logs   \
+#   -v /etc/localtime:/etc/localtime \
+#   openresty/openresty:latest 
+version: '3.8'
+services:
+  openresty:
+    image: openresty/openresty:latest
+    container_name: openresty
+    restart: always
+    network_mode: host
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - /data/front/openresty/conf/:/usr/local/openresty/nginx/conf:ro
+      - /data/front/openresty/conf/waf:/usr/local/openresty/nginx/conf/waf
+      - /data/front/openresty/conf/lua-resty-core:/usr/local/openresty/nginx/conf/lua-resty-core
+      - /data/front/openresty/logs:/usr/local/openresty/nginx/logs
+      - /data/front/openresty/cert:/usr/local/openresty/nginx/cert
+      - /data/front/openresty/www:/var/www/html:ro
+      - /data/front/openresty/vhost:/usr/local/openresty/nginx/conf/vhost
+      - /data/front/openresty/conf.d:/usr/local/openresty/nginx/conf/conf.d
+  front:
+    image: front:v0529
+    container_name: front
+    restart: always
+    network_mode: host
+    volumes:
+      - /etc/localtime:/etc/localtime
+  
+ 

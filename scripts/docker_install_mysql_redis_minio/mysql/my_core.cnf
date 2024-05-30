@@ -1,0 +1,34 @@
+innodb_buffer_pool 
+# 注：缓冲池位于主内存中，InnoDB用它来缓存被访问过的表和索引文件，使常用数据可以直接在内存中被处理，从而提升处理速度；
+innodb_buffer_pool_instance
+# 注：MySQL5.6.6之后可以调整为多个。表示InnoDB缓冲区可以被划分为多个区域，也可以理解为把innodb_buffer_pool划分为多个实例，可以提高并发性，避免在高并发环境下，出现内存的争用问题；
+innodb_data_file_path
+# 注：该参数可以指定系统表空间文件的路径和ibdata1文件的大小。默认大小是10MB，这里建议调整为1GB
+transaction_isolation
+# 注：MySQL数据库的事务隔离级别有四种，分别为READ-UNCOMMITTED、READ-COMMITTED、REPEATABLE-READ和SERIALIZABLE。默认采用REPEATABLE-READ（可重复读）
+innodb_log_buffer_size
+# 注：是日志缓冲的大小，InnoDB改变数据的时候，它会把这次改动的记录先写到日志缓冲中
+innodb_log_file_size
+# 注：是指Redo log日志的大小，该值设置不宜过大也不宜过小，如果设置太大，实例恢复的时候需要较长时间，如果设置太小，会造成redo log 切换频繁，产生无用的I/O消耗，影响数据库性能
+innodb_log_files_in_group
+# 注：redo log文件组中日志文件的数量，默认情况下至少有2个
+max_connections
+# 该参数代表MySQL数据库的最大连接数
+expire_logs_days
+# 注：该参数代表binlog的过期时间，单位是天
+slow_query_log
+# 注：慢查询日志的开关，该参数等于1代表开启慢查询
+long_query_time
+# 注：慢查询的时间，某条SQL语句超过该参数设置的时间，就会记录到慢查询日志中。单位是秒
+binlog_format
+# 注：该参数代表二进制日志的格式。binlog格式有三种statement、row和mixed。生产环境中使用row这种格式更安全，不会出现跨库复制丢数据的情况
+lower_case_table_names
+# 注：表名是否区分大小的参数。默认是值为0。0代表区分大小写，1代表不区分大小写，以小写存储
+interactive_timeout
+# 注：是服务器关闭交互式连接前等待活动的时间,默认是28800s（8小时）
+wait_timeout
+# 注：是服务器关闭非交互式连接之前等待活动的时间，默认是28800s（8小时）
+innodb_flush_method
+# 注：这个参数影响InnoDB数据文件，redo log文件的打开刷写模式
+log_queries_not_using_indexes
+# 注：如果运行的SQL语句没有使用索引，则MySQL数据库同样会将这条SQL语句记录到慢查询日志文件中

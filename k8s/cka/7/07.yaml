@@ -1,0 +1,17 @@
+apiVersion: network.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-port-from-namespace
+  namespace: my-app
+spec:
+  policyTypes: ["Ingress"]
+  podSelector: {}
+  ingress:
+  - from:
+    - namespaceSelector:
+      matchLabels:
+        kubernetes.io/metadata.name: my-app
+    ports:
+    - name:  Port_Name
+      port:  9200 
+      protocol: TCP

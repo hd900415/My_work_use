@@ -1,0 +1,76 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8.0.35
+    container_name: mysql
+    restart: always
+    network: admin
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - ${MYSQL_DATA_PATH}:/var/lib/mysql
+      - ${MYSQL_CONF_PATH}:/etc/mysql/conf.d
+  openresty:
+    image: openresty/openresty:latest
+    container_name: openresty
+    restart: always
+    network_mode: host
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - /data/front/openresty/conf/:/usr/local/openresty/nginx/conf:ro
+      - /data/front/openresty/conf/waf:/usr/local/openresty/nginx/conf/waf
+      - /data/front/openresty/conf/lua-resty-core:/usr/local/openresty/nginx/conf/lua-resty-core
+      - /data/front/openresty/logs:/usr/local/openresty/nginx/logs
+      - /data/front/openresty/cert:/usr/local/openresty/nginx/cert
+      - /data/front/openresty/www:/var/www/html:ro
+      - /data/front/openresty/vhost:/usr/local/openresty/nginx/conf/vhost
+      - /data/front/openresty/conf.d:/usr/local/openresty/nginx/conf/conf.d
+  front:
+    image: front:v0529
+    container_name: front
+    restart: always
+    network_mode: host
+    volumes:
+      - /etc/localtime:/etc/localtime  
+  redis:
+    image: redis:6.2
+    container_name: redis
+    restart: always
+    network: admin
+    ports:
+      - "6379:6379"
+    volumes:
+      - ${REDIS_DATA_PATH}:/data
+      - ${REDIS_CONF_PATH}:/usr/local/etc/redis/
+    command: ["redis-server", "--requirepass ${REDIS_PASSWORD}" ]
+# command: ["redis-server", "--requirepass ${REDIS_PASSWORD}" , "/usr/local/etc/redis/redis.conf"]
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: always
+    network: admin
+    environment:
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+    ports:
+      - "9000:9000"
+      - "9090:9090"
+    volumes:
+      - ${MINIO_DATA_PATH}:/data
+    command: server /data --console-address ":9090"
+
+networks:
+  admin:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  redis-data:
+  minio-data:
+
+# 根据需要配置.env 文件，更改相应的网络模式。
