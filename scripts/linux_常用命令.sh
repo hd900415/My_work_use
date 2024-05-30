@@ -1,6 +1,6 @@
 # 次文件内容记录linux 常用的使用记录
 
-# token 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
+# tok##en ghp_uMXivbABjPYsk####JRgZ7ZXLGPefE48mx34wIUh
 
 # 获取接口的访问时间
 curl -w '\ntime_namelookup=%{time_namelookup}\ntime_connect=%{time_connect}\ntime_appconnect=%{time_appconnect}\ntime_redirect=%{time_redirect}\ntime_pretransfer=%{time_pretransfer}\ntime_starttransfer=%{time_starttransfer}\ntime_total=%{time_total}\n\n' -o /dev/null -s -L http://api.appleasp.com/api/v1/token
