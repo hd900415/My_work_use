@@ -188,17 +188,17 @@ minio:
 
 
 # 腾讯云短信配置
-tx:
-  secretId: AKIDwiIqKgpiT2QL0Uo4Pl6LYntmV2QfhW9e
-  secretKey: toY6Uet4970iHk3HNKJDl7OfsHWffU9s
-  templateId: 1963032
-  signName: test
-  sdkAppId: 1400863921
+# tx:
+#   secretId: xxxxxxxxxx
+#   secretKey: xxxxxxxxxx
+#   templateId: 1963032
+#   signName: test
+#   sdkAppId: 1400863921
 
 #chatgpt:
-#  token: sk-proj-zBjkRP0RQrem0nh5s4yVT3BlbkFJpbv1xMLyaT7Xqu1UmEgM
+#  token: xxxxxxxxxsk-proj-xxxxxxxxxx
 chatgpt:
-  #token: sk-proj-eaKxewwvng9AYNBauj6NT3BlbkFJvEFfGlQ8c08gu8ELQwvw
+  #token: xxxxxxxxxx
   token: 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
   chat-model: gpt-3.5-turbo-1106 #可选
   #proxy-host: 127.0.0.1 #需要代理时必填
