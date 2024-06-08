@@ -1,0 +1,45 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:5.7.44
+    container_name: mysql
+    restart: always
+    network_mode: host
+    environment:
+      MYSQL_ROOT_PASSWORD: plexMysqlAdmin123
+      MYSQL_DATABASE: plex
+      MYSQL_USER: plex
+      MYSQL_PASSWORD: plex123456
+    volumes:
+      - /data/docker/mysql/data:/var/lib/mysql
+      - /data/docker/mysql/conf:/etc/mysql/conf.d
+      - /etc/localtime:/etc/localtime
+  openresty:
+    image: openresty/openresty:latest
+    container_name: openresty
+    restart: always
+    network_mode: host
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - /data/docker/openresty/conf/:/usr/local/openresty/nginx/conf:ro
+      - /data/docker/openresty/conf/waf:/usr/local/openresty/nginx/conf/waf
+      - /data/docker/openresty/conf/lua-resty-core:/usr/local/openresty/nginx/conf/lua-resty-core
+      - /data/docker/openresty/logs:/usr/local/openresty/nginx/logs
+      - /data/docker/openresty/cert:/usr/local/openresty/nginx/cert
+      - /data/docker/php-admin/app:/app
+      - /data/docker/openresty/www:/var/www/html
+      - /data/docker/openresty/vhost:/usr/local/openresty/nginx/conf/vhost
+      - /data/docker/openresty/conf.d:/usr/local/openresty/nginx/conf/conf.d
+    depends_on:
+      - php-admin
+  php-admin:
+    image: bitnami/php-fpm:7.2
+    container_name: php-admin
+    restart: always
+    network_mode: host
+    volumes: 
+      - /etc/localtime:/etc/localtime
+      - /data/docker/php-admin/conf:/opt/bitnami/php/etc
+      - /data/docker/php-admin/app:/app
+      - /data/docker/php-admin/logs:/opt/bitnami/php/logs
+      - /data/docker/php-admin/tmp:/opt/bitnami/php/tmp   
