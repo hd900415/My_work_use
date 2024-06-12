@@ -118,7 +118,7 @@ docker run -d --name  rocketmq-dashboard -u 0 --restart always   -p 18080:8080 \
 
 ### 问题处理 broker 启动报错。java.lang.nullpointerexception 。使用启动容器的时候，使用root 启动服务。加-u 0 参数。0 代码UID为0 的用户；
 ### dashborad 报错 library initialization failed - unable to allocate file descriptor table - out of memoryAborted (core dumped) rocketmq 
-# 此错误，启动时，请添加 
+# 此错误，启动时，请添加  --ulimit nofile=65535:65535 --ulimit nproc=65535:65535 
 
 # broker-a
 #所属集群名字
