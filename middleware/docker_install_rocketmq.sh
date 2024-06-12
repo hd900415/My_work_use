@@ -22,7 +22,7 @@ docker 容器路径
 
 /home/rocketmq/rocketmq-5.1.0
 
-
+cat >> broker-a.properties <<'EOF'
 # broker-a
 #所属集群名字
 brokerClusterName=rocketmq-cluster
@@ -90,9 +90,9 @@ sendMessageThreadPoolNums=128
 #发送消息是否使用可重入锁
 useReentrantLockWhenPutMessage=true
 waitTimeMillsInSendQueue=300  #或者更大
+EOF
 
-
-
+cat >> broker-a.properties <<'EOF'
 ### 配置文件 broker-b
 # 所属集群名称
 brokerClusterName=rocketmq-cluster
@@ -174,4 +174,4 @@ sendMessageThreadPoolNums=128
 #发送消息是否使用可重入锁
 useReentrantLockWhenPutMessage=true
 waitTimeMillsInSendQueue=300
-
+EOF
