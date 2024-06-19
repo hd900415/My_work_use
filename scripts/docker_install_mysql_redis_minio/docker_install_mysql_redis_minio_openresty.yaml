@@ -14,6 +14,7 @@ services:
       - "3306:3306"
     volumes:
       - ${MYSQL_DATA_PATH}:/var/lib/mysql
+      - /etc/localtime:/etc/localtime
       - ${MYSQL_CONF_PATH}:/etc/mysql/conf.d
   openresty:
     image: openresty/openresty:latest
@@ -46,8 +47,9 @@ services:
       - "6379:6379"
     volumes:
       - ${REDIS_DATA_PATH}:/data
-      - ${REDIS_CONF_PATH}:/usr/local/etc/redis/
-    command: ["redis-server", "--requirepass ${REDIS_PASSWORD}" ]
+      - ${REDIS_CONF_PATH}/redis.conf:/usr/local/etc/redis/redis.conf
+      - /etc/localtime:/etc/localtime
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf" ]
 # command: ["redis-server", "--requirepass ${REDIS_PASSWORD}" , "/usr/local/etc/redis/redis.conf"]
   minio:
     image: minio/minio:latest
