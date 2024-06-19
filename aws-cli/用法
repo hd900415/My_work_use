@@ -1,0 +1,25 @@
+### 配置
+aws configure 
+输入 access key 和 
+
+aws ec2 run-instances \
+          --image-id ami-0abcdef1234567890 \
+          --instance-type t2.micro \
+          --key-name MyKeyPair
+aws ec2 run-instances \
+    --image-id ami-0abcdef1234567890 \
+    --instance-type c5.xlarge \
+    --security-group-ids sg-0b0384b66d7d692f9 \
+    --associate-public-ip-address \
+    --key-name MyKeyPair
+
+aws ec2 run-instances \
+    --image-id ami-0de566aa7b182e06e \
+    --count 1 \
+    --instance-type c5.xlarge \
+    --key-name changyan \
+    --associate-public-ip-address \
+    --security-group-ids changyan-prod \
+    --block-device-mappings DeviceName=/dev/sda1,Ebs={VolumeSize=100} \
+    --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=changyan_prod}]'
+    rsync -avzrP --delete -e "ssh -p ${Ssh_Port} -i ${Ssh_Key} -o 'StrictHostKeyChecking no'"     ${Source_Dir}    ${Ssh_User}@${Ssh_Host}:${Target_Dir} \
