@@ -2,6 +2,10 @@
 aws configure --profile
 输入 access key 和 
 
+
+
+AKIA6GBMC7VHFN2SHYUD
+9bJrfr/y7FaD2UQeIDjaQOalU7JvdJVV0AIiqp3H
 # 多用户设置
 
 aws configure --profile wtai # 这里将wtai替换为要更改的名字
