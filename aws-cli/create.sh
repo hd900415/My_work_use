@@ -1,16 +1,20 @@
 #!/bin/bash
+set -e  # 遇到错误时立即退出
+set -u # 使用未定义的变量时报错.
+
 
 # 设置变量
 VPC_NAME="prod"
 SUBNET_NAME="prod-subnet"
 NEW_INSTANCE_NAME="prod-new"  # 新实例的名称
 NEW_SG_NAME="prod-new-sg"     # 新安全组的名称
-INSTANCE_TYPE="t2.micro"      # 可以根据需要更改实例类型
+INSTANCE_TYPE="c5.2xlarge"      # 可以根据需要更改实例类型
 KEY_NAME="wtai"
 AMI_ID="ami-0de566aa7b182e06e"
 
 # 获取已存在的VPC ID
 VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=$VPC_NAME" --query 'Vpcs[0].VpcId' --output text)
+VPC_ID=$(echo $VPC_ID | tr -d '[:space:]')
 if [ -z "$VPC_ID" ]; then
     echo "Error: VPC with name $VPC_NAME not found"
     exit 1
@@ -27,8 +31,20 @@ echo "Using existing Subnet: $SUBNET_ID"
 
 # 创建新的安全组
 SG_ID=$(aws ec2 create-security-group --group-name $NEW_SG_NAME --description "New security group for $NEW_INSTANCE_NAME" --vpc-id $VPC_ID --query 'GroupId' --output text)
+SG_ID=$(echo $SG_ID | tr -d '[:space:]')
 aws ec2 authorize-security-group-ingress --group-id $SG_ID --protocol tcp --port 22 --cidr 0.0.0.0/0
 echo "New Security group created with ID: $SG_ID"
+
+if ! [[ $VPC_ID =~ ^vpc-[a-f0-9]+$ ]]; then
+    echo "Error: Invalid VPC ID format: $VPC_ID"
+    exit 1
+fi
+
+# 检查VPC是否存在
+if ! aws ec2 describe-vpcs --vpc-ids "$VPC_ID" >/dev/null 2>&1; then
+    echo "Error: VPC with ID $VPC_ID does not exist"
+    exit 1
+fi
 
 # 创建新的EC2实例
 INSTANCE_ID=$(aws ec2 run-instances \
