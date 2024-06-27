@@ -1,6 +1,18 @@
 ### 配置
-aws configure 
+aws configure --profile
 输入 access key 和 
+
+# 多用户设置
+
+aws configure --profile wtai # 这里将wtai替换为要更改的名字
+# 使用alias 别名简化
+alias aws_wtai='aws --profile wtai'
+# 添加到~/.bashrc中使得alias永久生效
+echo "alias aws_wtai='aws --profile wtai'" >> ~/.bashrc
+
+# 设置默认profile
+export AWS_DEFAULT_PROFILE=$username
+
 
 aws ec2 run-instances \
           --image-id ami-0abcdef1234567890 \
@@ -22,4 +34,74 @@ aws ec2 run-instances \
     --security-group-ids changyan-prod \
     --block-device-mappings DeviceName=/dev/sda1,Ebs={VolumeSize=100} \
     --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=changyan_prod}]'
-    rsync -avzrP --delete -e "ssh -p ${Ssh_Port} -i ${Ssh_Key} -o 'StrictHostKeyChecking no'"     ${Source_Dir}    ${Ssh_User}@${Ssh_Host}:${Target_Dir} \
+
+
+## 发送密钥到服务器
+aws ec2-instance-connect send-ssh-public-key \
+    --instance-id i-1234567890abcdef0 \
+    --instance-os-user ec2-user \
+    --availability-zone us-east-2b \
+    --ssh-public-key file://path/my-rsa-key.pub
+
+# 创建服务器
+如何通过aws cli 开启新的ec2服务器。要求100G gp3 ssd ,使用wtai这个密钥对。
+使用ami-0de566aa7b182e06e这个AMI。自动创建 VPC,使用name为prod标签。自动创建名字为prod的安全组。并放行ssh 22端口为全部可访问 实例类型使用 c5.2xlarge
+
+创建弹性IP。并绑定到启动的实例
+
+## 请按照以下步骤操作:
+# 1.首先,创建一个VPC:
+VPC_ID=$(aws ec2 create-vpc --cidr-block 10.0.0.0/16 --query 'Vpc.VpcId' --output text)
+aws ec2 create-tags --resources $VPC_ID --tags Key=Name,Value=prod
+echo "VPC created with ID: $VPC_ID"
+# 2.创建一个子网:
+SUBNET_ID=$(aws ec2 create-subnet --vpc-id $VPC_ID --cidr-block 10.0.1.0/24 --query 'Subnet.SubnetId' --output text)
+aws ec2 create-tags --resources $SUBNET_ID --tags Key=Name,Value=prod-subnet
+echo "Subnet created with ID: $SUBNET_ID"
+# 3.创建一个互联网网关并附加到VPC:
+IGW_ID=$(aws ec2 create-internet-gateway --query 'InternetGateway.InternetGatewayId' --output text)
+aws ec2 attach-internet-gateway --vpc-id $VPC_ID --internet-gateway-id $IGW_ID
+echo "Internet Gateway created with ID: $IGW_ID and attached to VPC"
+# 4.创建一个路由表并添加路由:
+ROUTE_TABLE_ID=$(aws ec2 create-route-table --vpc-id $VPC_ID --query 'RouteTable.RouteTableId' --output text)
+aws ec2 create-route --route-table-id $ROUTE_TABLE_ID --destination-cidr-block 0.0.0.0/0 --gateway-id $IGW_ID
+aws ec2 associate-route-table --subnet-id $SUBNET_ID --route-table-id $ROUTE_TABLE_ID
+
+echo "Route table created and associated with subnet"
+
+# 5.创建安全组:
+SG_ID=$(aws ec2 create-security-group --group-name prod --description "prod security group" --vpc-id $VPC_ID --query 'GroupId' --output text)
+aws ec2 authorize-security-group-ingress --group-id $SG_ID --protocol tcp --port 22 --cidr 0.0.0.0/0
+
+echo "Security group created with ID: $SG_ID"
+# 6.创建EC2实例:
+INSTANCE_ID=$(aws ec2 run-instances \
+    --image-id ami-0de566aa7b182e06e \
+    --count 1 \
+    --instance-type c5.2xlarge \
+    --key-name wtai \
+    --security-group-ids $SG_ID \
+    --subnet-id $SUBNET_ID \
+    --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=prod}]' \
+    --block-device-mappings '[{"DeviceName":"/dev/xvda","Ebs":{"VolumeSize":100,"VolumeType":"gp3"}}]' \
+    --query 'Instances[0].InstanceId' \
+    --output text)
+
+echo "EC2 instance created with ID: $INSTANCE_ID"
+# 7.等待实例运行并获取公共IP:
+aws ec2 wait instance-running --instance-ids $INSTANCE_ID
+PUBLIC_IP=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
+
+echo "EC2 instance is running. Public IP: $PUBLIC_IP"
+
+
+
+
+
+
+
+
+
+
+
+生成弹性IP。并进行绑定到生成的EC2服务器
