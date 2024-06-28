@@ -128,11 +128,21 @@ aws ec2 wait instance-running --instance-ids i-1234567890abcdef0
 aws ec2 describe-instances --instance-ids i-1234567890abcdef0 --query 'Reservations[].Instances[].InstanceType' --output text
 
 
+##### 添加安全组白名单
+# 先获取安全组ID。然后使用命令
+aws ec2 authorize-security-group-ingress \
+    --group-id sg-1234567890abcdef0 \
+    --ip-permissions IpProtocol=tcp,FromPort=5200,ToPort=5200,IpRanges='[{CidrIp=0.0.0.0/0,Description="Allow all IP to access port 5200"}]'
 
+# 或者使用一下命令。不添加描述
+aws ec2 authorize-security-group-ingress --group-id sg-0c94cbcbcdcce876e --protocol tcp --port 5200 --cidr 0.0.0.0/0 
 
-
-
-
+# 删除安全组白名单
+aws ec2 revoke-security-group-ingress \
+    --group-id sg-1234567890abcdef0 \
+    --protocol tcp \
+    --port 5200 \
+    --cidr 0.0.0.0/0
 
 
 

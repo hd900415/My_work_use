@@ -17,20 +17,15 @@ services:
       - /etc/localtime:/etc/localtime
       - ${MYSQL_CONF_PATH}:/etc/mysql/conf.d
   openresty:
-    image: openresty/openresty:latest
+    image: openresty/openresty:1.25.3.1-alpine
     container_name: openresty
     restart: always
     network_mode: host
     volumes:
       - /etc/localtime:/etc/localtime
-      - /data/front/openresty/conf/:/usr/local/openresty/nginx/conf:ro
-      - /data/front/openresty/conf/waf:/usr/local/openresty/nginx/conf/waf
-      - /data/front/openresty/conf/lua-resty-core:/usr/local/openresty/nginx/conf/lua-resty-core
-      - /data/front/openresty/logs:/usr/local/openresty/nginx/logs
-      - /data/front/openresty/cert:/usr/local/openresty/nginx/cert
-      - /data/front/openresty/www:/var/www/html:ro
-      - /data/front/openresty/vhost:/usr/local/openresty/nginx/conf/vhost
-      - /data/front/openresty/conf.d:/usr/local/openresty/nginx/conf/conf.d
+      - /data/docker/openresty/conf/:/usr/local/openresty/nginx/conf:ro
+      - /data/docker/openresty/logs:/usr/local/openresty/nginx/logs
+      - /data/docker/openresty/www:/var/www/html:ro
   front:
     image: front:v0529
     container_name: front
