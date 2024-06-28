@@ -6,8 +6,8 @@ set -u # 使用未定义的变量时报错.
 # 设置变量
 VPC_NAME="prod"
 SUBNET_NAME="prod-subnet"
-NEW_INSTANCE_NAME="data"  # 新实例的名称
-NEW_SG_NAME="data-sg"     # 新安全组的名称
+NEW_INSTANCE_NAME="web"  # 新实例的名称
+NEW_SG_NAME="web-sg"     # 新安全组的名称
 INSTANCE_TYPE="c5.2xlarge"      # 可以根据需要更改实例类型
 KEY_NAME="wtai"
 AMI_ID="ami-0de566aa7b182e06e"

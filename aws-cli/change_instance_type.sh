@@ -31,3 +31,10 @@ aws ec2 wait instance-running --instance-ids $INSTANCE_ID
 # 验证新的实例类型
 NEW_TYPE=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[].Instances[].InstanceType' --output text)
 echo "Instance type changed to: $NEW_TYPE"
+
+
+
+
+
+
+
