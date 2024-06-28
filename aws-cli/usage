@@ -97,6 +97,39 @@ PUBLIC_IP=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Rese
 
 echo "EC2 instance is running. Public IP: $PUBLIC_IP"
 
+# 8.创建弹性IP并将其绑定到实例:
+# 创建弹性IP
+ELASTIC_IP=$(aws ec2 allocate-address --domain vpc --query 'AllocationId' --output text)
+echo "Elastic IP allocated with ID: $ELASTIC_IP"
+
+# 将弹性IP绑定到实例
+aws ec2 associate-address --instance-id $INSTANCE_ID --allocation-id $ELASTIC_IP
+
+# 获取弹性IP地址
+EIP_ADDRESS=$(aws ec2 describe-addresses --allocation-ids $ELASTIC_IP --query 'Addresses[0].PublicIp' --output text)
+
+echo "Elastic IP associated with the instance. IP address: $EIP_ADDRESS"
+
+###### 更改实例类型或者叫做实例升降配置
+# 1.首先，确认目标实例的ID：
+aws ec2 describe-instances --filters "Name=tag:Name,Values=your-instance-name" --query 'Reservations[].Instances[].InstanceId' --output text #替换 your-instance-name 为您实例的名称标签。
+
+# 2.停止实例（如果它正在运行）
+aws ec2 stop-instances --instance-ids i-1234567890abcdef0 #替换 i-1234567890abcdef0 为您的实际实例ID。
+# 3.等待实例停止：
+aws ec2 wait instance-stopped --instance-ids i-1234567890abcdef0
+# 4.更改实例类型：
+aws ec2 modify-instance-attribute --instance-id i-1234567890abcdef0 --instance-type "{\"Value\": \"new-instance-type\"}" # 将 new-instance-type 替换为您想要的新实例类型，例如 "t3.medium"。
+# 5.启动实例：
+aws ec2 start-instances --instance-ids i-1234567890abcdef0
+# 6.等待实例运行：
+aws ec2 wait instance-running --instance-ids i-1234567890abcdef0
+# 7.验证新的实例类型：
+aws ec2 describe-instances --instance-ids i-1234567890abcdef0 --query 'Reservations[].Instances[].InstanceType' --output text
+
+
+
+
 
 
 

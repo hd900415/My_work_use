@@ -6,8 +6,8 @@ set -u # 使用未定义的变量时报错.
 # 设置变量
 VPC_NAME="prod"
 SUBNET_NAME="prod-subnet"
-NEW_INSTANCE_NAME="prod-new"  # 新实例的名称
-NEW_SG_NAME="prod-new-sg"     # 新安全组的名称
+NEW_INSTANCE_NAME="data"  # 新实例的名称
+NEW_SG_NAME="data-sg"     # 新安全组的名称
 INSTANCE_TYPE="c5.2xlarge"      # 可以根据需要更改实例类型
 KEY_NAME="wtai"
 AMI_ID="ami-0de566aa7b182e06e"
@@ -23,6 +23,8 @@ echo "Using existing VPC: $VPC_ID"
 
 # 获取已存在的子网 ID
 SUBNET_ID=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$VPC_ID" "Name=tag:Name,Values=$SUBNET_NAME" --query 'Subnets[0].SubnetId' --output text)
+SUBNET_ID=$(echo $SUBNET_ID | tr -d '[:space:]')
+
 if [ -z "$SUBNET_ID" ]; then
     echo "Error: Subnet with name $SUBNET_NAME not found in VPC $VPC_ID"
     exit 1
