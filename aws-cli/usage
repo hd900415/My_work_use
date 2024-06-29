@@ -1,5 +1,5 @@
 ### 配置
-aws configure --profile
+aws configure --profile $user 
 输入 access key 和 
 
 
@@ -89,6 +89,21 @@ INSTANCE_ID=$(aws ec2 run-instances \
     --block-device-mappings '[{"DeviceName":"/dev/xvda","Ebs":{"VolumeSize":100,"VolumeType":"gp3"}}]' \
     --query 'Instances[0].InstanceId' \
     --output text)
+INSTANCE_ID=$(aws ec2 run-instances \
+    --image-id ami-0de566aa7b182e06e \
+    --count 1 \
+    --instance-type t2.micro \
+    --key-name wtai \
+    --security-group-ids $SG_ID \
+    --subnet-id $SUBNET_ID \
+    --block-device-mappings '[{"DeviceName":"/dev/xvda","Ebs":{"VolumeSize":100,"VolumeType":"gp3"}}]' \
+    --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=prod}]' \
+    --associate-public-ip-address \
+    --query 'Instances[0].InstanceId' \
+    --output text)
+
+
+
 
 echo "EC2 instance created with ID: $INSTANCE_ID"
 # 7.等待实例运行并获取公共IP:
