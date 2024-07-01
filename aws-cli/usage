@@ -160,8 +160,8 @@ aws ec2 revoke-security-group-ingress \
     --cidr 0.0.0.0/0
 
 
-
-
+## 查询实例的信息；
+aws ec2 describe-instances --query 'Reservations[*].Instances[*].[InstanceId,InstanceType,State.Name,PublicIpAddress,Tags[?Key==`Name`].Value | [0],SecurityGroups[*].[GroupId,GroupName]]' --output table
 
 
 
