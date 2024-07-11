@@ -1,0 +1,39 @@
+node1 
+redis 6.2
+kafka kafka_2.12-3.4.0
+etcdctl version: 3.5.9
+
+docker run -dt --name etcd -p 12379:2379 -p 12380:2380 -e ALLOW_NONE_AUTHENTICATION=yes -e ETCD_ADVERTISE_CLIENT_URLS=http://$ip:12379 bitnami/etcd1
+
+node2 
+mysql 8以上
+
+gitlab 15.7.0-ce.0 以上
+
+服务节点 22个服务
+
+/data/go/idgen -f /data/conf/test_idgen.yaml
+/data/go/agent -f /data/conf/test_agent.yaml
+/data/go/video -f /data/conf/test_video.yaml
+/data/go/comic -f /data/conf/test_comic.yaml
+/data/go/resourceApi -f /data/conf/test_video_api.yaml
+/data/go/statistics -f /data/conf/test_statistics.yaml
+/data/go/pay -f /data/conf/test_pay.yaml
+/data/go/sms -f /data/conf/test_sms.yaml
+/data/go/member -f /data/conf/test_member.yaml
+/data/go/agentApi -f /data/conf/test_agent_api.yaml
+/data/go/smsapi -f /data/conf/test_smsapi.yaml
+/data/go/managerApi -f /data/conf/test_manager_api.yaml
+/data/go/game -f /data/conf/test_game.yaml
+/data/go/base -f /data/conf/test_base.yaml
+/data/go/verifycode -f /data/conf/test_verifycode.yaml
+/data/go/agentorder -f /data/conf/test_order.yaml
+/data/go/h5gameapi -f /data/conf/test_h5_game_api.yaml
+/data/go/h5PayApi -f /data/conf/test_pay_api.yaml
+/data/go/binlog -f /data/conf/test_binlog.yaml
+/data/go/image-enc -f /data/conf/test_api.yaml
+/data/go/h5Api -f /data/conf/test_h5_api.yaml
+/data/go/callback -f /data/conf/test_callback.yaml
+ 
+node3 
+mongo:4.4.0
