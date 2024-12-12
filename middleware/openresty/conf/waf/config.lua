@@ -1,7 +1,7 @@
 --WAF config file,enable = "on",disable = "off"
 
 --waf status
-config_waf_enable = "on"
+config_waf_enable = "off"
 --log dir
 config_log_dir = "/tmp"
 --rule setting

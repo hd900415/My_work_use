@@ -1,0 +1,79 @@
+pipeline {
+    agent any
+    environment {
+        GIT_URL = 'http://166.108.193.76:8081/gitlab-instance-0e2e0ec2/base-java.git'
+        MVN_HOME = '/usr/local/apache-maven-3.3.9'
+    }
+    stages {
+        stage('选择分支') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: '6df6bff5-8c30-4b1e-a648-86cff9334cef', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        def branches = sh(
+                            script: """
+                                git ls-remote --heads http://${USERNAME}:${PASSWORD}@166.108.193.76:8081/gitlab-instance-0e2e0ec2/base-java.git | awk '{print \$2}' | sed 's|refs/heads/||'
+                            """,
+                            returnStdout: true
+                        ).trim().split("\n")
+
+                        // 检查分支列表是否为空
+                        if (branches.size() == 0) {
+                            error "未能获取分支列表，请检查仓库地址和权限！"
+                        }
+
+                        // 提示用户选择分支
+                        env.SELECTED_BRANCH = input(
+                            message: '请选择要拉取的分支',
+                            parameters: [
+                                choice(name: 'BRANCH', choices: branches.join('\n'), description: '分支列表')
+                            ]
+                        )
+                    }
+                }
+            }
+        }
+        stage('拉取代码') {
+            steps {
+                echo "选择的分支是: ${env.SELECTED_BRANCH}"
+                checkout scmGit(
+                    branches: [[name: "${env.SELECTED_BRANCH}"]],
+                    userRemoteConfigs: [[
+                        credentialsId: '6df6bff5-8c30-4b1e-a648-86cff9334cef',
+                        url: "${GIT_URL}"
+                    ]]
+                )
+            }
+        }
+        stage('编译构建') {
+            steps {
+                echo '编译构建'
+                sh "${MVN_HOME}/bin/mvn clean install -Dmaven.test.skip=true -U"
+            }
+        }
+        
+        stage('部署Dev') {
+            steps {
+                echo '项目部署Dev'
+                sh ""
+            }
+        }
+        stage('部署UAT') {
+            steps {
+                echo '项目部署Dev'
+            }
+        }
+        stage('部署Prod') {
+            steps {
+                echo '项目部署Dev'
+            }
+        }
+    }
+    post {
+        success {
+            echo 'Pipeline 执行成功！'
+        }
+        failure {
+            echo 'Pipeline 执行失败！'
+        }
+    }
+}

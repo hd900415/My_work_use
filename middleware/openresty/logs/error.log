@@ -1,0 +1,526 @@
+2024/12/04 19:28:21 [alert] 1#1: failed to load the 'resty.core' module (https://github.com/openresty/lua-resty-core); ensure you are using an OpenResty release from https://openresty.org/en/download.html (reason: module 'resty.core' not found:
+	no field package.preload['resty.core']
+	no file '/usr/local/openresty/nginx/conf/waf/resty/core.lua'
+	no file '/usr/local/openresty/site/lualib/resty/core.so'
+	no file '/usr/local/openresty/lualib/resty/core.so'
+	no file './resty/core.so'
+	no file '/usr/local/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so'
+	no file '/usr/local/openresty/site/lualib/resty.so'
+	no file '/usr/local/openresty/lualib/resty.so'
+	no file './resty.so'
+	no file '/usr/local/lib/lua/5.1/resty.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so') in /usr/local/openresty/nginx/conf/nginx.conf:151
+2024/12/04 19:28:21 [alert] 1#1: failed to load the 'resty.core' module (https://github.com/openresty/lua-resty-core); ensure you are using an OpenResty release from https://openresty.org/en/download.html (reason: module 'resty.core' not found:
+	no field package.preload['resty.core']
+	no file '/usr/local/openresty/nginx/conf/waf/resty/core.lua'
+	no file '/usr/local/openresty/site/lualib/resty/core.so'
+	no file '/usr/local/openresty/lualib/resty/core.so'
+	no file './resty/core.so'
+	no file '/usr/local/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so'
+	no file '/usr/local/openresty/site/lualib/resty.so'
+	no file '/usr/local/openresty/lualib/resty.so'
+	no file './resty.so'
+	no file '/usr/local/lib/lua/5.1/resty.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so') in /usr/local/openresty/nginx/conf/nginx.conf:151
+2024/12/04 19:28:22 [alert] 1#1: failed to load the 'resty.core' module (https://github.com/openresty/lua-resty-core); ensure you are using an OpenResty release from https://openresty.org/en/download.html (reason: module 'resty.core' not found:
+	no field package.preload['resty.core']
+	no file '/usr/local/openresty/nginx/conf/waf/resty/core.lua'
+	no file '/usr/local/openresty/site/lualib/resty/core.so'
+	no file '/usr/local/openresty/lualib/resty/core.so'
+	no file './resty/core.so'
+	no file '/usr/local/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so'
+	no file '/usr/local/openresty/site/lualib/resty.so'
+	no file '/usr/local/openresty/lualib/resty.so'
+	no file './resty.so'
+	no file '/usr/local/lib/lua/5.1/resty.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so') in /usr/local/openresty/nginx/conf/nginx.conf:151
+2024/12/04 19:28:22 [alert] 1#1: failed to load the 'resty.core' module (https://github.com/openresty/lua-resty-core); ensure you are using an OpenResty release from https://openresty.org/en/download.html (reason: module 'resty.core' not found:
+	no field package.preload['resty.core']
+	no file '/usr/local/openresty/nginx/conf/waf/resty/core.lua'
+	no file '/usr/local/openresty/site/lualib/resty/core.so'
+	no file '/usr/local/openresty/lualib/resty/core.so'
+	no file './resty/core.so'
+	no file '/usr/local/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so'
+	no file '/usr/local/openresty/site/lualib/resty.so'
+	no file '/usr/local/openresty/lualib/resty.so'
+	no file './resty.so'
+	no file '/usr/local/lib/lua/5.1/resty.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so') in /usr/local/openresty/nginx/conf/nginx.conf:151
+2024/12/04 19:28:23 [alert] 1#1: failed to load the 'resty.core' module (https://github.com/openresty/lua-resty-core); ensure you are using an OpenResty release from https://openresty.org/en/download.html (reason: module 'resty.core' not found:
+	no field package.preload['resty.core']
+	no file '/usr/local/openresty/nginx/conf/waf/resty/core.lua'
+	no file '/usr/local/openresty/site/lualib/resty/core.so'
+	no file '/usr/local/openresty/lualib/resty/core.so'
+	no file './resty/core.so'
+	no file '/usr/local/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so'
+	no file '/usr/local/openresty/site/lualib/resty.so'
+	no file '/usr/local/openresty/lualib/resty.so'
+	no file './resty.so'
+	no file '/usr/local/lib/lua/5.1/resty.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so') in /usr/local/openresty/nginx/conf/nginx.conf:151
+2024/12/04 19:28:25 [alert] 1#1: failed to load the 'resty.core' module (https://github.com/openresty/lua-resty-core); ensure you are using an OpenResty release from https://openresty.org/en/download.html (reason: module 'resty.core' not found:
+	no field package.preload['resty.core']
+	no file '/usr/local/openresty/nginx/conf/waf/resty/core.lua'
+	no file '/usr/local/openresty/site/lualib/resty/core.so'
+	no file '/usr/local/openresty/lualib/resty/core.so'
+	no file './resty/core.so'
+	no file '/usr/local/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so'
+	no file '/usr/local/openresty/site/lualib/resty.so'
+	no file '/usr/local/openresty/lualib/resty.so'
+	no file './resty.so'
+	no file '/usr/local/lib/lua/5.1/resty.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so') in /usr/local/openresty/nginx/conf/nginx.conf:151
+2024/12/04 19:28:28 [alert] 1#1: failed to load the 'resty.core' module (https://github.com/openresty/lua-resty-core); ensure you are using an OpenResty release from https://openresty.org/en/download.html (reason: module 'resty.core' not found:
+	no field package.preload['resty.core']
+	no file '/usr/local/openresty/nginx/conf/waf/resty/core.lua'
+	no file '/usr/local/openresty/site/lualib/resty/core.so'
+	no file '/usr/local/openresty/lualib/resty/core.so'
+	no file './resty/core.so'
+	no file '/usr/local/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so'
+	no file '/usr/local/openresty/site/lualib/resty.so'
+	no file '/usr/local/openresty/lualib/resty.so'
+	no file './resty.so'
+	no file '/usr/local/lib/lua/5.1/resty.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so') in /usr/local/openresty/nginx/conf/nginx.conf:151
+2024/12/04 19:28:35 [alert] 1#1: failed to load the 'resty.core' module (https://github.com/openresty/lua-resty-core); ensure you are using an OpenResty release from https://openresty.org/en/download.html (reason: module 'resty.core' not found:
+	no field package.preload['resty.core']
+	no file '/usr/local/openresty/nginx/conf/waf/resty/core.lua'
+	no file '/usr/local/openresty/site/lualib/resty/core.so'
+	no file '/usr/local/openresty/lualib/resty/core.so'
+	no file './resty/core.so'
+	no file '/usr/local/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so'
+	no file '/usr/local/openresty/site/lualib/resty.so'
+	no file '/usr/local/openresty/lualib/resty.so'
+	no file './resty.so'
+	no file '/usr/local/lib/lua/5.1/resty.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so') in /usr/local/openresty/nginx/conf/nginx.conf:151
+2024/12/04 19:28:48 [alert] 1#1: failed to load the 'resty.core' module (https://github.com/openresty/lua-resty-core); ensure you are using an OpenResty release from https://openresty.org/en/download.html (reason: module 'resty.core' not found:
+	no field package.preload['resty.core']
+	no file '/usr/local/openresty/nginx/conf/waf/resty/core.lua'
+	no file '/usr/local/openresty/site/lualib/resty/core.so'
+	no file '/usr/local/openresty/lualib/resty/core.so'
+	no file './resty/core.so'
+	no file '/usr/local/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so'
+	no file '/usr/local/openresty/site/lualib/resty.so'
+	no file '/usr/local/openresty/lualib/resty.so'
+	no file './resty.so'
+	no file '/usr/local/lib/lua/5.1/resty.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so') in /usr/local/openresty/nginx/conf/nginx.conf:151
+2024/12/04 19:29:14 [alert] 1#1: failed to load the 'resty.core' module (https://github.com/openresty/lua-resty-core); ensure you are using an OpenResty release from https://openresty.org/en/download.html (reason: module 'resty.core' not found:
+	no field package.preload['resty.core']
+	no file '/usr/local/openresty/nginx/conf/waf/resty/core.lua'
+	no file '/usr/local/openresty/site/lualib/resty/core.so'
+	no file '/usr/local/openresty/lualib/resty/core.so'
+	no file './resty/core.so'
+	no file '/usr/local/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so'
+	no file '/usr/local/openresty/site/lualib/resty.so'
+	no file '/usr/local/openresty/lualib/resty.so'
+	no file './resty.so'
+	no file '/usr/local/lib/lua/5.1/resty.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so') in /usr/local/openresty/nginx/conf/nginx.conf:151
+2024/12/04 20:53:36 [alert] 1#1: failed to load the 'resty.core' module (https://github.com/openresty/lua-resty-core); ensure you are using an OpenResty release from https://openresty.org/en/download.html (reason: module 'resty.core' not found:
+	no field package.preload['resty.core']
+	no file '/usr/local/openresty/nginx/conf/waf/resty/core.lua'
+	no file '/usr/local/openresty/site/lualib/resty/core.so'
+	no file '/usr/local/openresty/lualib/resty/core.so'
+	no file './resty/core.so'
+	no file '/usr/local/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so'
+	no file '/usr/local/openresty/site/lualib/resty.so'
+	no file '/usr/local/openresty/lualib/resty.so'
+	no file './resty.so'
+	no file '/usr/local/lib/lua/5.1/resty.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so') in /usr/local/openresty/nginx/conf/nginx.conf:151
+2024/12/04 20:53:37 [alert] 1#1: failed to load the 'resty.core' module (https://github.com/openresty/lua-resty-core); ensure you are using an OpenResty release from https://openresty.org/en/download.html (reason: module 'resty.core' not found:
+	no field package.preload['resty.core']
+	no file '/usr/local/openresty/nginx/conf/waf/resty/core.lua'
+	no file '/usr/local/openresty/site/lualib/resty/core.so'
+	no file '/usr/local/openresty/lualib/resty/core.so'
+	no file './resty/core.so'
+	no file '/usr/local/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so'
+	no file '/usr/local/openresty/site/lualib/resty.so'
+	no file '/usr/local/openresty/lualib/resty.so'
+	no file './resty.so'
+	no file '/usr/local/lib/lua/5.1/resty.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so') in /usr/local/openresty/nginx/conf/nginx.conf:151
+2024/12/04 20:53:37 [alert] 1#1: failed to load the 'resty.core' module (https://github.com/openresty/lua-resty-core); ensure you are using an OpenResty release from https://openresty.org/en/download.html (reason: module 'resty.core' not found:
+	no field package.preload['resty.core']
+	no file '/usr/local/openresty/nginx/conf/waf/resty/core.lua'
+	no file '/usr/local/openresty/site/lualib/resty/core.so'
+	no file '/usr/local/openresty/lualib/resty/core.so'
+	no file './resty/core.so'
+	no file '/usr/local/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so'
+	no file '/usr/local/openresty/site/lualib/resty.so'
+	no file '/usr/local/openresty/lualib/resty.so'
+	no file './resty.so'
+	no file '/usr/local/lib/lua/5.1/resty.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so') in /usr/local/openresty/nginx/conf/nginx.conf:151
+2024/12/04 20:53:38 [alert] 1#1: failed to load the 'resty.core' module (https://github.com/openresty/lua-resty-core); ensure you are using an OpenResty release from https://openresty.org/en/download.html (reason: module 'resty.core' not found:
+	no field package.preload['resty.core']
+	no file '/usr/local/openresty/nginx/conf/waf/resty/core.lua'
+	no file '/usr/local/openresty/site/lualib/resty/core.so'
+	no file '/usr/local/openresty/lualib/resty/core.so'
+	no file './resty/core.so'
+	no file '/usr/local/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so'
+	no file '/usr/local/openresty/site/lualib/resty.so'
+	no file '/usr/local/openresty/lualib/resty.so'
+	no file './resty.so'
+	no file '/usr/local/lib/lua/5.1/resty.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so') in /usr/local/openresty/nginx/conf/nginx.conf:151
+2024/12/04 20:53:39 [alert] 1#1: failed to load the 'resty.core' module (https://github.com/openresty/lua-resty-core); ensure you are using an OpenResty release from https://openresty.org/en/download.html (reason: module 'resty.core' not found:
+	no field package.preload['resty.core']
+	no file '/usr/local/openresty/nginx/conf/waf/resty/core.lua'
+	no file '/usr/local/openresty/site/lualib/resty/core.so'
+	no file '/usr/local/openresty/lualib/resty/core.so'
+	no file './resty/core.so'
+	no file '/usr/local/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so'
+	no file '/usr/local/openresty/site/lualib/resty.so'
+	no file '/usr/local/openresty/lualib/resty.so'
+	no file './resty.so'
+	no file '/usr/local/lib/lua/5.1/resty.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so') in /usr/local/openresty/nginx/conf/nginx.conf:151
+2024/12/04 20:53:40 [alert] 1#1: failed to load the 'resty.core' module (https://github.com/openresty/lua-resty-core); ensure you are using an OpenResty release from https://openresty.org/en/download.html (reason: module 'resty.core' not found:
+	no field package.preload['resty.core']
+	no file '/usr/local/openresty/nginx/conf/waf/resty/core.lua'
+	no file '/usr/local/openresty/site/lualib/resty/core.so'
+	no file '/usr/local/openresty/lualib/resty/core.so'
+	no file './resty/core.so'
+	no file '/usr/local/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so'
+	no file '/usr/local/openresty/site/lualib/resty.so'
+	no file '/usr/local/openresty/lualib/resty.so'
+	no file './resty.so'
+	no file '/usr/local/lib/lua/5.1/resty.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so') in /usr/local/openresty/nginx/conf/nginx.conf:151
+2024/12/04 20:53:44 [alert] 1#1: failed to load the 'resty.core' module (https://github.com/openresty/lua-resty-core); ensure you are using an OpenResty release from https://openresty.org/en/download.html (reason: module 'resty.core' not found:
+	no field package.preload['resty.core']
+	no file '/usr/local/openresty/nginx/conf/waf/resty/core.lua'
+	no file '/usr/local/openresty/site/lualib/resty/core.so'
+	no file '/usr/local/openresty/lualib/resty/core.so'
+	no file './resty/core.so'
+	no file '/usr/local/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so'
+	no file '/usr/local/openresty/site/lualib/resty.so'
+	no file '/usr/local/openresty/lualib/resty.so'
+	no file './resty.so'
+	no file '/usr/local/lib/lua/5.1/resty.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so') in /usr/local/openresty/nginx/conf/nginx.conf:151
+2024/12/04 20:53:50 [alert] 1#1: failed to load the 'resty.core' module (https://github.com/openresty/lua-resty-core); ensure you are using an OpenResty release from https://openresty.org/en/download.html (reason: module 'resty.core' not found:
+	no field package.preload['resty.core']
+	no file '/usr/local/openresty/nginx/conf/waf/resty/core.lua'
+	no file '/usr/local/openresty/site/lualib/resty/core.so'
+	no file '/usr/local/openresty/lualib/resty/core.so'
+	no file './resty/core.so'
+	no file '/usr/local/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty/core.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so'
+	no file '/usr/local/openresty/site/lualib/resty.so'
+	no file '/usr/local/openresty/lualib/resty.so'
+	no file './resty.so'
+	no file '/usr/local/lib/lua/5.1/resty.so'
+	no file '/usr/local/openresty/luajit/lib/lua/5.1/resty.so'
+	no file '/usr/local/lib/lua/5.1/loadall.so') in /usr/local/openresty/nginx/conf/nginx.conf:151
+2024/12/04 20:54:26 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/04 20:54:26 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/04 20:54:26 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/04 20:54:26 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:04:44 [notice] 224#224: signal process started
+2024/12/04 21:04:44 [alert] 225#225: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:04:44 [alert] 226#226: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:04:44 [alert] 227#227: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:04:44 [alert] 228#228: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:10:01 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:10:01 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:10:01 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:10:01 [alert] 11#11: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:13:06 [emerg] 1#1: open() "/usr/local/openresty/nginx/conf/nginx.conf" failed (2: No such file or directory)
+2024/12/04 21:13:06 [emerg] 1#1: open() "/usr/local/openresty/nginx/conf/nginx.conf" failed (2: No such file or directory)
+2024/12/04 21:13:06 [emerg] 1#1: open() "/usr/local/openresty/nginx/conf/nginx.conf" failed (2: No such file or directory)
+2024/12/04 21:13:07 [emerg] 1#1: open() "/usr/local/openresty/nginx/conf/nginx.conf" failed (2: No such file or directory)
+2024/12/04 21:13:08 [emerg] 1#1: open() "/usr/local/openresty/nginx/conf/nginx.conf" failed (2: No such file or directory)
+2024/12/04 21:13:10 [emerg] 1#1: open() "/usr/local/openresty/nginx/conf/nginx.conf" failed (2: No such file or directory)
+2024/12/04 21:13:13 [emerg] 1#1: open() "/usr/local/openresty/nginx/conf/nginx.conf" failed (2: No such file or directory)
+2024/12/04 21:13:20 [emerg] 1#1: open() "/usr/local/openresty/nginx/conf/nginx.conf" failed (2: No such file or directory)
+2024/12/04 21:13:32 [emerg] 1#1: open() "/usr/local/openresty/nginx/conf/nginx.conf" failed (2: No such file or directory)
+2024/12/04 21:14:16 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:14:16 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:14:16 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:14:16 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:15:45 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:15:45 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:15:45 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:15:45 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:21:29 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:21:29 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:21:29 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:21:29 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:25:15 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:25:15 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:25:15 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:25:15 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:26:47 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:26:47 [alert] 11#11: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:26:47 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:26:47 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:54:46 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:54:46 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:54:46 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/04 21:54:46 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/04 23:52:35 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/04 23:52:35 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/04 23:52:35 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/04 23:52:35 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/05 00:57:42 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/05 00:57:42 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/05 00:57:42 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/05 00:57:42 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/05 00:57:42 [alert] 11#11: setpriority(-20) failed (13: Permission denied)
+2024/12/05 00:57:42 [alert] 14#14: setpriority(-20) failed (13: Permission denied)
+2024/12/05 00:57:42 [alert] 12#12: setpriority(-20) failed (13: Permission denied)
+2024/12/05 00:57:42 [alert] 13#13: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:18:00 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:18:00 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:18:00 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:18:00 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:18:00 [alert] 11#11: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:18:00 [alert] 12#12: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:18:00 [alert] 14#14: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:18:00 [alert] 13#13: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:29:30 [emerg] 1#1: "proxy_headers_hash_max_size" directive is duplicate in /usr/local/openresty/nginx/conf/conf.d/proxy.conf:14
+2024/12/05 01:29:30 [emerg] 1#1: "proxy_headers_hash_max_size" directive is duplicate in /usr/local/openresty/nginx/conf/conf.d/proxy.conf:14
+2024/12/05 01:29:31 [emerg] 1#1: "proxy_headers_hash_max_size" directive is duplicate in /usr/local/openresty/nginx/conf/conf.d/proxy.conf:14
+2024/12/05 01:29:31 [emerg] 1#1: "proxy_headers_hash_max_size" directive is duplicate in /usr/local/openresty/nginx/conf/conf.d/proxy.conf:14
+2024/12/05 01:29:32 [emerg] 1#1: "proxy_headers_hash_max_size" directive is duplicate in /usr/local/openresty/nginx/conf/conf.d/proxy.conf:14
+2024/12/05 01:29:34 [emerg] 1#1: "proxy_headers_hash_max_size" directive is duplicate in /usr/local/openresty/nginx/conf/conf.d/proxy.conf:14
+2024/12/05 01:29:37 [emerg] 1#1: "proxy_headers_hash_max_size" directive is duplicate in /usr/local/openresty/nginx/conf/conf.d/proxy.conf:14
+2024/12/05 01:29:44 [emerg] 1#1: "proxy_headers_hash_max_size" directive is duplicate in /usr/local/openresty/nginx/conf/conf.d/proxy.conf:14
+2024/12/05 01:29:57 [emerg] 1#1: "proxy_headers_hash_max_size" directive is duplicate in /usr/local/openresty/nginx/conf/conf.d/proxy.conf:14
+2024/12/05 01:30:23 [emerg] 1#1: "proxy_headers_hash_max_size" directive is duplicate in /usr/local/openresty/nginx/conf/conf.d/proxy.conf:14
+2024/12/05 01:30:43 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:30:43 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:30:43 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:30:43 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:30:43 [alert] 12#12: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:30:43 [alert] 13#13: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:30:43 [alert] 14#14: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:30:43 [alert] 11#11: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:33:02 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:33:02 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:33:02 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:33:02 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:33:02 [alert] 11#11: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:33:02 [alert] 12#12: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:33:02 [alert] 13#13: setpriority(-20) failed (13: Permission denied)
+2024/12/05 01:33:02 [alert] 14#14: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:11:42 [warn] 1#1: could not build optimal proxy_headers_hash, you should increase either proxy_headers_hash_max_size: 512 or proxy_headers_hash_bucket_size: 64; ignoring proxy_headers_hash_bucket_size
+2024/12/05 02:11:42 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:11:42 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:11:42 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:11:42 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:11:42 [alert] 11#11: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:11:42 [alert] 14#14: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:11:42 [alert] 13#13: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:11:42 [alert] 12#12: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:22:16 [error] 9#9: *27 connect() failed (111: Connection refused) while connecting to upstream, client: 2001:8f8:192f:80d:24b2:38b3:fefd:3221, server: jms.ptfx.me, request: "GET /ui/ HTTP/1.1", upstream: "http://192.168.88.223:8888/ui/", host: "jms.ptfx.me"
+2024/12/05 02:22:17 [error] 9#9: *29 connect() failed (111: Connection refused) while connecting to upstream, client: 2001:8f8:192f:80d:24b2:38b3:fefd:3221, server: jms.ptfx.me, request: "GET /favicon.ico HTTP/1.1", upstream: "http://192.168.88.223:8888/favicon.ico", host: "jms.ptfx.me", referrer: "https://jms.ptfx.me/ui/"
+2024/12/05 02:22:29 [error] 9#9: *31 connect() failed (111: Connection refused) while connecting to upstream, client: 2001:8f8:192f:80d:24b2:38b3:fefd:3221, server: jms.ptfx.me, request: "GET /ui/ HTTP/1.1", upstream: "http://192.168.88.223:8888/ui/", host: "jms.ptfx.me"
+2024/12/05 02:22:29 [error] 9#9: *33 connect() failed (111: Connection refused) while connecting to upstream, client: 2001:8f8:192f:80d:24b2:38b3:fefd:3221, server: jms.ptfx.me, request: "GET /favicon.ico HTTP/1.1", upstream: "http://192.168.88.223:8888/favicon.ico", host: "jms.ptfx.me", referrer: "https://jms.ptfx.me/ui/"
+2024/12/05 02:22:42 [error] 9#9: *35 connect() failed (111: Connection refused) while connecting to upstream, client: 2001:8f8:192f:80d:24b2:38b3:fefd:3221, server: jms.ptfx.me, request: "GET /ui/ HTTP/1.1", upstream: "http://192.168.88.223:8888/ui/", host: "jms.ptfx.me"
+2024/12/05 02:22:44 [error] 14#14: *37 connect() failed (111: Connection refused) while connecting to upstream, client: 2001:8f8:192f:80d:24b2:38b3:fefd:3221, server: jms.ptfx.me, request: "GET /favicon.ico HTTP/1.1", upstream: "http://192.168.88.223:8888/favicon.ico", host: "jms.ptfx.me", referrer: "https://jms.ptfx.me/ui/"
+2024/12/05 02:38:30 [warn] 1#1: could not build optimal proxy_headers_hash, you should increase either proxy_headers_hash_max_size: 512 or proxy_headers_hash_bucket_size: 64; ignoring proxy_headers_hash_bucket_size
+2024/12/05 02:38:30 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:38:30 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:38:30 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:38:30 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:38:30 [alert] 12#12: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:38:30 [alert] 11#11: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:38:30 [alert] 13#13: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:38:30 [alert] 14#14: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:48:06 [warn] 1#1: could not build optimal proxy_headers_hash, you should increase either proxy_headers_hash_max_size: 512 or proxy_headers_hash_bucket_size: 64; ignoring proxy_headers_hash_bucket_size
+2024/12/05 02:48:06 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:48:06 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:48:06 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:48:06 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:48:06 [alert] 11#11: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:48:06 [alert] 12#12: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:48:06 [alert] 14#14: setpriority(-20) failed (13: Permission denied)
+2024/12/05 02:48:06 [alert] 13#13: setpriority(-20) failed (13: Permission denied)
+2024/12/05 03:05:48 [warn] 1#1: the "listen ... http2" directive is deprecated, use the "http2" directive instead in /usr/local/openresty/nginx/conf/vhost/jms.conf:2
+2024/12/05 03:05:48 [warn] 1#1: could not build optimal proxy_headers_hash, you should increase either proxy_headers_hash_max_size: 512 or proxy_headers_hash_bucket_size: 64; ignoring proxy_headers_hash_bucket_size
+2024/12/05 03:05:48 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/05 03:05:48 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/05 03:05:48 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/05 03:05:48 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/05 03:05:48 [alert] 12#12: setpriority(-20) failed (13: Permission denied)
+2024/12/05 03:05:48 [alert] 14#14: setpriority(-20) failed (13: Permission denied)
+2024/12/05 03:05:48 [alert] 13#13: setpriority(-20) failed (13: Permission denied)
+2024/12/05 03:05:48 [alert] 11#11: setpriority(-20) failed (13: Permission denied)
+2024/12/05 20:59:19 [warn] 1#1: the "listen ... http2" directive is deprecated, use the "http2" directive instead in /usr/local/openresty/nginx/conf/vhost/jms.conf:2
+2024/12/05 20:59:19 [warn] 1#1: could not build optimal proxy_headers_hash, you should increase either proxy_headers_hash_max_size: 512 or proxy_headers_hash_bucket_size: 64; ignoring proxy_headers_hash_bucket_size
+2024/12/05 20:59:19 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/05 20:59:19 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/05 20:59:19 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/05 20:59:19 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/05 20:59:19 [alert] 11#11: setpriority(-20) failed (13: Permission denied)
+2024/12/05 20:59:19 [alert] 13#13: setpriority(-20) failed (13: Permission denied)
+2024/12/05 20:59:19 [alert] 12#12: setpriority(-20) failed (13: Permission denied)
+2024/12/05 20:59:19 [alert] 14#14: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:15:40 [warn] 1#1: the "listen ... http2" directive is deprecated, use the "http2" directive instead in /usr/local/openresty/nginx/conf/vhost/jms.conf:7
+2024/12/05 21:15:40 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:15:40 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:15:40 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:15:40 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:15:40 [alert] 11#11: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:15:40 [alert] 12#12: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:15:40 [alert] 13#13: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:15:40 [alert] 14#14: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:16:58 [error] 9#9: *1 connect() failed (111: Connection refused) while connecting to upstream, client: 83.110.181.62, server: jms.ptfx.me, request: "GET /api/health/ HTTP/2.0", upstream: "http://192.168.88.223:8888/api/health/", host: "jms.ptfx.me", referrer: "https://jms.ptfx.me/core/auth/login/?csrf_failure=1&admin=1"
+2024/12/05 21:26:16 [warn] 1#1: the "listen ... http2" directive is deprecated, use the "http2" directive instead in /usr/local/openresty/nginx/conf/vhost/jms.conf:7
+2024/12/05 21:26:16 [warn] 1#1: could not build optimal proxy_headers_hash, you should increase either proxy_headers_hash_max_size: 512 or proxy_headers_hash_bucket_size: 64; ignoring proxy_headers_hash_bucket_size
+2024/12/05 21:26:16 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:26:16 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:26:16 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:26:16 [alert] 11#11: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:26:16 [alert] 13#13: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:26:16 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:26:16 [alert] 12#12: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:26:16 [alert] 14#14: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:27:27 [warn] 1#1: the "listen ... http2" directive is deprecated, use the "http2" directive instead in /usr/local/openresty/nginx/conf/vhost/jms.conf:7
+2024/12/05 21:27:27 [warn] 1#1: could not build optimal proxy_headers_hash, you should increase either proxy_headers_hash_max_size: 512 or proxy_headers_hash_bucket_size: 64; ignoring proxy_headers_hash_bucket_size
+2024/12/05 21:27:27 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:27:27 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:27:27 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:27:27 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:27:27 [alert] 11#11: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:27:27 [alert] 13#13: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:27:27 [alert] 12#12: setpriority(-20) failed (13: Permission denied)
+2024/12/05 21:27:27 [alert] 14#14: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:14:50 [warn] 1#1: the "listen ... http2" directive is deprecated, use the "http2" directive instead in /usr/local/openresty/nginx/conf/vhost/jms.conf:7
+2024/12/06 18:14:50 [warn] 1#1: could not build optimal proxy_headers_hash, you should increase either proxy_headers_hash_max_size: 512 or proxy_headers_hash_bucket_size: 64; ignoring proxy_headers_hash_bucket_size
+2024/12/06 18:14:50 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:14:50 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:14:50 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:14:50 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:14:50 [alert] 11#11: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:14:50 [alert] 12#12: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:14:50 [alert] 13#13: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:14:50 [alert] 14#14: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:17:15 [emerg] 1#1: invalid number of arguments in "http2" directive in /usr/local/openresty/nginx/conf/vhost/jms.conf:8
+2024/12/06 18:17:15 [emerg] 1#1: invalid number of arguments in "http2" directive in /usr/local/openresty/nginx/conf/vhost/jms.conf:8
+2024/12/06 18:17:16 [emerg] 1#1: invalid number of arguments in "http2" directive in /usr/local/openresty/nginx/conf/vhost/jms.conf:8
+2024/12/06 18:17:16 [emerg] 1#1: invalid number of arguments in "http2" directive in /usr/local/openresty/nginx/conf/vhost/jms.conf:8
+2024/12/06 18:17:17 [emerg] 1#1: invalid number of arguments in "http2" directive in /usr/local/openresty/nginx/conf/vhost/jms.conf:8
+2024/12/06 18:17:19 [emerg] 1#1: invalid number of arguments in "http2" directive in /usr/local/openresty/nginx/conf/vhost/jms.conf:8
+2024/12/06 18:17:22 [emerg] 1#1: invalid number of arguments in "http2" directive in /usr/local/openresty/nginx/conf/vhost/jms.conf:8
+2024/12/06 18:17:29 [emerg] 1#1: invalid number of arguments in "http2" directive in /usr/local/openresty/nginx/conf/vhost/jms.conf:8
+2024/12/06 18:17:42 [emerg] 1#1: invalid number of arguments in "http2" directive in /usr/local/openresty/nginx/conf/vhost/jms.conf:8
+2024/12/06 18:18:04 [warn] 1#1: could not build optimal proxy_headers_hash, you should increase either proxy_headers_hash_max_size: 512 or proxy_headers_hash_bucket_size: 64; ignoring proxy_headers_hash_bucket_size
+2024/12/06 18:18:04 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:18:04 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:18:04 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:18:04 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:18:04 [alert] 11#11: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:18:04 [alert] 12#12: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:18:04 [alert] 13#13: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:18:04 [alert] 14#14: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:20:31 [warn] 1#1: could not build optimal proxy_headers_hash, you should increase either proxy_headers_hash_max_size: 512 or proxy_headers_hash_bucket_size: 64; ignoring proxy_headers_hash_bucket_size
+2024/12/06 18:20:31 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:20:31 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:20:31 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:20:31 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:20:31 [alert] 11#11: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:20:31 [alert] 12#12: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:20:31 [alert] 13#13: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:20:31 [alert] 14#14: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:22:07 [emerg] 1#1: "proxy_ignore_client_abort" directive is duplicate in /usr/local/openresty/nginx/conf/conf.d/proxy.conf:8
+2024/12/06 18:22:07 [emerg] 1#1: "proxy_ignore_client_abort" directive is duplicate in /usr/local/openresty/nginx/conf/conf.d/proxy.conf:8
+2024/12/06 18:22:08 [emerg] 1#1: "proxy_ignore_client_abort" directive is duplicate in /usr/local/openresty/nginx/conf/conf.d/proxy.conf:8
+2024/12/06 18:22:08 [emerg] 1#1: "proxy_ignore_client_abort" directive is duplicate in /usr/local/openresty/nginx/conf/conf.d/proxy.conf:8
+2024/12/06 18:22:09 [emerg] 1#1: "proxy_ignore_client_abort" directive is duplicate in /usr/local/openresty/nginx/conf/conf.d/proxy.conf:8
+2024/12/06 18:22:11 [emerg] 1#1: "proxy_ignore_client_abort" directive is duplicate in /usr/local/openresty/nginx/conf/conf.d/proxy.conf:8
+2024/12/06 18:22:15 [emerg] 1#1: "proxy_ignore_client_abort" directive is duplicate in /usr/local/openresty/nginx/conf/conf.d/proxy.conf:8
+2024/12/06 18:22:21 [emerg] 1#1: "proxy_ignore_client_abort" directive is duplicate in /usr/local/openresty/nginx/conf/conf.d/proxy.conf:8
+2024/12/06 18:22:34 [emerg] 1#1: "proxy_ignore_client_abort" directive is duplicate in /usr/local/openresty/nginx/conf/conf.d/proxy.conf:8
+2024/12/06 18:23:00 [emerg] 1#1: "proxy_ignore_client_abort" directive is duplicate in /usr/local/openresty/nginx/conf/conf.d/proxy.conf:8
+2024/12/06 18:23:35 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:23:35 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:23:35 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:23:35 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:23:35 [alert] 11#11: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:23:35 [alert] 12#12: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:23:35 [alert] 13#13: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:23:35 [alert] 14#14: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:28:10 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:28:10 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:28:10 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:28:10 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:28:10 [alert] 11#11: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:28:10 [alert] 12#12: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:28:10 [alert] 13#13: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:28:10 [alert] 14#14: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:38:27 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:38:27 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:38:27 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:38:27 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:38:27 [alert] 11#11: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:38:27 [alert] 12#12: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:38:27 [alert] 13#13: setpriority(-20) failed (13: Permission denied)
+2024/12/06 18:38:27 [alert] 14#14: setpriority(-20) failed (13: Permission denied)
+2024/12/06 19:24:35 [alert] 7#7: setpriority(-20) failed (13: Permission denied)
+2024/12/06 19:24:35 [alert] 8#8: setpriority(-20) failed (13: Permission denied)
+2024/12/06 19:24:35 [alert] 9#9: setpriority(-20) failed (13: Permission denied)
+2024/12/06 19:24:35 [alert] 10#10: setpriority(-20) failed (13: Permission denied)
+2024/12/06 19:24:35 [alert] 11#11: setpriority(-20) failed (13: Permission denied)
+2024/12/06 19:24:35 [alert] 12#12: setpriority(-20) failed (13: Permission denied)
+2024/12/06 19:24:35 [alert] 13#13: setpriority(-20) failed (13: Permission denied)
+2024/12/06 19:24:35 [alert] 14#14: setpriority(-20) failed (13: Permission denied)
+2024/12/06 21:03:41 [error] 13#13: *1940 recv() failed (104: Connection reset by peer) while reading response header from upstream, client: 83.110.181.62, server: jenkins.1fx.me, request: "GET /updateCenter/installStatus?_=1733490210893 HTTP/1.1", upstream: "http://192.168.0.184:8080/updateCenter/installStatus?_=1733490210893", host: "jenkins.1fx.me", referrer: "https://jenkins.1fx.me/"
+2024/12/06 21:03:44 [error] 13#13: *1940 connect() failed (111: Connection refused) while connecting to upstream, client: 83.110.181.62, server: jenkins.1fx.me, request: "GET / HTTP/1.1", upstream: "http://192.168.0.184:8080/", host: "jenkins.1fx.me"

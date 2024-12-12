@@ -16,7 +16,9 @@ docker run -d \
 -e MYSQL_SERVICE_DB_NAME=nacos_conf \
 -e MYSQL_SERVICE_DB_PARAM='characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=Asia/Dubai' \
 -e NACOS_SERVER_IP=172.28.93.234 \
--v /var/log/nacos/:/home/nacos/logs \
+-v /data/docker/nacos/logs:/home/nacos/logs \
+-v /data/docker/nacos/conf:/home/nacos/conf \
+-v /data/docker/nacos/data:/home/nacos/data \
 --restart=always \
 --name nacos2 \
 nacos/nacos-server:v2.2.3
@@ -39,7 +41,9 @@ docker run -d \
 -e MYSQL_SERVICE_DB_NAME=nacos_conf \
 -e MYSQL_SERVICE_DB_PARAM='characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=Asia/Dubai' \
 -e NACOS_SERVER_IP=172.28.116.31 \
--v /var/log/nacos/:/home/nacos/logs \
+-v /data/docker/nacos/logs:/home/nacos/logs \
+-v /data/docker/nacos/conf:/home/nacos/conf \
+-v /data/docker/nacos/data:/home/nacos/data \
 --restart=always \
 --name nacos2 \
 nacos/nacos-server:v2.2.3
@@ -62,7 +66,9 @@ docker run -d \
 -e MYSQL_SERVICE_DB_NAME=nacos_conf \
 -e MYSQL_SERVICE_DB_PARAM='characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=Asia/Dubai' \
 -e NACOS_SERVER_IP=172.28.104.220 \
--v /var/log/nacos/:/home/nacos/logs \
+-v /data/docker/nacos/logs:/home/nacos/logs \
+-v /data/docker/nacos/conf:/home/nacos/conf \
+-v /data/docker/nacos/data:/home/nacos/data \
 --restart=always \
 --name nacos2 \
 nacos/nacos-server:v2.2.3
@@ -95,7 +101,37 @@ docker run -d \
 -e MYSQL_SERVICE_DB_NAME=nacos \
 -e MYSQL_SERVICE_DB_PARAM='characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=Asia/Dubai' \
 -e NACOS_SERVER_IP=148.66.10.42 \
--v /data/docker/nacos/logs/:/home/nacos/logs \
+-v /data/docker/nacos/logs:/home/nacos/logs \
+-v /data/docker/nacos/conf:/home/nacos/conf \
+-v /data/docker/nacos/data:/home/nacos/data \
 --restart=always \
 --name nacos \
 nacos/nacos-server:v2.4.0
+
+
+# 单机非集群安装
+# 1.先运行程序，复制配置文件到宿主机
+docker run -p 8848:8848 --name nacos -d nacos/nacos-server:v2.3.2
+# 2.复制配置文件
+docker cp nacos:/home/nacos/conf /data/docker/nacos/
+# 3.导入nacos 数据库sql 
+ # 位于配置文件目录下：mysql-schema.sql
+docker run -d \
+-e JVM_XMS=512m \
+-e JVM_XMX=512m \
+-e JVM_XMN=512m \
+-e NACOS_AUTH_ENABLE=false \
+-e MODE=standalone \
+-e NACOS_SERVER_PORT=8848 \
+-e SPRING_DATASOURCE_PLATFORM=mysql \
+-e MYSQL_SERVICE_HOST=192.168.0.108 \
+-e MYSQL_SERVICE_PORT=3306 \
+-e MYSQL_SERVICE_USER=root \
+-e MYSQL_SERVICE_PASSWORD="DtixjtS3145DF" \
+-e MYSQL_SERVICE_DB_NAME=nacos \
+-v /data/docker/nacos/logs:/home/nacos/logs \
+-v /data/docker/nacos/conf:/home/nacos/conf \
+-v /data/docker/nacos/data:/home/nacos/data \
+--restart=always \
+--name nacos \
+nacos/nacos-server:v2.3.2

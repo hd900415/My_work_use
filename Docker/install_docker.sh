@@ -1,4 +1,4 @@
-sudo yum remove docker \
+sudo dnf remove docker \
                   docker-client \
                   docker-client-latest \
                   docker-common \
@@ -14,4 +14,4 @@ systemctl enable --now docker
 systemctl daemon-reload 
 sudo systemctl restart docker
 # docker compose new 
-docker compose 
+sudo docker compose 
