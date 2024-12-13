@@ -1,0 +1,1 @@
+docker run -d --name nexus3 -p 8081:8081 --restart always -v /data/docker/nexus3:/nexus-data sonatype/nexus3:3.68.1-java8
