@@ -2,7 +2,7 @@
 docker run -d --name mysql \
 --restart always  \
 -p 3306:3306 \
--e MYSQL_ROOT_PASSWORD='Dtixn$U@xdljtS$3145DF' \
+-e MYSQL_ROOT_PASSWORD='sa3dd3SLKJDf' \
 -e MYSQL_DATABASE='zhijia' \
 -v /etc/localtime:/etc/localtime \
 -v /data/docker/mysql/data:/var/lib/mysql \

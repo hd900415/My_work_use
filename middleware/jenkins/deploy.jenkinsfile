@@ -1,0 +1,116 @@
+pipeline {
+    agent any
+    environment {
+        HOST_CONFIG_FILE = '/var/jenkins_home/hostfile/host_config.yaml'
+        REMOTE_DIR = '/data'
+        SSH_KEY = '/var/jenkins_home/sshfile/devops-dev.pem'
+        nacosServer = '127.0.0.1:8848'
+        activeProfile = 'local'
+        nameSpace = '81056a8e-7051-4300-8c9d-7d362ce5c930'
+        STARTUP_SCRIPT = 'startup.sh'
+    }
+    parameters {
+        choice(name: 'ENVIRONMENT', choices: ['development', 'testing', 'production'], description: '选择环境')
+        choice(name: 'APP_NAME', choices: ['base-activity-app', 'base-biz-app', 'base-third-app', 'base-user-app', 'base-wallet-app', 'base-web-app'], description: '选择APP名称')
+    }
+    stages {
+        stage('Load Configuration') {
+            steps {
+                script {
+                    def yamlContent = readYaml file: env.HOST_CONFIG_FILE
+                    def selectedEnv = params.ENVIRONMENT
+                    def selectedApp = params.APP_NAME
+                    def ips = yamlContent.environments[selectedEnv][selectedApp].collect { it.ip.trim() }
+                    
+                    echo "Selected Environment: ${selectedEnv}"
+                    echo "Selected App: ${selectedApp}"
+                    echo "Valid IPs: ${ips}"
+                    
+                    if (!ips || ips.isEmpty()) {
+                        error "未从 YAML 文件中读取到有效的 IP 地址，请检查配置！"
+                    }
+                    env.VALID_IPS = ips.join(',')
+                }
+            }
+        }
+        stage('Build Jar Path') {
+            steps {
+                script {
+                    def jarPath = "/var/jenkins_home/jarfile/${params.APP_NAME}/${params.APP_NAME}.jar"
+                    echo "Jar Path: ${jarPath}"
+                    if (!fileExists(jarPath)) {
+                        error "JAR 文件未找到: ${jarPath}. 请确认构建是否已完成！"
+                    }
+                    env.JAR_PATH = jarPath
+                }
+            }
+        }
+        stage('Generate and Execute Startup Script') {
+            steps {
+                script {
+                    def ips = env.VALID_IPS.tokenize(',')
+                    ips.each { ip ->
+                        try {
+                            echo "Processing server: ${ip}"
+                            
+                            // 生成启动脚本内容
+                            def startupScript = """
+                            #!/bin/bash
+                            APP_NAME="${params.APP_NAME}"
+                            JAR_PATH="${env.REMOTE_DIR}/${params.APP_NAME}/${params.APP_NAME}.jar"
+                            NACOS_SERVER="${nacosServer}"
+                            ACTIVE_PROFILE="${activeProfile}"
+                            NAMESPACE="${nameSpace}"
+                            
+                            echo "检查是否有正在运行的进程..."
+                            pid=\$(ps -ef | grep "[j]ava.*\${APP_NAME}" | awk '{print \$2}')
+                            if [ -n "\$pid" ]; then
+                                echo "发现正在运行的进程，PID: \$pid，准备停止..."
+                                kill -9 \$pid
+                                echo "进程已停止。"
+                            else
+                                echo "未发现运行中的进程。"
+                            fi
+                            
+                            echo "启动新的进程..."
+                            mkdir -p ${env.REMOTE_DIR}/\${APP_NAME}
+                            nohup /opt/jdk1.8.0_431/bin/java -jar \\
+                            -Dspring.cloud.nacos.config.server-addr=\${NACOS_SERVER} \\
+                            -Dspring.profiles.active=\${ACTIVE_PROFILE} \\
+                            -Dspring.cloud.nacos.config.namespace=\${NAMESPACE} \\
+                            \${JAR_PATH} > ${env.REMOTE_DIR}/\${APP_NAME}/nohup.out 2>&1 &
+                            
+                            sleep 15
+                            pid=\$(ps -ef | grep "[j]ava.*\${APP_NAME}" | awk '{print \$2}')
+                            if [ -n "\$pid" ]; then
+                                echo "进程启动成功，PID: \$pid"
+                            else
+                                echo "进程启动失败，请检查日志文件：${env.REMOTE_DIR}/\${APP_NAME}/nohup.out"
+                                exit 1
+                            fi
+                            """
+                            
+                            // 将脚本写入文件并上传到目标服务器
+                            writeFile file: env.STARTUP_SCRIPT, text: startupScript
+                            sh """
+                            scp -i ${env.SSH_KEY} -o StrictHostKeyChecking=no ${env.STARTUP_SCRIPT} root@${ip}:${env.REMOTE_DIR}/${env.STARTUP_SCRIPT}
+                            ssh -i ${env.SSH_KEY} -o StrictHostKeyChecking=no root@${ip} "chmod +x ${env.REMOTE_DIR}/${env.STARTUP_SCRIPT}"
+                            ssh -i ${env.SSH_KEY} -o StrictHostKeyChecking=no root@${ip} "${env.REMOTE_DIR}/${env.STARTUP_SCRIPT}"
+                            """
+                        } catch (Exception e) {
+                            echo "Error processing server ${ip}: ${e.message}"
+                        }
+                    }
+                }
+            }
+        }
+    }
+    post {
+        success {
+            echo "Application deployed successfully on all selected servers."
+        }
+        failure {
+            echo "Deployment failed on one or more servers. Please check the logs."
+        }
+    }
+}

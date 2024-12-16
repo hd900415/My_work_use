@@ -1,0 +1,108 @@
+pipeline {
+    agent any
+    environment {
+        GIT_URL = 'http://166.108.193.76:8081/gitlab-instance-0e2e0ec2/base-java.git'
+        MVN_HOME = '/usr/local/apache-maven-3.3.9'
+        JAR_DIR = '/var/jenkins_home/jarfile'
+    }
+    stages {
+        stage('开始前清理工作目录') {
+            steps {
+                echo '清理工作目录...'
+                deleteDir()
+            }
+        }
+        stage('选择分支和应用') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: '6df6bff5-8c30-4b1e-a648-86cff9334cef', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        // 获取分支列表
+                        def branches = sh(
+                            script: """
+                                git ls-remote --heads http://${USERNAME}:${PASSWORD}@166.108.193.76:8081/gitlab-instance-0e2e0ec2/base-java.git | awk '{print \$2}' | sed 's|refs/heads/||'
+                            """,
+                            returnStdout: true
+                        ).trim().split("\n")
+
+                        if (branches.size() == 0) {
+                            error "未能获取分支列表，请检查仓库地址和权限！"
+                        }
+
+                        // 选择分支
+                        env.SELECTED_BRANCH = input(
+                            message: '请选择要拉取的分支',
+                            parameters: [
+                                choice(name: 'BRANCH', choices: branches.join('\n'), description: '分支列表')
+                            ]
+                        )
+
+                        // 选择应用
+                        env.APP_NAME = input(
+                            message: '请选择要构建的应用',
+                            parameters: [
+                                choice(
+                                    name: 'APP_NAME', 
+                                    choices: ['all', 'base-activity-app', 'base-biz-app', 'base-third-app', 'base-user-app', 'base-wallet-app', 'base-web-app'], 
+                                    description: '应用列表（选择 all 构建所有应用）'
+                                )
+                            ]
+                        )
+                    }
+                }
+            }
+        }
+        stage('拉取代码') {
+            steps {
+                echo "选择的分支是: ${env.SELECTED_BRANCH}"
+                checkout scmGit(
+                    branches: [[name: "${env.SELECTED_BRANCH}" ]],
+                    userRemoteConfigs: [[
+                        credentialsId: '6df6bff5-8c30-4b1e-a648-86cff9334cef',
+                        url: "${GIT_URL}"
+                    ]]
+                )
+            }
+        }
+        stage('编译构建') {
+            steps {
+                script {
+                    if (env.APP_NAME == 'all') {
+                        echo '构建所有应用...'
+                        sh "${MVN_HOME}/bin/mvn clean install -Dmaven.test.skip=true -U"
+                    } else {
+                        echo "构建应用: ${env.APP_NAME}"
+                        sh "${MVN_HOME}/bin/mvn clean install -pl base-modules/${env.APP_NAME} -am -Dmaven.test.skip=true"
+                    }
+                }
+            }
+        }
+        stage('提取构建包') {
+            steps {
+                script {
+                    def apps = env.APP_NAME == 'all' ? ['base-activity-app', 'base-biz-app', 'base-third-app', 'base-user-app', 'base-wallet-app', 'base-web-app'] : [env.APP_NAME]
+                    apps.each { app ->
+                        def jarPath = "base-modules/${app}/target/${app}.jar"
+                        def destDir = "${env.JAR_DIR}/${app}"
+
+                        echo "准备保存应用 ${app} 的构建包..."
+                        if (fileExists(jarPath)) {
+                            sh "mkdir -p ${destDir}"
+                            sh "cp ${jarPath} ${destDir}/"
+                            echo "已保存 ${jarPath} 到 ${destDir}/"
+                        } else {
+                            error "未找到 JAR 文件: ${jarPath}"
+                        }
+                    }
+                }
+            }
+        }
+    }
+    post {
+        success {
+            echo 'Pipeline 执行成功！'
+        }
+        failure {
+            echo 'Pipeline 执行失败，请检查日志！'
+        }
+    }
+}
