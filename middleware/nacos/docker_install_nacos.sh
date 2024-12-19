@@ -139,9 +139,10 @@ nacos/nacos-server:v2.3.2
 docker run -d \
 -u root \
 -p 8848:8848 \
--e JVM_XMS=512m \
--e JVM_XMX=512m \
--e JVM_XMN=512m \
+-p 9848:9848 \
+-e JVM_XMS=1024m \
+-e JVM_XMX=1024m \
+-e JVM_XMN=1024m \
 -e NACOS_AUTH_ENABLE=false \
 -e MODE=standalone \
 -e NACOS_SERVER_PORT=8848 \
@@ -151,11 +152,10 @@ docker run -d \
 -e MYSQL_SERVICE_USER=root \
 -e MYSQL_SERVICE_PASSWORD=sa3dd3SLKJDf \
 -e MYSQL_SERVICE_DB_NAME=nacos \
+-e MYSQL_SERVICE_DB_PARAM='characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai' \
 -v /data/docker/nacos/logs:/home/nacos/logs \
 -v /data/docker/nacos/conf:/home/nacos/conf \
 -v /data/docker/nacos/data:/home/nacos/data \
--e MYSQL_SERVICE_DB_NAME=nacos \
--e MYSQL_SERVICE_DB_PARAM='characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true' \
 --restart=always \
 --name nacos \
 nacos/nacos-server:v2.3.2
