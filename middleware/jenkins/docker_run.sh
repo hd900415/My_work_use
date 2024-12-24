@@ -15,4 +15,6 @@ docker run -d --name jenkins --network host  -u root --restart=always  \
 -v /var/run/docker.sock:/var/run/docker.sock \
 -v /opt/apache-maven-3.3.9:/usr/local/apache-maven-3.3.9 \
 -v /opt/jdk1.8.0_431:/usr/local/jdk1.8.0_431 \
+-v /root/.nvm/versions/node/v16.20.2/bin:/usr/local/node_16_20_2/bin \
+-v /root/.nvm/versions/node/v16.20.2/lib:/usr/local/node_16_20_2/lib \
 jenkins/jenkins:lts

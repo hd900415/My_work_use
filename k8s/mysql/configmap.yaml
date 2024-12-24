@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: pt-dev
+  name: zabbix-app
+  labels:
+    app: mysql-server
+data:
+  MYSQL_DATABASE: "your_database_name"

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 
 metadata:
-  namespace: devops-test
+  namespace: pt-dev
   name: mysql-server
   labels:
     app: mysql-server-sonarqube
@@ -72,13 +72,13 @@ spec:
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  namespace: devops-test
+  namespace: pt-dev
   name: mysql-pv-volume
   labels:
     type: local
     app: mysql-server
 spec:
-  storageClassName: storageclass1
+  storageClassName: csi-disk-topology
   capacity:
     storage: 5Gi
   accessModes:
@@ -90,23 +90,23 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  namespace: devops-test
+  namespace: pt-dev
   name: mysql-pv-claim
   labels:
     app: mysql-server
 spec:
-  storageClassName: storageclass1
+  storageClassName: csi-disk-topology
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi
+      storage: 50Gi
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: devops-test
+  namespace: pt-dev
   name: mysql-server
   labels:
     app: mysql-server
@@ -116,3 +116,28 @@ spec:
     - port: 3306
   selector:
     app: mysql-server
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: pt-dev
+  name: zabbix-app
+  labels:
+    app: mysql-server
+data:
+  MYSQL_DATABASE: "nacos"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: pt-dev
+  name: zabbix-app
+  labels:
+    app: mysql-server
+type: Opaque
+data:
+  MYSQL_ROOT_PASSWORD: eUNURlJBVHJ0WDNHVTM=
+  MYSQL_USER: bmFjb3M=
+  MYSQL_PASSWORD: eUNURlJBVHJ0WDNHVTM=
