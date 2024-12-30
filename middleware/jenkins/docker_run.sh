@@ -13,6 +13,7 @@ docker run -d --name jenkins --network host  -u root --restart=always  \
 --privileged \
 -v /data/docker/jenkins/data:/var/jenkins_home \
 -v /var/run/docker.sock:/var/run/docker.sock \
+-v /usr/bin/docker:/usr/bin/docker \
 -v /opt/apache-maven-3.3.9:/usr/local/apache-maven-3.3.9 \
 -v /opt/jdk1.8.0_431:/usr/local/jdk1.8.0_431 \
 -v /root/.nvm/versions/node/v16.20.2/bin:/usr/local/node_16_20_2/bin \

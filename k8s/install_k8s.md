@@ -198,30 +198,27 @@ systemctl status containerd.service
 
 ##### 2.2 添加 k8s 镜像仓库
 ```bash
-cat <<EOF > /etc/yum.repos.d/kubernetes.repo
-[kubernetes]
-name=Kubernetes
-baseurl=https://pkgs.k8s.io/core:/stable:/v1.26/rpm/
-enabled=1
-gpgcheck=1
-gpgkey=https://pkgs.k8s.io/core:/stable:/v1.26/rpm/repodata/repomd.xml.key
-exclude=kubelet kubeadm kubectl
-EOF
+# cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+# [kubernetes]
+# name=Kubernetes
+# baseurl=https://pkgs.k8s.io/core:/stable:/v1.26/rpm/
+# enabled=1
+# gpgcheck=1
+# gpgkey=https://pkgs.k8s.io/core:/stable:/v1.26/rpm/repodata/repomd.xml.key
+# exclude=kubelet kubeadm kubectl
+# EOF
 
 # 最新的参考第二种仓库文件
 cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
-baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+baseurl=https://pkgs.k8s.io/core:/stable:/v1.30/rpm/
 enabled=1
 gpgcheck=1
-repo_gpgcheck=1
-gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+gpgkey=https://pkgs.k8s.io/core:/stable:/v1.30/rpm/repodata/repomd.xml.key
 exclude=kubelet kubeadm kubectl
 EOF
 ```
-
-
 
 ##### 2.3 将桥接的 IPv4 流量传递到 iptables 的链
 设置所需的 sysctl 参数，参数在重新启动后保持不变
@@ -247,54 +244,22 @@ modprobe br_netfilter
 echo 1 > /proc/sys/net/ipv4/ip_forward
 ```
 
-
-
 ##### 2.4 安装k8s 
-可以安装1.24.0-1.26.3版本,本文使用1.26.0
+可以安装1.30.0版本,本文使用1.30.0
 
 ```bash
-sudo yum install -y kubelet-1.24.0-0 kubeadm-1.24.0-0 kubectl-1.24.0-0 --disableexcludes=kubernetes --nogpgcheck
-#sudo yum install -y kubelet-1.25.3-0 kubeadm-1.25.3-0 kubectl-1.25.3-0 --disableexcludes=kubernetes --nogpgcheck
-
-
-2022-11-18，经过测试，版本号：1.25.4
-sudo yum install -y kubelet-1.25.4-0 kubeadm-1.25.4-0 kubectl-1.25.4-0 --disableexcludes=kubernetes --nogpgcheck
-2023-02-07，经过测试，版本号：1.25.5，
-sudo yum install -y kubelet-1.25.5-0 kubeadm-1.25.5-0 kubectl-1.25.5-0 --disableexcludes=kubernetes --nogpgcheck
-2023-02-07，经过测试，版本号：1.25.6，
-sudo yum install -y kubelet-1.25.6-0 kubeadm-1.25.6-0 kubectl-1.25.6-0 --disableexcludes=kubernetes --nogpgcheck
-2023-02-07，经过测试，版本号：1.26.0，
-sudo yum install -y kubelet-1.26.0-0 kubeadm-1.26.0-0 kubectl-1.26.0-0 --disableexcludes=kubernetes --nogpgcheck
-2023-02-07，经过测试，版本号：1.26.1，
-sudo yum install -y kubelet-1.26.1-0 kubeadm-1.26.1-0 kubectl-1.26.1-0 --disableexcludes=kubernetes --nogpgcheck
-2023-03-02，经过测试，版本号：1.26.2，
-sudo yum install -y kubelet-1.26.2-0 kubeadm-1.26.2-0 kubectl-1.26.2-0 --disableexcludes=kubernetes --nogpgcheck
-sudo yum install -y kubelet-1.26.3 kubeadm-1.26.3 kubectl-1.26.3 --disableexcludes=kubernetes --nogpgcheck
-
-sudo yum install -y kubelet-1.26.5 kubeadm-1.26.5 kubectl-1.26.5 --disableexcludes=kubernetes
-
-
-
-sudo yum install -y kubelet-1.27.3-0 kubeadm-1.27.3-0 kubectl-1.27.3-0 --disableexcludes=kubernetes --nogpgcheck
-
+yum install -y kubelet-1.30.0 kubeadm-1.30.0 kubectl-1.30.0 --disableexcludes=kubernetes --nogpgcheck
 systemctl daemon-reload
 sudo systemctl restart kubelet
 sudo systemctl enable kubelet
 ```
 
-
-
-
-
-
 ##### 2.5 初始化,只需要在master节点
 
 ```bash
 kubeadm init \
- --apiserver-advertise-address=172.31.10.28 \
+ --apiserver-advertise-address=172.31.19.94 \
 ```
-
-
 
 更改apiserver 为master节点
 
