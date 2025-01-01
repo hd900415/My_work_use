@@ -1,0 +1,126 @@
+pipeline {
+    agent any
+
+    environment {
+        MVN_HOME = '/usr/local/apache-maven-3.3.9' // Maven 路径
+        GIT_REPO = 'https://gitlab.1fx.me/business/pt-admin.git' // Git 仓库地址
+        DOCKER_REGISTRY = 'swr.ap-southeast-3.myhuaweicloud.com/pt-dev' // Docker 镜像仓库路径
+        CREDENTIALS_ID = '14446344-c6e1-4a60-9970-0dcb790e09f2' // GitLab 凭据 ID
+        DOCKER_CREDENTIALS_ID = 'huawei-docker-credentials' // Docker 凭据 ID
+        KUBERNETES_FILE_ID = '0da4e480-c688-41c1-9cae-82191bf3e4ed' // Kubernetes 配置文件凭据 ID
+    }
+
+    parameters {
+        choice(
+            name: 'APP_NAME',
+            choices: ['all', 'pt-admin-modules-activity', 'pt-admin-modules-bets', 'pt-admin-modules-file', 
+                      'pt-admin-modules-finance', 'pt-admin-modules-game', 'pt-admin-modules-gen', 
+                      'pt-admin-modules-job', 'pt-admin-modules-member', 'pt-admin-modules-report', 
+                      'pt-admin-modules-system'],
+            description: '选择要打包和部署的模块（选择 "all" 打包所有模块）。' ,
+            defaultValue: 'all'
+        )
+    }
+
+    stages {
+        stage('开始前清理工作目录') {
+            steps {
+                echo '清理工作目录...'
+                deleteDir()
+            }
+        }
+
+        stage('选择分支') {
+            steps {
+                script {
+                    def branches = sh(script: "git ls-remote --heads ${GIT_REPO} | awk '{print \"\" $2}'", returnStdout: true).trim().split('\n')
+                    BRANCH_NAME = input message: '请选择分支', parameters: [choice(name: 'branch', choices: branches.join('\n'), description: '分支名称')]
+                }
+                echo "分支选择为: ${BRANCH_NAME}"
+            }
+        }
+
+        stage('拉取代码') {
+            steps {
+                git branch: "${BRANCH_NAME}",
+                    credentialsId: "${CREDENTIALS_ID}",
+                    url: "${GIT_REPO}"
+            }
+        }
+
+        stage('编译构建') {
+            steps {
+                script {
+                    if (params.APP_NAME == 'all') {
+                        echo '构建所有应用...'
+                        sh "${MVN_HOME}/bin/mvn clean install -Dmaven.test.skip=true -U"
+                    } else {
+                        echo "构建应用: ${params.APP_NAME}"
+                        sh "${MVN_HOME}/bin/mvn clean install -pl pt-admin-modules/${params.APP_NAME} -amd -Dmaven.test.skip=true -U"
+                    }
+                }
+            }
+        }
+
+        stage('构建 Docker 镜像') {
+            steps {
+                script {
+                    def commitHash = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    def modules = (params.APP_NAME == 'all') ? [
+                        'pt-admin-modules-activity', 'pt-admin-modules-bets', 'pt-admin-modules-file', 
+                        'pt-admin-modules-finance', 'pt-admin-modules-game', 'pt-admin-modules-gen', 
+                        'pt-admin-modules-job', 'pt-admin-modules-member', 'pt-admin-modules-report', 
+                        'pt-admin-modules-system'
+                    ] : [params.APP_NAME]
+
+                    modules.each { module ->
+                        def imageName = "${DOCKER_REGISTRY}/${module}:${commitHash}"
+                        echo "正在构建 Docker 镜像: ${imageName}"
+
+                        dir(module) {
+                            sh """
+                            docker build -t ${imageName} .
+                            """
+
+                            echo "推送镜像到仓库: ${imageName}"
+                            withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                                sh """
+                                docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} ${DOCKER_REGISTRY}
+                                docker push ${imageName}
+                                """
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('部署到 Kubernetes') {
+            steps {
+                script {
+                    def commitHash = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    def modules = (params.APP_NAME == 'all') ? [
+                        'pt-admin-modules-activity', 'pt-admin-modules-bets', 'pt-admin-modules-file', 
+                        'pt-admin-modules-finance', 'pt-admin-modules-game', 'pt-admin-modules-gen', 
+                        'pt-admin-modules-job', 'pt-admin-modules-member', 'pt-admin-modules-report', 
+                        'pt-admin-modules-system'
+                    ] : [params.APP_NAME]
+
+                    modules.each { module ->
+                        echo "部署模块到 Kubernetes: ${module}"
+                        def yamlFile = "deploy-${module}.yaml"
+                        sh "sed -i 's/1.0/${commitHash}/g' ${module}/${yamlFile}"
+
+                        withCredentials([file(credentialsId: "${KUBERNETES_FILE_ID}", variable: 'KUBECONFIG')]) {
+                            sh """
+                            export KUBECONFIG=${KUBECONFIG}
+                            kubectl apply -f ${module}/${yamlFile}
+                            unset KUBECONFIG
+                            """
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
