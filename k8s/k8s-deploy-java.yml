@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pt-client-member
+  namespace: pt-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pt-client-member
+  template:
+    metadata:
+      labels:
+        app: pt-client-member
+    spec:
+      imagePullSecrets:
+        - name: harbor-secret
+      containers:
+        - name: pt-client-member
+          image: swr.ap-southeast-3.myhuaweicloud.com/pt-dev/pt-client-member:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9309
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "sit"
+            - name: JAVA_OPTS
+              value: "-Xms128m -Xmx512m"
+            - name: NACOS_ADDR
+              value: nacos-server-svc.pt-dev.svc.cluster.local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pt-client-member-svc
+  namespace: pt-dev
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9309
+      targetPort: 9309
+  selector:
+    app: pt-client-member

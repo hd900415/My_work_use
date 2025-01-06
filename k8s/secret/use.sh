@@ -1,6 +1,9 @@
 # base64 解码
 [root@k8s-master ~]# echo "eyJhdXRocyI6eyJoYXJib3IuZ2FsYXh5bWVldGluZy5saXZlIjp7InVzZXJuYW1lIjoiYWRtaW4iLCJwYXNzd29yZCI6IkhhaWRhbzEyMy4uLiIsImF1dGgiOiJZV1J0YVc0NlNHRnBaR0Z2TVRJekxpNHUifX19" |base64 -d
-{"auths":{"harbor.galaxymeeting.live":{"username":"admin","password":"Haidao123...","auth":"YWRtaW46SGFpZGFvMTIzLi4u"}}}[root@k8s-master ~]# 
+{"auths":{"harbor.galaxymeeting.live":{"username":"admin","password":"Haidao123...","auth":"YWRtaW46SGFpZGFvMTIzLi4u"}}}
+
+
+[root@k8s-master ~]# 
 
 kubectl create secret docker-registry harbor-secret -n devops-test \
   --docker-server=harbor.galaxymeeting.live \

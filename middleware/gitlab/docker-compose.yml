@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    container_name: gitlab
+    restart: always
+    environment:
+      TZ: 'Asia/Shanghai'
+      GITLAB_OMNIBUS_CONFIG: |
+        # 对外访问gitlab地址，可以使用本机IP
+        external_url 'http://192.168.184.200:9080'
+        gitlab_rails['gitlab_shell_ssh_port'] = 9022
+    ports:
+      - '9080:80' # 注意宿主机和容器内部的端口要一致，否则external_url无法访问
+      - '9443:443'
+      - '9022:22'
+    volumes:
+      - '/opt/store/gitlab/config:/etc/gitlab'
+      - '/opt/store/gitlab/logs:/var/log/gitlab'
+      - '/opt/store/gitlab/data:/var/opt/gitlab'
+    shm_size: '1g'
+
+  gitlab-runner:
+    image: 'gitlab/gitlab-runner:latest'
+    container_name: "gitlab-runner"
+    restart: always
+    volumes:
+      - '/opt/store/gitlab-runner:/etc/gitlab-runner'
+      - '/var/run/docker.sock:/var/run/docker.sock' #这个挂载是将宿主机上的docker socket挂载到了容器内，这样容器内执行的docker命令会被宿主机docker daemon最终执行

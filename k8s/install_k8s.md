@@ -93,6 +93,21 @@ sysctl -p
 ```
 
 
+###### 禁用 IPv6
+cat <<EOF>>/etc/sysctl.conf
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+EOF
+sysctl -p
+
+
+###### 配置 IPv4
+nmcli connection modify ens33 ipv4.addresses 192.168.1.11/24
+nmcli connection modify ens33 ipv4.gateway 192.168.1.1
+nmcli connection modify ens33 ipv4.dns "8.8.8.8 8.8.4.4"
+nmcli connection modify ens33 ipv4.method manual
+
 
 ###### 4.文件数限制
 ```bash
@@ -288,7 +303,7 @@ kubeadm join 192.168.19.135:6443 --token i7w5xr.u3t483h07aksnzg6 \
 cd ~
 vim .bashrc 
 # or 
-echo "export KUBECONFIG=/etc/kubernetes/admin.conf" /root/.bashrc
+echo "export KUBECONFIG=/etc/kubernetes/admin.conf" >> /root/.bashrc
 ```
 
 
@@ -316,6 +331,10 @@ kubectl get node
 ```bash
 wget --no-check-certificate https://projectcalico.docs.tigera.io/archive/v3.25/manifests/calico.yaml
 ```
+
+https://docs.projectcalico.org/manifests/calico.yaml
+
+https://calico-v3-25.netlify.app/archive/v3.25/manifests/calico.yaml
 
 
 

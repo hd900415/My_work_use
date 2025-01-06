@@ -2,20 +2,20 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: postgres-data
-  namespace: devops-test
+  namespace: sonarqube
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: "storageclass1"
+  storageClassName: "nfs-storageclass"
   resources:
     requests:
       storage: 2Gi
 ---
-apiVersion: apps/v1
+apiVersion: v1
 kind: Deployment
 metadata:
   name: postgres-sonar
-  namespace: devops-test
+  namespace: sonarqube
 spec:
   replicas: 1
   selector:
@@ -46,11 +46,11 @@ spec:
           persistentVolumeClaim:
             claimName: postgres-data
 ---
-apiVersion: apps/v1
+apiVersion: v1
 kind: Service
 metadata:
   name: postgres-sonar
-  namespace: devops-test
+  namespace: sonarqube
   labels:
     app: postgres-sonar
 spec:

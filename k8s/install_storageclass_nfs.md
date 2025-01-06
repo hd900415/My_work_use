@@ -62,7 +62,7 @@ mount -t nfs 172.31.8.80:/data/ro /mnt/ro
 
 1. helm添加 库
 helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
-
+helm repo update
 2.应用新的helm
 # helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner \
 #     --set nfs.server=172.31.3.204 \
@@ -71,8 +71,4 @@ helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/
 #     --set storageClass.defaultClass=true
 
 
-helm install nfs  nfs-subdir-external-provisioner/nfs-subdir-external-provisioner \
-    --set storageClass.name=nfs-storageclass \
-    --set nfs.server=172.31.6.90 \
-    --set nfs.path=/mnt/rw \
-    --set storageClass.defaultClass=true 
+helm upgrade  --install nfs nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --namespace kube-system    --set storageClass.name=nfs-storageclass     --set nfs.server=192.168.1.11     --set nfs.path=/data/rw     --set storageClass.defaultClass=true 

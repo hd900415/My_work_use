@@ -7,3 +7,8 @@ docker run --detach   --hostname gitlab.1fx.me \
 -v /data/docker/gitlab/ssl:/etc/gitlab/ssl \
 -e GITLAB_OMNIBUS_CONFIG="external_url 'https://gitlab.1fx.me'; nginx['ssl_certificate'] = '/etc/gitlab/ssl/gitlab.1fx.me.crt'; nginx['ssl_certificate_key'] = '/etc/gitlab/ssl/gitlab.1fx.me.key';"  \
 gitlab/gitlab-ce:17.4.6-ce.0
+
+
+
+
+

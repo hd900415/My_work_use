@@ -2,11 +2,11 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: jenkins-pvc
-  namespace: devops-test
+  namespace: jenkins
 spec:
-  storageClassName: storageclass1
+  storageClassName: nfs-storageclass
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: 3Gi
+      storage: 30Gi

@@ -2,11 +2,11 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: sonarqube-data
-  namespace: devops-test
+  namespace: sonarqube
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: "storageclass1"
+  storageClassName: "nfs-storageclass"
   resources:
     requests:
       storage: 4Gi
@@ -15,7 +15,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sonarqube
-  namespace: devops-test
+  namespace: sonarqube
   labels:
     app: sonarqube
 spec:
@@ -40,7 +40,7 @@ spec:
         ports:
         - containerPort: 9000
         env:
-        - name: SONARQUEB_JDBC_USERNAME
+        - name: SONARQUBE_JDBC_USERNAME
           value: "sonarUser"
         - name: SONARQUBE_JDBC_PASSWORD
           value: "123456"
@@ -75,7 +75,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: sonarqube
-  namespace: devops-test
+  namespace: sonarqube
   labels:
     app: sonarqube
 spec:
