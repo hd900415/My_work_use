@@ -2,11 +2,11 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mav-pvc
-  namespace: devops-test
+  namespace: devops
 spec:
-  storageClassName: storageclass1
+  storageClassName: nfs-storageclass
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: 3Gi
+      storage: 10Gi

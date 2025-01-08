@@ -30,4 +30,4 @@ bash ~/.acme.sh/acme.sh --install-cert -d "h5.5f8.top" --key-file /usr/local/ope
 # 使用certbot 
 yum install certbot -y
 
-certbot certonly --standalone -d harbor.galaxymeeting.live
+certbot certonly --manual --preferred-challenges dns -d *.pttech.cc -d pttech.cc 

@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+apiVersion: v1
 kind: Deployment
 metadata:
   name: jenkins
@@ -15,10 +15,10 @@ spec:
     spec:
       imagePullSecrets:
         - name: harbor-secret
-      serviceAccountName: jenkins-admin
+      serviceAccountName: jenkins
       containers:
         - name: jenkins
-          image: harbor.galaxymeeting.live/im/jenkins-maven:v1
+          image: harbor.pt.tech/dev/jenkins:lts-jdk17
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: "true"
@@ -59,7 +59,7 @@ spec:
             - name: docker-home
               mountPath: /usr/bin/docker
             - name: mvn-settings
-              mountPath: /usr/local/appache-maven-3.9.4/conf/settings.xml
+              mountPath: /usr/local/appache-maven-3.9.9/conf/settings.xml
               subPath: settings.xml
             - name: daemon
               mountPath: /etc/docker/daemon.json
@@ -72,7 +72,7 @@ spec:
             path: /usr/bin/kubectl
         - name: jenkins-data
           persistentVolumeClaim:
-              claimName: jenkins-pvc
+              claimName: jenkins
         - name: docker
           hostPath:
             path: /run/docker.sock

@@ -1,0 +1,71 @@
+pipeline {
+  agent {
+    kubernetes {
+      yaml '''
+        apiVersion: v1
+        kind: Pod
+        spec:
+          containers:
+          - name: maven
+            image: maven:alpine
+            command:
+            - cat
+            tty: true
+          - name: docker
+            image: docker:latest
+            command:
+            - cat
+            tty: true
+            volumeMounts:
+             - mountPath: /var/run/docker.sock
+               name: docker-sock
+          volumes:
+          - name: docker-sock
+            hostPath:
+              path: /var/run/docker.sock    
+        '''
+    }
+  }
+  stages {
+    stage('Clone Repository') {
+      steps {
+        container('maven') {
+          script {
+            withCredentials([usernamePassword(credentialsId: 'f5802aa5-b427-415f-aeba-51de20b47b0f', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+              sh 'git clone -b main https://${GIT_USERNAME}:${GIT_PASSWORD}@gitlab.1fx.me/business/pt-client-report.git'
+            }
+          }
+        }
+      }
+    }
+    stage('Build Jar') {
+      steps {
+        container('maven') {
+          dir('pt-client-report') {
+            sh 'mvn clean package -Dmaven.test.skip=true -U'
+          }
+        }
+      }
+    }
+    stage('Build Docker Image') {
+      steps {
+        container('docker') {
+          sh 'docker build -t swr.ap-southeast-3.myhuaweicloud.com/pt-dev/pt-client-report:latest .'
+        }
+      }
+    }
+    stage('Push Docker Image') {
+      steps {
+        container('docker') {
+          script {
+            withCredentials([usernamePassword(credentialsId: '34014b0c-de20-4ea7-ab77-656db7d9a7e1', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+              sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+              sh 'docker push swr.ap-southeast-3.myhuaweicloud.com/pt-dev/pt-client-report:latest'
+              sh 'docker logout'
+            }
+          }
+        }
+      }
+    }
+  }
+}
