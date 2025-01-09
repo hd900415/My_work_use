@@ -41,7 +41,7 @@ pipeline {
     stage('Build Jar') {
       steps {
         container('maven') {
-          dir('pt-client-report') {
+          dir('pt-client-report/pt-client-report-provider') {
             sh 'mvn clean package -Dmaven.test.skip=true -U'
           }
         }
