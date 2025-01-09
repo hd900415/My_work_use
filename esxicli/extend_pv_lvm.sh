@@ -59,3 +59,7 @@ resize2fs /dev/mapper/rl-root
 # 使用以下命令检查根分区的容量是否已经增加：
 
 df -h
+
+# 固定IP
+nmcli connection modify ens33 ipv4.method manual ipv4.addresses 192.168.1.92/24 ipv4.gateway 192.168.1.1 ipv4.dns "8.8.8.8 8.8.4.4"
+nmcli connection up ens33
