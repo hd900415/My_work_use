@@ -1,4 +1,4 @@
-https://rocketmq.apache.org/zh/docs/quickStart/04quickstartWithHelmInKubernetes/
+# https://rocketmq.apache.org/zh/docs/quickStart/04quickstartWithHelmInKubernetes/
 
 
 #验证消息发送和接收
@@ -39,3 +39,26 @@ helm upgrade --install rocketmq rocketmq/rocketmq-cluster \
 --set rocketmq.broker.storageClass=nfs-storageclass \
 --set broker.config.enableLmq=true \
 --set broker.config.enableMultiDispatch=true
+
+
+
+helm upgrade --install rocketmq rocketmq/rocketmq-cluster \
+-n pt \
+--create-namespace \
+--set rocketmq.namesrv.resources.requests.memory=1Gi \
+--set rocketmq.namesrv.resources.requests.cpu=500m \
+--set rocketmq.broker.resources.requests.memory=1Gi \
+--set rocketmq.broker.resources.requests.cpu=500m \
+--set rocketmq.broker.resources.limits.memory=2Gi \
+--set rocketmq.broker.resources.limits.cpu=1 \
+--set rocketmq.broker.replicas=2 \
+--set rocketmq.broker.storageClass=nfs-storageclass \
+--set broker.config.enableLmq=true \
+--set broker.config.enableMultiDispatch=true \
+--set proxy.service.type=NodePort \
+--set proxy.enabled=true  \
+
+
+
+
+

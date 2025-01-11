@@ -1,18 +1,17 @@
-# k8s 1.24版本之后，已经废弃的字段配置中包含RemoveSelfLink 参考https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/#feature-gates-for-graduated-or-deprecated-features
-#需要使用新的方法使用nfs 自动创建pvc 和pv 在使用helm 进行部署的时候。
+k8s 1.24版本之后，已经废弃的字段配置中包含RemoveSelfLink 参考https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/#feature-gates-for-graduated-or-deprecated-features
+需要使用新的方法使用nfs 自动创建pvc 和pv 在使用helm 进行部署的时候。
+### 先部署NFS系统
+#### 服务端
 
-# 先部署NFS系统
-# 服务端
-
+```
 yum install -y nfs-utils
-
-
 mkdir -p /data/{ro,rw} 
-
 vim /etc/exports
 /home/nfs/ 192.168.248.0/24(rw,sync,fsid=0)
-# 或者使用如下配置文件
-### 配置文件
+```
+#### 或者使用如下配置文件
+#### 配置文件
+```
 cat /etc/exports
 /data/ro        172.31.0.0/16(ro,sync,no_root_squash,no_all_squash)
 /data/rw        172.31.0.0/16(rw,sync,no_root_squash,no_all_squash)
@@ -22,19 +21,19 @@ cat /etc/exports
 # sync: 同步共享目录。
 # no_root_squash: 可以使用 root 授权。
 # no_all_squash: 可以使用普通用户授权。
+```
 
-
-###
-
-
+```
 systemctl enable rpcbind.service
 systemctl start rpcbind.service
 
 systemctl enable nfs-server.service
 systemctl start nfs-server.service
+```
 
 
-# 客户端
+#### 客户端
+```
 yum install -y nfs-utils
 
 systemctl enable rpcbind.service
@@ -57,18 +56,29 @@ mount -t nfs 172.31.8.80:/data/ro /mnt/ro
 [root@k8s-master mnt]# echo  "mount -t nfs 172.31.8.80:/data/rw /mnt/rw/" >>/etc/rc.d/rc.local 
 [root@k8s-master mnt]# echo "mount -t nfs 172.31.8.80:/data/ro /mnt/ro" >>/etc/rc.d/rc.local 
 [root@k8s-master mnt]# chmod +x /etc/rc.d/rc.local 
+```
 
-# helm 部署nfs-subdir-external-provisioner 并设置为default
+#### helm 部署nfs-subdir-external-provisioner 并设置为default
 
-1. helm添加 库
+1.helm添加 库
+```
 helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
 helm repo update
+```
+
 2.应用新的helm
-# helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner \
-#     --set nfs.server=172.31.3.204 \
-#     --set nfs.path=/data/k8snfs \
-#     --set storageClass.name=nfs-storage \
-#     --set storageClass.defaultClass=true
+```
+helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner \
+--set nfs.server=172.31.3.204 \
+--set nfs.path=/data/k8snfs \
+--set storageClass.name=nfs-storage \
+--set storageClass.defaultClass=true
 
-
-helm upgrade  --install nfs nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --namespace kube-system    --set storageClass.name=nfs-storageclass     --set nfs.server=192.168.1.11     --set nfs.path=/data/rw     --set storageClass.defaultClass=true 
+helm upgrade  --install nfs \
+nfs-subdir-external-provisioner/nfs-subdir-external-provisioner \
+--namespace kube-system    \
+--set storageClass.name=nfs-storageclass     \
+--set nfs.server=192.168.1.11     \
+--set nfs.path=/data/rw     \
+--set storageClass.defaultClass=true
+``` 
