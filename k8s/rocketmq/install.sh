@@ -60,5 +60,25 @@ helm upgrade --install rocketmq rocketmq/rocketmq-cluster \
 
 
 
+# bitnami/rocketmq 
 
+helm repo add rocketmq-repo https://helm-charts.itboon.top/rocketmq
+helm repo update rocketmq-repo
 
+helm upgrade --install rocketmq \
+  --namespace pt \
+  --create-namespace \
+  --set broker.size.master="3" \
+  --set broker.master.jvm.maxHeapSize="2G" \
+  --set broker.master.resources.requests.memory="4Gi" \
+  --set proxy.service.type=NodePort \
+  --set proxy.enabled=true \
+  --set broker.master.resources.requests.cpu="1" \
+  --set broker.master.resources.limits.cpu="2" \
+  --set broker.master.resources.limits.memory="8Gi" \
+  --set broker.master.storageClass=nfs-storageclass \
+  --set broker.master.persistence.enabled=true \
+  --set broker.master.persistence.size="10Gi" \
+  --set broker.master.persistence.storageClass=nfs-storageclass \
+  --set broker.master.persistence.accessMode=ReadWriteMany \
+  rocketmq-repo/rocketmq-cluster
