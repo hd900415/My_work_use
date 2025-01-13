@@ -57,7 +57,14 @@ helm upgrade --install rocketmq rocketmq/rocketmq-cluster \
 --set broker.config.enableMultiDispatch=true \
 --set proxy.service.type=NodePort \
 --set proxy.enabled=true  \
-
+--set namesrv.service.type=NodePort \
+--set namesrv.enabled=true \
+--set dashboard.enabled=true \
+--set dashboard.service.type=NodePort \
+--set namesrv.service.type=NodePort \
+--set broker.service.type=NodePort \
+--set broker.ip=192.168.1.72 \
+--set namesrv.ip=192.168.1.72 
 
 
 # bitnami/rocketmq 
