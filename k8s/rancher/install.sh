@@ -42,6 +42,30 @@ helm install rancher rancher-stable/rancher \
   --set letsEncrypt.email=hd900415@gmail.com \
   --set letsEncrypt.ingress.class=nginx
 
+helm install rancher rancher-latest/rancher \
+  --namespace cattle-system \
+  --set hostname=192.168.1.66 \
+  --set bootstrapPassword=admin \
+  --set service.type=NodePort \
+  --set service.nodePort=30080 \
+  --set ingress.enabled=false
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
  ✘ ⚡ root@ai-work-nginx-h5-ldy  ~  helm install rancher rancher-stable/rancher \ 
   --namespace cattle-system \

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pt-component-gateway-admin
+  namespace: pt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pt-component-gateway-admin
+  template:
+    metadata:
+      labels:
+        app: pt-component-gateway-admin
+    spec:
+      imagePullSecrets:
+        - name: harbor-secret
+      containers:
+        - name: pt-component-gateway-admin
+          image: harbor.pttech.cc/dev/pt-component-gateway-admin:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "dev"
+            - name: JAVA_OPTS
+              value: "-Xms128m -Xmx512m"
+            - name: NACOS_ADDR
+              value: nacos-server-svc.pt.svc.cluster.local
+            - name: DISCOVERY_ADDR
+              value: 192.168.1.14
+            - name: DISCOVERY_PORT
+              value: "38080"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pt-component-gateway-admin-svc
+  namespace: pt
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 38080
+  selector:
+    app: pt-component-gateway-admin
