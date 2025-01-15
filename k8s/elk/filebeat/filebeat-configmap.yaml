@@ -2,16 +2,37 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: filebeat-config
-  namespace: kube-system
+  namespace: es
 data:
   filebeat.yml: |
     filebeat.inputs:
     - type: container
+      enabled: true
       paths:
         - /var/log/containers/*.log
+      fields:
+        index: "%{[kubernetes.labels.app]}-log" 
       processors:
       - add_kubernetes_metadata:
           in_cluster: true
+          default_indexers.enabled: true
+          default_matchers.enabled: true
+          include_labels:
+            - app
+          include_annotations:
+            - logs_path 
+      - drop_event:
+          when:
+            not:
+              equals:
+                kubernetes.namespace: "pt"
+
+    setup.template.name: "filebeat-k8s-template"
+    setup.template.pattern: "filebeat-k8s-*"
+    setup.ilm.enabled: false
 
     output.elasticsearch:
       hosts: ['http://elasticsearch:9200']
+      username: elastic
+      password: aGlE3w56z0abFNFflIs5
+      index: "filebeat-%{[kubernetes.labels.app]}-%{+yyyy.MM.dd}"

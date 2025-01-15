@@ -12,6 +12,8 @@ spec:
     metadata:
       labels:
         app: pt-component-gateway-admin
+      annotations:
+      logs_path: pt-component-gateway-admin
     spec:
       imagePullSecrets:
         - name: harbor-secret

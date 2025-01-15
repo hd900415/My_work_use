@@ -1,0 +1,2 @@
+docker run --rm -v $(pwd)/certs:/usr/share/elasticsearch/config/certs docker.elastic.co/elasticsearch/elasticsearch:7.15.2 \
+  sh -c 'bin/elasticsearch-certutil cert --silent --out config/certs/elastic-certificates.p12 --self-signed --pass "password"'

@@ -1,0 +1,5 @@
+apiVersion: v2
+name: elk-helm
+description: A Helm chart for ELK stack
+version: 0.1.0
+appVersion: "8.5.0"

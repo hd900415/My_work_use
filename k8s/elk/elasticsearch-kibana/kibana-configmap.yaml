@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kibana-config
+  namespace: es
+data:
+  kibana.yml: |
+    server.name: kibana
+    server.host: "0.0.0.0"
+    elasticsearch.hosts: ["http://elasticsearch:9200"]
+    elasticsearch.username: "elastic"
+    elasticsearch.password: "changeme"
+    xpack.security.encryptionKey: "79eca0882ec7a6b6f08bee51e2023a25"
+    xpack.encryptedSavedObjects.encryptionKey: "ed2b962ad392acfda340a842a6ac4b48"
+    xpack.reporting.encryptionKey: "65303b72a6510c8550e974d036744cfa"
+    enterpriseSearch.host: 'http://localhost:3002'
+    i18n.locale: "zh-CN"
