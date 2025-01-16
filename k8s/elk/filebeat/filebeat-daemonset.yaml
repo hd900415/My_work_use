@@ -42,13 +42,19 @@ spec:
         - name: config
           mountPath: /usr/share/filebeat/filebeat.yml
           subPath: filebeat.yml
-        - name: varlibdockercontainers
-          mountPath: /var/lib/docker/containers
+        - name: varlogcontainers
+          mountPath: /var/log/pods/
+          readOnly: true
+        - name: varlibkubelet
+          mountPath: /var/lib/kubelet
           readOnly: true
       volumes:
       - name: config
         configMap:
           name: filebeat-config
-      - name: varlibdockercontainers
+      - name: varlogcontainers
         hostPath:
-          path: /var/lib/docker/containers
+          path: /var/log/pods/
+      - name: varlibkubelet
+        hostPath:
+          path: /var/lib/kubelet

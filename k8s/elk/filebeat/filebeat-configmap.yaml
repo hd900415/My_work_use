@@ -6,21 +6,27 @@ metadata:
 data:
   filebeat.yml: |
     filebeat.inputs:
-    - type: container
+    - type: log
       enabled: true
       paths:
-        - /var/log/containers/*.log
+        - /var/log/pods/*/*/*.log
       fields:
-        index: "%{[kubernetes.labels.app]}-log" 
+        index: "%{[kubernetes.labels.app]}-log"
       processors:
       - add_kubernetes_metadata:
           in_cluster: true
           default_indexers.enabled: true
-          default_matchers.enabled: true
+          default_matchers.enabled: false
           include_labels:
             - app
+            - app.kubernetes.io/instance
+            - app.kubernetes.io/component
+            - app.kubernetes.io/name
           include_annotations:
-            - logs_path 
+            - logs_path
+          # matchers: 
+          #   - logs_path:
+          #       logs_path: "/var/log/pods/"
       - drop_event:
           when:
             not:
@@ -30,9 +36,11 @@ data:
     setup.template.name: "filebeat-k8s-template"
     setup.template.pattern: "filebeat-k8s-*"
     setup.ilm.enabled: false
+    setup.template.overwrite: true
+    
 
     output.elasticsearch:
       hosts: ['http://elasticsearch:9200']
       username: elastic
       password: aGlE3w56z0abFNFflIs5
-      index: "filebeat-%{[kubernetes.labels.app]}-%{+yyyy.MM.dd}"
+      index: "filebeat-%{[kubernetes.labels.app]:default}-%{+yyyy.MM.dd}"

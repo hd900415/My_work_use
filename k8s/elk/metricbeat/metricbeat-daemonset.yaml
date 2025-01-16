@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: metricbeat
+  namespace: es
+  labels:
+    app: metricbeat
+spec:
+  selector:
+    matchLabels:
+      app: metricbeat
+  template:
+    metadata:
+      labels:
+        app: metricbeat
+    spec:
+      serviceAccountName: metricbeat
+      containers:
+      - name: metricbeat
+        image: docker.elastic.co/beats/metricbeat:7.15.2
+        args: ["-e", "-c", "/usr/share/metricbeat/metricbeat.yml"]
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: config
+          mountPath: /usr/share/metricbeat/metricbeat.yml
+          subPath: metricbeat.yml
+        - name: varlibdockercontainers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+        - name: varrun
+          mountPath: /var/run/docker.sock
+          readOnly: true
+        - name: sysfs
+          mountPath: /hostfs/sys
+          readOnly: true
+        - name: proc
+          mountPath: /hostfs/proc
+          readOnly: true
+      volumes:
+      - name: config
+        configMap:
+          name: metricbeat-config
+      - name: varlibdockercontainers
+        hostPath:
+          path: /var/lib/docker/containers
+      - name: varrun
+        hostPath:
+          path: /var/run/docker.sock
+      - name: sysfs
+        hostPath:
+          path: /sys
+      - name: proc
+        hostPath:
+          path: /proc
