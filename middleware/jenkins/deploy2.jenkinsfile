@@ -1,0 +1,279 @@
+pipeline {
+    agent any
+
+    environment {
+        MVN_HOME = '/usr/local/apache-maven-3.9.9' // Maven 路径
+        GIT_REPO = 'https://gitlab.1fx.me/business/pt-admin.git' // Git 仓库地址
+        DOCKER_REGISTRY = 'harbor.pttech.cc/dev' // Docker 镜像仓库路径
+        CREDENTIALS_ID = '86f083fe-8a8e-4b12-a445-985e77d2733e' // GitLab 凭据 ID
+        DOCKER_CREDENTIALS_ID = '194c44bc-fb25-4ffb-82bc-9357aeb2e809' // Docker 凭据 ID
+        KUBERNETES_FILE_ID = 'ba18c432-38d8-480d-b7dc-5cd0f31aabde' // Kubernetes 配置文件凭据 ID
+        // 设置飞书 webhook URL
+        LARK_WEBHOOK = "https://open.larksuite.com/open-apis/bot/v2/hook/1f105b8d-8cb7-4215-bf7f-2afcb9754579"
+    }
+
+    // parameters {
+    //     choice(
+    //         name: 'APP_NAME',
+    //         choices: ['all', 
+    //                   'pt-admin-modules-activity', 
+    //                   'pt-admin-modules-bets', 
+    //                   'pt-admin-modules-file', 
+    //                   'pt-admin-modules-finance', 
+    //                   'pt-admin-modules-game', 
+    //                   'pt-admin-modules-gen', 
+    //                   'pt-admin-modules-job', 
+    //                   'pt-admin-modules-member', 
+    //                   'pt-admin-modules-report', 
+    //                   'pt-admin-modules-system'],
+    //         description: '选择要打包和部署的模块（选择 "all" 打包所有模块）。'
+    //     )
+    // }
+
+    stages {
+        stage('开始前清理工作目录') {
+            steps {
+                echo '清理工作目录...'
+                deleteDir()
+            }
+        }
+
+        stage('选择分支') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: '86f083fe-8a8e-4b12-a445-985e77d2733e', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        //获取分支列表
+                        def branches = sh (
+                            script: """
+                                git ls-remote --heads https://${USERNAME}:${PASSWORD}@gitlab.1fx.me/business/pt-admin.git |awk '{print \$2}' | sed 's|refs/heads/||'
+                            """,
+                            returnStdout: true
+                        ).trim().split('\n')
+                        
+                        if (branches.size() == 0) {
+                            error "未能获取分支列表，请检查仓库地址和权限！"
+                        }    
+                        
+                        // 选择分支
+                        env.SELECTED_BRANCH = input(
+                            message: '请选择要拉取的分支',
+                            parameters: [
+                                choice(name: 'BRANCH', choices: branches.join('\n'), description: '分支列表')
+                            ]
+                        )
+                        
+                        // 选择应用
+                        env.APP_NAME = input(
+                            message: '请选择要构建的应用',
+                            parameters: [
+                                choice(
+                                    name: 'APP_NAME',
+                                    choices: [
+                                        'all', 
+                                        'pt-admin-modules-activity', 
+                                        'pt-admin-modules-bet', 
+                                        'pt-admin-modules-file', 
+                                        'pt-admin-modules-finance', 
+                                        'pt-admin-modules-game', 
+                                        'pt-admin-modules-gen', 
+                                        'pt-admin-modules-job', 
+                                        'pt-admin-modules-member', 
+                                        'pt-admin-modules-report', 
+                                        'pt-admin-modules-system',
+                                        'pt-admin-modules-auth'
+                                        ],
+                                    description: '应用列表（选择 all 构建所有应用）'
+                                )
+                            ]
+                        )
+                    }
+                }
+            }
+        }
+
+        stage('拉取代码') {
+            steps {
+                echo "选择的分支是: ${env.SELECTED_BRANCH}"
+                checkout scmGit(
+                    branches: [[name: "${env.SELECTED_BRANCH}"]],
+                    userRemoteConfigs: [[
+                        credentialsId: "86f083fe-8a8e-4b12-a445-985e77d2733e",
+                        url: "${GIT_REPO}"
+                    ]]
+                )
+            }
+        }
+
+        stage('编译构建') {
+            steps {
+                script {
+                    if (env.APP_NAME == 'all') {
+                        echo '构建所有应用...'
+                        sh "${MVN_HOME}/bin/mvn clean install -Dmaven.test.skip=true -U"
+                    } else {
+                        echo "构建应用: ${env.APP_NAME}"
+                        sh "${MVN_HOME}/bin/mvn clean install -pl pt-admin-modules/${env.APP_NAME} -amd -Dmaven.test.skip=true -U"
+                    }
+                }
+            }
+        }
+
+        stage('构建 Docker 镜像') {
+            steps {
+                script {
+                    def commitHash = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    def modules = (env.APP_NAME == 'all') ? [
+                        'pt-admin-modules-activity', 
+                        'pt-admin-modules-bet', 
+                        'pt-admin-modules-file', 
+                        'pt-admin-modules-finance', 
+                        'pt-admin-modules-game', 
+                        'pt-admin-modules-gen', 
+                        'pt-admin-modules-job', 
+                        'pt-admin-modules-member', 
+                        'pt-admin-modules-report', 
+                        'pt-admin-modules-system',
+                        'pt-admin-modules-auth'
+                    ] : [env.APP_NAME]
+
+                    modules.each { module ->
+                        def imageName = "${DOCKER_REGISTRY}/${module}:${commitHash}"
+                        echo "正在构建 Docker 镜像: ${imageName}"
+
+                        sh "docker build -t ${imageName} ${WORKSPACE}/pt-admin-modules/${module}"
+
+                        echo "推送镜像到仓库: ${imageName}"
+                        withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                            sh """
+                            docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} ${DOCKER_REGISTRY}
+                            docker push ${imageName}
+                            """
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('部署到 Kubernetes') {
+            steps {
+                script {
+                    def commitHash = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    def modules = (env.APP_NAME == 'all') ? [
+                        'pt-admin-modules-activity', 
+                        'pt-admin-modules-bet', 
+                        'pt-admin-modules-file', 
+                        'pt-admin-modules-finance', 
+                        'pt-admin-modules-game', 
+                        'pt-admin-modules-gen', 
+                        'pt-admin-modules-job', 
+                        'pt-admin-modules-member', 
+                        'pt-admin-modules-report', 
+                        'pt-admin-modules-system',
+                        'pt-admin-modules-auth'
+                    ] : [env.APP_NAME]
+
+                    modules.each { module ->
+                        echo "部署模块到 Kubernetes: ${module}"
+                        def yamlFile = "${WORKSPACE}/pt-admin-modules/${module}/deploy-${module}-dev.yaml"
+
+                        sh "sed -i 's/1.0/${commitHash}/g' ${yamlFile}"
+
+                        withCredentials([file(credentialsId: "${KUBERNETES_FILE_ID}", variable: 'KUBECONFIG')]) {
+                            sh """
+                            export KUBECONFIG=${KUBECONFIG}
+                            kubectl apply -f ${yamlFile}
+                            unset KUBECONFIG
+                            """
+                        }
+                    }
+                }
+            }
+        }
+    }
+    post {
+    always {
+        script {
+            // 获取构建状态
+            def buildStatus = currentBuild.currentResult ?: 'SUCCESS'
+
+            // 获取镜像名称（支持多个模块的情况）
+            def commitHash = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+            def modules = (env.APP_NAME == 'all') ? [
+                'pt-admin-modules-activity', 
+                'pt-admin-modules-bet', 
+                'pt-admin-modules-file', 
+                'pt-admin-modules-finance', 
+                'pt-admin-modules-game', 
+                'pt-admin-modules-gen', 
+                'pt-admin-modules-job', 
+                'pt-admin-modules-member', 
+                'pt-admin-modules-report', 
+                'pt-admin-modules-system',
+                'pt-admin-modules-auth'
+            ] : [env.APP_NAME]
+
+            def images = modules.collect { module ->
+                "${DOCKER_REGISTRY}/${module}:${commitHash}"
+            }
+
+            // 获取最后一次提交信息
+            def lastCommit = sh(script: "git log -1 --pretty=format:'%h - %s (%an)'", returnStdout: true).trim()
+
+            // 构建消息
+            def buildMessage = """
+            {
+                "msg_type": "interactive",
+                "card": {
+                    "config": {
+                        "wide_screen_mode": true
+                    },
+                    "header": {
+                        "title": {
+                            "tag": "plain_text",
+                            "content": "Jenkins 构建通知"
+                        },
+                        "template": "${buildStatus == 'SUCCESS' ? 'green' : 'red'}"
+                    },
+                    "elements": [
+                        {
+                            "tag": "div",
+                            "text": {
+                                "tag": "plain_text",
+                                "content": "项目: ${env.JOB_NAME}\\n构建编号: #${env.BUILD_NUMBER}\\n状态: ${buildStatus}\\n详情: ${env.BUILD_URL}"
+                            }
+                        },
+                        {
+                            "tag": "div",
+                            "text": {
+                                "tag": "plain_text",
+                                "content": "镜像名称:\\n${images.join('\\n')}"
+                            }
+                        },
+                        {
+                            "tag": "div",
+                            "text": {
+                                "tag": "plain_text",
+                                "content": "提交内容:\\n${lastCommit}"
+                            }
+                        }
+                    ]
+                }
+            }
+            """
+
+            // 输出构建消息到日志中
+            echo "发送到飞书的消息: ${buildMessage}"
+
+            // 发送飞书通知
+            httpRequest(
+                httpMode: 'POST',
+                acceptType: 'APPLICATION_JSON',
+                contentType: 'APPLICATION_JSON',
+                url: env.LARK_WEBHOOK,
+                requestBody: buildMessage
+            )
+        }
+    }
+}
+
+}

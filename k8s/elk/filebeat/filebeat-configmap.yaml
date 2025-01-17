@@ -12,6 +12,8 @@ data:
         - /var/log/pods/*/*/*.log
       fields:
         index: "%{[kubernetes.labels.app]}-log"
+      close_inactive: 10h
+      monitoring.enable: false
       processors:
       - add_kubernetes_metadata:
           in_cluster: true
@@ -27,11 +29,11 @@ data:
           # matchers: 
           #   - logs_path:
           #       logs_path: "/var/log/pods/"
-      - drop_event:
-          when:
-            not:
-              equals:
-                kubernetes.namespace: "pt"
+      # - drop_event:
+      #     when:
+      #       not:
+      #         equals:
+      #           kubernetes.namespace: "pt"
 
     setup.template.name: "filebeat-k8s-template"
     setup.template.pattern: "filebeat-k8s-*"
