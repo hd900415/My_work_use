@@ -1,59 +1,12 @@
-helm upgrade --install  sonarqube  sonarqube/sonarqube \
-    --namespace sonarqube --create-namespace \
-    --set service.type=NodePort \
-    --set postgresql.enabled="true" \
-    --set postgresql.postgresqlUsername="sonarUser" \
-    --set postgresql.postgresqlPassword="sonarPass" \
-    --set postgresql.postgresqlDatabase="sonarDB" \
-    --set postgresql.service.port="5432" \
-    --set postgresql.persistence.storageClass=nfs-storageclass \
-    --set sonarqubePassword="Haidao123..." \
-    --set persistence.enabled="true" \
-    --set persistence.storageClass="nfs-storageclass" \
+helm upgrade --install  sonarqube  sonarqube/sonarqube-lts \
+    --namespace sonar --create-namespace \
     --set initSysctl.enabled="false" \
     --set initFs.enabled="false" \
     --set nginx.enabled="false" \
-    --set community.enabled=true
-
-
-An example Ingress that makes use of the controller:
-  apiVersion: networking.k8s.io/v1
-  kind: Ingress
-  metadata:
-    name: example
-    namespace: foo
-  spec:
-    ingressClassName: nginx
-    rules:
-      - host: www.example.com
-        http:
-          paths:
-            - pathType: Prefix
-              backend:
-                service:
-                  name: exampleService
-                  port:
-                    number: 80
-              path: /
-    # This section is only required if TLS is to be enabled for the Ingress
-    tls:
-      - hosts:
-        - www.example.com
-        secretName: example-tls
-
-If TLS is enabled for the Ingress, a Secret containing the certificate and key must also be provided:
-
-  apiVersion: v1
-  kind: Secret
-  metadata:
-    name: example-tls
-    namespace: foo
-  data:
-    tls.crt: <base64 encoded cert>
-    tls.key: <base64 encoded key>
-  type: kubernetes.io/tls.
-
-
+    --set elasticsearch.enabled=true \
+    --set elasticsearch.hosts[0]="http://elasticsearch-headless.es.svc.cluster.local:9200" \
+    --set elasticsearch.username="elastic" \
+    --set elasticsearch.password="aGlE3w56z0abFNFflIs5"
 
 
 
@@ -68,4 +21,3 @@ helm install cert-manager jetstack/cert-manager \
     --set ingressShim.defaultIssuerKind=ClusterIssuer \
     --set installCRDs=true 
 
-helm upgrade --install sonarqube sonarqube --repo https://charts.kubesphere.io/main -n devops --create-namespace --set service.type=NodePort --set  postgresql.persistence.storageClass=nfs-storageclass
