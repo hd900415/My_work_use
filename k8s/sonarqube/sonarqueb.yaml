@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: sonarqube-data
-  namespace: sonarqube
+  namespace: sonar
 spec:
   accessModes:
     - ReadWriteMany
@@ -15,7 +15,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sonarqube
-  namespace: sonarqube
+  namespace: sonar
   labels:
     app: sonarqube
 spec:
@@ -36,7 +36,7 @@ spec:
           privileged: true
       containers:
       - name: sonarqube
-        image: sonarqube
+        image: sonarqube:10.7.0-community
         ports:
         - containerPort: 9000
         env:
@@ -45,7 +45,7 @@ spec:
         - name: SONARQUBE_JDBC_PASSWORD
           value: "123456"
         - name: SONARQUBE_JDBC_URL
-          value: "jdbc:postgresql://postgres-sonar:5432/sonarDB"
+          value: "jdbc:postgresql://postgres-sonar.sonar.svc.cluster.local:5432/sonarDB"
         livenessProbe:
           httpGet:
             path: /sessions/new
@@ -75,7 +75,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: sonarqube
-  namespace: sonarqube
+  namespace: sonar
   labels:
     app: sonarqube
 spec:

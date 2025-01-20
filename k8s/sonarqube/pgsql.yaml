@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: postgres-data
-  namespace: sonarqube
+  namespace: sonar
 spec:
   accessModes:
     - ReadWriteMany
@@ -11,11 +11,11 @@ spec:
     requests:
       storage: 2Gi
 ---
-apiVersion: v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres-sonar
-  namespace: sonarqube
+  namespace: sonar
 spec:
   replicas: 1
   selector:
@@ -50,7 +50,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres-sonar
-  namespace: sonarqube
+  namespace: sonar
   labels:
     app: postgres-sonar
 spec:
