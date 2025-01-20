@@ -1,14 +1,14 @@
-# 服务端
+#### 服务端
 
+```
 yum install -y nfs-utils
-
-
 mkdir -p /data/{ro,rw} 
-
-# vim /etc/exports
-# /home/nfs/ 192.168.248.0/24(rw,sync,fsid=0)
-# 或者使用如下配置文件
-### 配置文件
+vim /etc/exports
+/home/nfs/ 192.168.248.0/24(rw,sync,fsid=0)
+```
+#### 或者使用如下配置文件
+#### 配置文件
+```
 cat /etc/exports
 /data/ro        172.31.0.0/16(ro,sync,no_root_squash,no_all_squash)
 /data/rw        172.31.0.0/16(rw,sync,no_root_squash,no_all_squash)
@@ -18,17 +18,12 @@ cat /etc/exports
 # sync: 同步共享目录。
 # no_root_squash: 可以使用 root 授权。
 # no_all_squash: 可以使用普通用户授权。
-
-
 ###
-
-
 systemctl enable rpcbind.service
 systemctl start rpcbind.service
 
 systemctl enable nfs-server.service
 systemctl start nfs-server.service
-
 
 # 客户端
 yum install -y nfs-utils
@@ -53,3 +48,4 @@ mount -t nfs 172.31.8.80:/data/ro /mnt/ro
 [root@k8s-master mnt]# echo  "mount -t nfs 172.31.8.80:/data/rw /mnt/rw/" >>/etc/rc.d/rc.local 
 [root@k8s-master mnt]# echo "mount -t nfs 172.31.8.80:/data/ro /mnt/ro" >>/etc/rc.d/rc.local 
 [root@k8s-master mnt]# chmod +x /etc/rc.d/rc.local 
+```
