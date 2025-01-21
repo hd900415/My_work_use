@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-server
+  labels:
+    app: prometheus
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+      compoent: server
+  template:
+    metadata:
+      labels:
+        app: prometheus
+        compoent: server
+      annotations:
+        prometheus.io/scrape: 'false'
+        prometheus.io/port: '9090'
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+      serviceAccountName: prometheus
+      containers:
+      - image: prom/prometheus:v2.51.1
+        name: prometheus
+        imagePullPolicy: Always
+        command:
+        - prometheus
+        - --config.file=/etc/prometheus/prometheus.yml
+        - --storage.tsdb.path=/prometheus
+        - --storage.tsdb.retention.time=72h
+        - --web.enable-lifecycle
+        resources:
+          requests:
+            cpu: "20m"
+            memory: "100Mi"
+          limits:
+            cpu: "100m"
+            memory: "1000Mi"
+        ports:
+        - containerPort: 9090
+          protocol: TCP
+          name: prometheus
+        volumeMounts:
+        - mountPath: /prometheus
+          name: prometheus-pvc
+        - mountPath: /etc/prometheus
+          name: prometheus-server-conf
+      volumes:
+      - name: prometheus-pvc
+        persistentVolumeClaim:
+          claimName: prometheus-pvc
+      - name: prometheus-server-conf
+        configMap:
+          name: prometheus-server-conf
