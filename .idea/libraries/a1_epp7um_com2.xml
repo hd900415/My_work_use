@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="a1.epp7um.com2">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/nginx_with_doc_conf/openresty_with_GeoIP2/ngx_conf/ssl/a1.epp7um.com.zip!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
