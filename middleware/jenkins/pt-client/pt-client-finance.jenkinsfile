@@ -1,0 +1,98 @@
+pipeline {
+    agent any
+
+    environment {
+        MVN_HOME = '/usr/local/apache-maven-3.9.9' // Maven 路径
+        GIT_REPO = 'https://gitlab.1fx.me/business/pt-client-finance.git' // Git 仓库地址
+        DOCKER_REGISTRY = 'harbor.pttech.cc/dev' // Docker 镜像仓库路径
+        APP_NAME = 'pt-client-finance' // Java 应用名称
+        CREDENTIALS_ID = '86f083fe-8a8e-4b12-a445-985e77d2733e' // GitLab 凭据 ID
+        DOCKER_CREDENTIALS_ID = '194c44bc-fb25-4ffb-82bc-9357aeb2e809' // Docker 凭据 ID
+        KUBERNETES_FILE_ID = 'ba18c432-38d8-480d-b7dc-5cd0f31aabde'
+    }
+
+    stages {
+        stage('开始前清理工作目录') {
+            steps {
+                echo '清理工作目录...'
+                deleteDir()
+            }
+        }
+        stage('选择分支') {
+            steps {
+                script {
+                    // 选择分支，提供手动输入功能
+                    BRANCH_NAME = input message: '请选择分支', parameters: [string(defaultValue: 'main', description: '分支名称', name: 'branch')]
+                }
+                echo "分支选择为: ${BRANCH_NAME}"
+            }
+        }
+
+        stage('拉取代码') {
+            steps {
+                git branch: "${BRANCH_NAME}",
+                    credentialsId: "${CREDENTIALS_ID}",
+                    url: "${GIT_REPO}"
+            }
+        }
+
+        stage('构建 Jar 包') {
+            steps {
+                sh "${MVN_HOME}/bin/mvn clean package -Dmaven.test.skip=true -U"
+            }
+        }
+        stage('初始化') {
+            steps {
+                script {
+                    env.BUILD_VERSION = "1.0-${new Date().format('yyyyMMddHHmm')}.${sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()}"
+                    echo "动态版本号已生成: ${env.BUILD_VERSION}"
+                }
+            }
+        }
+
+        stage('构建 Docker 镜像') {
+            steps {
+                script {
+                    // 生成版本号，按commit hash区分
+                    def commitHash = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    def imageName = "${DOCKER_REGISTRY}/${env.APP_NAME}:${env.BUILD_VERSION}"
+
+                    echo "正在构建 Docker 镜像: ${imageName}"
+                    
+                    // 进入 Dockerfile 所在目录
+                    dir('pt-client-finance-provider') {
+                        sh """
+                        docker build -t ${imageName} .
+                        """
+                    }
+                    // 给镜像打标签并推送到 Docker 仓库
+                    echo "推送镜像到仓库: ${imageName}"
+                    withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                        sh """
+                        docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} ${DOCKER_REGISTRY}
+                        docker push ${imageName}
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('部署到 Kubernetes') {
+            steps {
+                script {
+                    def commitHash = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    sh """
+                    sed -i "s/1.0/${env.BUILD_VERSION}/" pt-client-finance-provider/deploy-pt-client-finance-dev.yaml
+                    """
+                    withCredentials([file(credentialsId: "${KUBERNETES_FILE_ID}", variable: 'KUBECONFIG')]) {
+                    sh """
+                    export KUBECONFIG=${KUBECONFIG}
+                    kubectl apply -f pt-client-finance-provider/deploy-pt-client-finance-dev.yaml
+                    unset KUBECONFIG
+                    """
+                    }
+                }
+            }
+        }
+    }
+}
