@@ -1,6 +1,5 @@
 apiVersion: apps/v1
 kind: StatefulSet
-
 metadata:
   namespace: pt-dev
   name: mysql-server

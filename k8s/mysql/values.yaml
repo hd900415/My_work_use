@@ -1,0 +1,45 @@
+architecture: replication  # 使用主从复制架构
+
+auth:
+  rootPassword: yCTFRATrtX3GU3  # 设置 root 用户密码
+  replicationUser: rsync_user  # 同步用户
+  replicationPassword: yCTFRATrtX3GU3  # 同步用户密码
+
+primary:
+  persistence:
+    storageClass: standard-rwo
+    enabled: true
+    size: 40Gi  # 主节点存储卷大小
+  extraVolumeMounts:
+    - name: mysql-custom-config
+      mountPath: /bitnami/mysql/conf/my_custom.cnf
+      subPath: mysql-config.cnf
+  extraVolumes:
+    - name: mysql-custom-config
+      configMap:
+        name: mysql-config
+
+secondary:
+  replicas: 1  # 从节点数量设置为 1
+  persistence:
+    storageClass: standard-rwo
+    enabled: true
+    size: 40Gi  # 从节点存储卷大小
+  extraVolumeMounts:
+    - name: mysql-custom-config
+      mountPath: /bitnami/mysql/conf/my_custom.cnf
+      subPath: mysql-config.cnf
+  extraVolumes:
+    - name: mysql-custom-config
+      configMap:
+        name: mysql-config
+
+resources:
+  primary:
+    requests:
+      memory: 512Mi
+      cpu: 250m
+  secondary:
+    requests:
+      memory: 512Mi
+      cpu: 250m
