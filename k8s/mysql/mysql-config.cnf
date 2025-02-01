@@ -1,4 +1,3 @@
-
 [mysqld]
 # 基本设置
 user = mysql

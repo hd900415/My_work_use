@@ -6,4 +6,84 @@ metadata:
   labels:
     app: mysql-server
 data:
-  MYSQL_DATABASE: "your_database_name"
+  mysql-config.cnf: |
+    [mysqld]
+    # 基本设置
+    user = mysql
+    port = 3306
+    basedir = /usr
+    datadir = /var/lib/mysql
+    socket = /var/lib/mysql/mysql.sock
+    pid-file = /var/lib/mysql/mysql.pid
+
+    lower_case_table_names = 1
+    # 内存设置
+    innodb_buffer_pool_size = 10G  # 设置为物理内存的 70-80%
+    innodb_log_file_size = 2G  # 设置为缓冲池大小的 25%
+    innodb_buffer_pool_instances = 48  # 每个实例大约 1G
+    innodb_log_buffer_size = 256M  # 日志缓冲区大小
+    join_buffer_size = 1M  # JOIN 缓冲区大小
+    sort_buffer_size = 4M  # 排序缓冲区大小
+    read_buffer_size = 4M  # 读缓冲区大小
+    read_rnd_buffer_size = 8M  # 随机读缓冲区大小
+    tmp_table_size = 256M  # 临时表大小
+    max_heap_table_size = 256M  # 内存表最大大小
+
+    # 连接设置
+    max_connections = 1000  # 最大连接数
+    table_open_cache = 4000  # 表缓存大小
+    thread_cache_size = 100  # 线程缓存大小
+
+    # InnoDB 设置
+    innodb_flush_log_at_trx_commit = 2  # 提高性能，可能会有数据丢失风险
+    innodb_thread_concurrency = 0  # 自动管理线程并发
+    innodb_flush_method = O_DIRECT  # 减少文件系统缓存的影响
+    innodb_file_per_table = 1  # 每个表使用单独的表空间
+    innodb_stats_on_metadata = 0  # 减少统计信息更新的开销
+
+    # 日志设置
+    log_error = /var/log/mysql/error.log  # 错误日志文件
+    slow_query_log = 1  # 启用慢查询日志
+    slow_query_log_file = /var/log/mysql/slow.log  # 慢查询日志文件
+    long_query_time = 2  # 慢查询阈值，单位为秒
+
+    # 二进制日志设置
+    server-id = 1  # 服务器 ID
+    log_bin = /var/lib/mysql/mysql-bin  # 二进制日志文件
+    binlog_format = ROW  # 二进制日志格式
+    sync_binlog = 0  # 提高性能，可能会有数据丢失风险
+    binlog_cache_size = 1M  # 二进制日志缓存大小
+
+    # 其他优化
+    skip_name_resolve = 1  # 跳过主机名解析
+    query_cache_type = 0  # 禁用查询缓存
+    query_cache_size = 0  # 查询缓存大小
+
+    # 性能模式
+    performance_schema = ON  # 启用性能模式
+    performance_schema_instrument = '%=ON'  # 启用所有性能模式仪表
+
+    # 复制设置（如果适用）
+    # master_info_repository = TABLE
+    # relay_log_info_repository = TABLE
+    # relay_log_recovery = ON
+
+    [mysqld_safe]
+    log-error = /var/log/mysql/mysqld_safe.log
+    pid-file = /var/run/mysqld/mysqld.pid
+
+    [client]
+    port = 3306
+    socket = /var/lib/mysql/mysql.sock
+
+    [mysql]
+    no-auto-rehash
+
+    [isamchk]
+    key_buffer = 16M
+
+    [myisamchk]
+    key_buffer = 16M
+
+    [mysqlhotcopy]
+    interactive-timeout
