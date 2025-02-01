@@ -6,9 +6,7 @@ metadata:
 spec:
   containers:
   - image: busybox
-    command:
-      - sleep
-      - "3600"
-    imagePullPolicy: IfNotPresent
     name: busybox
-  restartPolicy: Always
+    command: ["sh", "-c", "tail -f /dev/null"]
+    imagePullPolicy: IfNotPresent
+  restartPolicy: Never

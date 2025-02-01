@@ -1,3 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: default
+  labels:
+    app: nginx-deployment
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: nginx-deployment
+  template:
+    metadata:
+      labels:
+        app: nginx-deployment
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        resources:
+          requests:
+            cpu: "20m"
+            memory: "55M"
+          limits:
+            cpu: "100m"
+            memory: "128M"
+        ports:
+        - containerPort: 80
+          name: http
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 30
+          timeoutSeconds: 10
+        imagePullPolicy: Always
+      restartPolicy: Always
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -10,4 +54,4 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
-  type: NodePort
+  type: ClusterIP
