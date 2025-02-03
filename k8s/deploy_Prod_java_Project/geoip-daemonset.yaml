@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: geoip-distributor
+  namespace: pt
+spec:
+  selector:
+    matchLabels:
+      app: geoip-distributor
+  template:
+    metadata:
+      labels:
+        app: geoip-distributor
+    spec:
+      containers:
+      - name: geoip-distributor
+        image: busybox
+        command: ["/bin/sh", "-c"]
+        args:
+          - "cp /mnt/GeoLite2-City.mmdb /mnt/data/geoip/GeoLite2-City.mmdb && sleep 3600"
+        volumeMounts:
+        - name: geoip-source
+          mountPath: /mnt
+        - name: geoip-destination
+          mountPath: /mnt/data/geoip
+      volumes:
+      - name: geoip-source
+        hostPath:
+          path: /path/to/GeoLite2-City.mmdb  # 本地路径
+      - name: geoip-destination
+        hostPath:
+          path: /mnt/data/geoip

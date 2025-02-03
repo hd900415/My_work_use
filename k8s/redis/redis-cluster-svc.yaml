@@ -1,0 +1,125 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cluster-0
+  namespace: pt 
+spec:
+  selector:
+    statefulset.kubernetes.io/pod-name: redis-cluster-0
+  ports:
+    - name: client-port
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+      nodePort: 31000 # 当type为NodePort或LoadBalancer时，公开此服务的每个节点上的端口。通常由系统分配。如果指定了一个范围内的值，并且没有被使用，则将使用该值，否则操作将失败。如果不指定，如果该服务需要，将分配一个端口。如果在创建不需要该字段的服务时指定了该字段，则创建将失败。当一个服务更新到不再需要它时，这个字段将被删除(例如，将类型从NodePort改为ClusterIP)
+    - name: bus-port
+      port: 16379
+      protocol: TCP
+      targetPort: 16379
+      nodePort: 32003
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cluster-1
+  namespace: pt
+spec:
+  selector:
+    statefulset.kubernetes.io/pod-name: redis-cluster-1
+  ports:
+    - name: client-port
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+      nodePort: 31001
+    - name: bus-port
+      port: 16379
+      protocol: TCP
+      targetPort: 16379
+      nodePort: 32001
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cluster-2 # 改
+  namespace: pt
+spec:
+  selector:
+    statefulset.kubernetes.io/pod-name: redis-cluster-2 # 改
+  ports:
+    - name: client-port
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+      nodePort: 31002 # 改
+    - name: bus-port
+      port: 16379
+      protocol: TCP
+      targetPort: 16379
+      nodePort: 32002 # 改
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cluster-3 # 改
+  namespace: pt
+spec:
+  selector:
+    statefulset.kubernetes.io/pod-name: redis-cluster-3 # 改
+  ports:
+    - name: client-port
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+      nodePort: 31100 # 改
+    - name: bus-port
+      port: 16379
+      protocol: TCP
+      targetPort: 16379
+      nodePort: 32100 # 改
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cluster-4 # 改
+  namespace: pt
+spec:
+  selector:
+    statefulset.kubernetes.io/pod-name: redis-cluster-4 # 改
+  ports:
+    - name: client-port
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+      nodePort: 31101 # 改
+    - name: bus-port
+      port: 16379
+      protocol: TCP
+      targetPort: 16379
+      nodePort: 32101 # 改
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cluster-5 # 改
+  namespace: pt
+spec:
+  selector:
+    statefulset.kubernetes.io/pod-name: redis-cluster-5 # 改
+  ports:
+    - name: client-port
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+      nodePort: 31102 # 改
+    - name: bus-port
+      port: 16379
+      protocol: TCP
+      targetPort: 16379
+      nodePort: 32102 # 改
+  type: NodePort

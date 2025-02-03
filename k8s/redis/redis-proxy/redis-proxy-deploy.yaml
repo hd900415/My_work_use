@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-proxy
+  namespace: pt
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: redis-proxy
+  template:
+    metadata:
+      labels:
+        app: redis-proxy
+    spec:
+      imagePullSecrets:
+        - name: harbor-secret
+      containers:
+        - name: redis-proxy
+          image: harbor.pttech.cc/redis-proxy/redis-proxy:v1
+          imagePullPolicy: Always
+          command: ["redis-cluster-proxy"]
+          args:
+            - -c
+            - /data/proxy.conf   # 指定启动配置文件
+          ports:
+            - name: port
+              containerPort: 6378
+              protocol: TCP
+          volumeMounts:
+            - name: redis-proxy-conf
+              mountPath: /data/
+      volumes:   # 挂载proxy配置文件
+        - name: redis-proxy-conf
+          configMap:
+            name: redis-proxy-conf

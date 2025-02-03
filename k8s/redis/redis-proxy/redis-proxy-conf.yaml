@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-proxy-conf
+  namespace: pt
+data:
+  proxy.conf: |
+    cluster   redis-cluster-0:6379
+    cluster   redis-cluster-1:6379
+    cluster   redis-cluster-2:6379
+    cluster   redis-cluster-3:6379
+    cluster   redis-cluster-4:6379
+    cluster   redis-cluster-5:6379
+    # 配置为Redis Cluster Service
+    bind 0.0.0.0
+    # redis-cluster-proxy 对外暴露端口
+    port 6378
+    # 线程数量
+    threads 8
+    daemonize no
+    enable-cross-slot yes
+    # 配置Redis Cluster 认证密码  
+    auth CcehTwJ7lcIkpwLxGbz6
+    # auth-user xxx
+    log-level error

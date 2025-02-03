@@ -35,8 +35,15 @@ spec:
             - containerPort: 9211
               protocol: TCP
           resources: {}
+          volumeMounts:
+            - name: geoip-volume
+              mountPath: /usr/local/etc/redis/GeoLite2-City.mmdb
+              subPath: GeoLite2-City.mmdb
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
+      volumes:
+        - name: geoip-volume
+          emptyDir: {}
       dnsPolicy: ClusterFirst
       imagePullSecrets:
         - name: harbor-secret

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-proxy-service
+  namespace: pt
+spec:
+  type: NodePort
+  ports:
+    - name: redis-proxy-port
+      protocol: TCP
+      port: 6378
+      targetPort: 6378
+      nodePort: 36378
+  selector:
+    app: redis-proxy
