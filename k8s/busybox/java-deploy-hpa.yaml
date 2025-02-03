@@ -1,0 +1,25 @@
+kind: HorizontalPodAutoscaler
+apiVersion: autoscaling/v2
+metadata:
+  name: pt-admin-modules-auth-hpa
+  namespace: pt-dev
+spec:
+  scaleTargetRef:
+    kind: Deployment
+    name: pt-admin-modules-auth
+    apiVersion: apps/v1
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
+    - type: Resource
+      resource:
+        name: memory
+        target: 
+          type: Utilization
+          averageUtilization: 80

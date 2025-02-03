@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: canal
+  namespace: es
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: canal
+  template:
+    metadata:
+      labels:
+        app: canal
+    spec:
+      containers:
+      - name: canal
+        image: canal/canal-server:v1.1.7
+        ports:
+        - containerPort: 11111
+        env:
+        - name: canal.instance.master.address
+          value: "mysql-primary-headless.pt.svc.cluster.local:3306"
+        - name: canal.instance.dbUsername
+          value: "root"
+        - name: canal.instance.dbPassword
+          value: "yCCTFRdkfTFRdkfuwioaly"
+        - name: canal.instance.filter.regex
+          value: "pt-member\\.mem_account_change"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: canal
+  namespace: es
+spec:
+  selector:
+    app: canal
+  ports:
+    - protocol: TCP
+      port: 11111
+      targetPort: 11111
+  type: ClusterIP

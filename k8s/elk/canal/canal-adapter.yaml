@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: canal-adapter
+  namespace: es
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: canal-adapter
+  template:
+    metadata:
+      labels:
+        app: canal-adapter
+    spec:
+      containers:
+      - name: canal-adapter
+        #image: canal/client-adapter:v1.1.7
+        image: registry.cn-hangzhou.aliyuncs.com/canal/canal-adapter:v1.1.7
+        volumeMounts:
+        - name: config
+          mountPath: /opt/canal-adapter/conf
+      volumes:
+      - name: config
+        configMap:
+          name: canal-adapter-config

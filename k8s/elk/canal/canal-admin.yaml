@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: canal-admin
+  namespace: es
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: canal-admin
+  template:
+    metadata:
+      labels:
+        app: canal-admin
+    spec:
+      containers:
+      - name: canal-admin
+        image: canal/canal-admin:v1.1.7
+        ports:
+        - containerPort: 8089
+        env:
+        - name: CANAL_ADMIN_USER
+          value: "admin"
+        - name: CANAL_ADMIN_PASS
+          value: "admin123"
+        - name: CANAL_ADMIN_PORT
+          value: "8089"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: canal-admin
+  namespace: es
+spec:
+  selector:
+    app: canal-admin
+  ports:
+    - protocol: TCP
+      port: 8089
+      targetPort: 8089
+  type: NodePort
