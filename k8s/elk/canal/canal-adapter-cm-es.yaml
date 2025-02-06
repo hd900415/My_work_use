@@ -5,17 +5,17 @@ metadata:
   namespace: es
 data:
   mytest_user.yml: |
-    dataSourceKey: defaultDS  # 数据源名称，与 application.yml 中定义的名称一致
+    dataSourceKey: defaultDS
     destination: mysql8-to-es-pt-member
     groupId: g1
+    outerAdapterKey: es
     esMapping:
-      _index: mem_account_change  # Elasticsearch 索引名称，与 application.yml 中定义的名称一致
-      _type: _doc  # Elasticsearch 类型名称，与 application.yml 中定义的名称一致
-      _id: id  # Elasticsearch 文档 ID，通常使用 MySQL 表的主键
-      upsert: true  # 如果文档不存在，则插入；如果文档存在，则更新
+      _index: mem_account_change
+      _type: _doc
+      upsert: true
       sql: "SELECT id, user_no, account_type, source_currency, source_amount, exchange_rate, currency_type, currency, change_amount, before_amount, after_amount, agent_id, channel_id, transaction_no, income_type, main_change_type, sub_change_type, third_main_transaction_no, third_sub_transaction_no, remark, create_time, update_time FROM mem_account_change"  # SQL 查询语句，用于从 MySQL 表中读取数据
-      commitBatch: 1  # 批量提交大小，可以根据实际情况调整
-      fieldMapping: # 字段映射，可以自定义字段名称和类型
+      commitBatch: 1
+      fieldMapping:
         id: {name: id, type: long}
         user_no: {name: user_no, type: integer}
         account_type: {name: account_type, type: integer}
