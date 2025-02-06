@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         MVN_HOME = '/usr/local/apache-maven-3.9.9'
-        GIT_REPO = 'https://gitlab.1fx.me/business/pt-admin.git'
+        GIT_REPO = 'gitlab.ai9.me/business/pt-admin.git'
         DOCKER_REGISTRY = 'harbor.pttech.cc/dev'
         CREDENTIALS_ID = '86f083fe-8a8e-4b12-a445-985e77d2733e'
         DOCKER_CREDENTIALS_ID = '194c44bc-fb25-4ffb-82bc-9357aeb2e809'
@@ -12,12 +12,30 @@ pipeline {
     }
 
     stages {
+        stage('构建前清理工作目录') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('拉取所有分支') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: "${CREDENTIALS_ID}", usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                        env.GIT_USERNAME = GIT_USERNAME
+                        env.GIT_PASSWORD = GIT_PASSWORD
+                        sh "git ls-remote --heads https://${GIT_USERNAME}:${GIT_PASSWORD}@${GIT_REPO}"
+                    }
+                }
+            }
+        }
         stage('选择分支和模块') {
             steps {
                 script {
+                    def branches = sh(script: "git ls-remote --heads https://${env.GIT_USERNAME}:${env.GIT_PASSWORD}@${GIT_REPO} | awk '{print \$2}' | sed 's|refs/heads/||'", returnStdout: true).trim().split("\n")
+                    def branchChoices = branches.join("\n")
                     def userInput = input(
                         id: 'userInput', message: '请选择要构建的分支和模块', parameters: [
-                            [$class: 'StringParameterDefinition', defaultValue: 'main', description: '分支名称', name: 'BRANCH'],
+                            [$class: 'ChoiceParameterDefinition', choices: branchChoices, description: '分支名称', name: 'BRANCH'],
                             [$class: 'ChoiceParameterDefinition', choices: 'all\npt-admin-modules-activity\npt-admin-modules-bet\npt-admin-modules-file\npt-admin-modules-finance\npt-admin-modules-game\npt-admin-modules-gen\npt-admin-modules-job\npt-admin-modules-member\npt-admin-modules-report\npt-admin-modules-system\npt-admin-modules-auth', description: '模块名称', name: 'APP_NAME']
                         ]
                     )
@@ -28,13 +46,16 @@ pipeline {
         }
         stage('拉取代码') {
             steps {
-                checkout scmGit(
-                    branches: [[name: "${env.SELECTED_BRANCH}"]],
-                    userRemoteConfigs: [[
-                        credentialsId: "${CREDENTIALS_ID}",
-                        url: "${GIT_REPO}"
-                    ]]
-                )
+                script {
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: "${env.SELECTED_BRANCH}"]],
+                        userRemoteConfigs: [[
+                            credentialsId: "${CREDENTIALS_ID}",
+                            url: "https://${GIT_REPO}"
+                        ]]
+                    ])
+                }
             }
         }
         stage('初始化') {
@@ -45,44 +66,20 @@ pipeline {
                 }
             }
         }
-        stage('并发构建和打包') {
+        stage('构建 Jar 文件') {
             steps {
                 script {
-                    def modules = (env.APP_NAME == 'all') ? [
-                        'pt-admin-modules-activity', 
-                        'pt-admin-modules-bet', 
-                        'pt-admin-modules-file', 
-                        'pt-admin-modules-finance', 
-                        'pt-admin-modules-game', 
-                        'pt-admin-modules-gen', 
-                        'pt-admin-modules-job', 
-                        'pt-admin-modules-member', 
-                        'pt-admin-modules-report', 
-                        'pt-admin-modules-system',
-                        'pt-admin-modules-auth'
-                    ] : [env.APP_NAME]
-
-                    def parallelBuildsAndDocker = modules.collectEntries { module ->
-                        ["构建和打包 ${module}" : {
-                            echo "开始构建和打包模块: ${module}"
-                            sh "${MVN_HOME}/bin/mvn clean install -pl pt-admin-modules/${module} -amd -Dmaven.test.skip=true -U"
-                            def imageName = "${DOCKER_REGISTRY}/${module}:${env.BUILD_VERSION}"
-                            echo "正在构建 Docker 镜像: ${imageName}"
-                            withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                                sh """
-                                docker build -t ${imageName} ${WORKSPACE}/pt-admin-modules/${module}
-                                docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} ${DOCKER_REGISTRY}
-                                docker push ${imageName}
-                                """
-                            }
-                        }]
+                    if (env.APP_NAME == 'all') {
+                        echo "开始构建所有模块"
+                        sh "${MVN_HOME}/bin/mvn clean install -pl pt-admin-modules -amd -Dmaven.test.skip=true -U"
+                    } else {
+                        echo "开始构建模块: ${env.APP_NAME}"
+                        sh "${MVN_HOME}/bin/mvn clean install -pl pt-admin-modules/${env.APP_NAME} -amd -Dmaven.test.skip=true -U"
                     }
-
-                    parallel parallelBuildsAndDocker
                 }
             }
         }
-        stage('并发部署到 Kubernetes') {
+        stage('构建 Docker 镜像') {
             steps {
                 script {
                     def modules = (env.APP_NAME == 'all') ? [
@@ -99,24 +96,51 @@ pipeline {
                         'pt-admin-modules-auth'
                     ] : [env.APP_NAME]
 
-                    def parallelDeployments = modules.collectEntries { module ->
-                        ["部署模块 ${module}" : {
-                            echo "部署模块到 Kubernetes: ${module}"
-                            def yamlFile = "${WORKSPACE}/pt-admin-modules/${module}/deploy-${module}-dev.yaml"
+                    modules.each { module ->
+                        def imageName = "${DOCKER_REGISTRY}/${module}:${env.BUILD_VERSION}"
+                        echo "正在构建 Docker 镜像: ${imageName}"
+                        withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                             sh """
-                            sed -i 's|image:.*\$|image: ${DOCKER_REGISTRY}/${module}:${env.BUILD_VERSION}|' ${yamlFile}
+                            docker build -t ${imageName} ${WORKSPACE}/pt-admin-modules/${module}
+                            docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} ${DOCKER_REGISTRY}
+                            docker push ${imageName}
                             """
-                            withCredentials([file(credentialsId: "${KUBERNETES_FILE_ID}", variable: 'KUBECONFIG')]) {
-                                sh """
-                                export KUBECONFIG=${KUBECONFIG}
-                                kubectl apply -f ${yamlFile}
-                                unset KUBECONFIG
-                                """
-                            }
-                        }]
+                        }
                     }
+                }
+            }
+        }
+        stage('部署到 Kubernetes') {
+            steps {
+                script {
+                    def modules = (env.APP_NAME == 'all') ? [
+                        'pt-admin-modules-activity', 
+                        'pt-admin-modules-bet', 
+                        'pt-admin-modules-file', 
+                        'pt-admin-modules-finance', 
+                        'pt-admin-modules-game', 
+                        'pt-admin-modules-gen', 
+                        'pt-admin-modules-job', 
+                        'pt-admin-modules-member', 
+                        'pt-admin-modules-report', 
+                        'pt-admin-modules-system',
+                        'pt-admin-modules-auth'
+                    ] : [env.APP_NAME]
 
-                    parallel parallelDeployments
+                    modules.each { module ->
+                        echo "部署模块到 Kubernetes: ${module}"
+                        def yamlFile = "${WORKSPACE}/pt-admin-modules/${module}/deploy-${module}-dev.yaml"
+                        sh """
+                        sed -i 's|image:.*\$|image: ${DOCKER_REGISTRY}/${module}:${env.BUILD_VERSION}|' ${yamlFile}
+                        """
+                        withCredentials([file(credentialsId: "${KUBERNETES_FILE_ID}", variable: 'KUBECONFIG')]) {
+                            sh """
+                            export KUBECONFIG=${KUBECONFIG}
+                            kubectl apply -f ${yamlFile}
+                            unset KUBECONFIG
+                            """
+                        }
+                    }
                 }
             }
         }
@@ -190,7 +214,7 @@ pipeline {
                     acceptType: 'APPLICATION_JSON',
                     contentType: 'APPLICATION_JSON',
                     url: env.LARK_WEBHOOK,
-                    requestBody: buildMessage 
+                    requestBody: buildMessage
                 )
             }
         }

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: canal-adapter-config-es
+  namespace: es
+data:
+  mytest_user.yml: |
+    dataSourceKey: defaultDS
+    destination: mysql8-to-es-pt-member
+    outerAdapterKey: es7
+    groupId: g1
+    esMapping:
+      _index: mysql8-to-es-pt-member
+      _id: id
+      upsert: true
+      sql: "SELECT id, id as _id, user_no, account_type, source_currency, source_amount, exchange_rate, currency_type, currency, change_amount, before_amount, after_amount, agent_id, channel_id, transaction_no, income_type, main_change_type, sub_change_type, third_main_transaction_no, third_sub_transaction_no, remark, create_time, update_time FROM mem_account_change"
+      commitBatch: 3000

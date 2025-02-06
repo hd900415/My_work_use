@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-config
+  namespace: es
+data:
+  KAFKA_ZOOKEEPER_CONNECT: "canal-zookeeper-headless.es.svc.cluster.local:2181"

@@ -4,12 +4,45 @@ metadata:
   name: canal-adapter-config
   namespace: es
 data:
-  es.yml: |
-    dataSourceKey: defaultDS
-    destination: example
-    groupId: g1
-    esMapping:
-      _index: mysql-index
-      _type: _doc
-      id: id
-      sql: "SELECT * FROM pt-member.mem_account_change"
+  application.yml: |
+    server:
+      port: 8081
+    spring:
+      jackson:
+        date-format: yyyy-MM-dd HH:mm:ss
+        time-zone: GMT+8
+        default-property-inclusion: non_null
+    canal.conf:
+      mode: tcp
+      flatMessage: true
+      zookeeperHosts:
+      syncBatchSize: 1000
+      retries: -1
+      timeout:
+      accessKey:
+      secretKey:
+      consumerProperties:
+        canal.tcp.server.host: canal-server-headless.es.svc.cluster.local:11110
+        canal.tcp.zookeeper.hosts: canal-zookeeper-headless.es.svc.cluster.local:2181
+        canal.tcp.batch.size: 500
+        canal.tcp.username:
+        canal.tcp.password:
+      srcDataSources:
+        defaultDS:
+          url: jdbc:mysql://mysql-primary-headless.pt.svc.cluster.local:3306/pt-member?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8
+          username: root
+          password: yCCTFRdkfTFRdkfuwioaly
+      canalAdapters:
+      - instance: mysql8-to-es-pt-member
+        groups:
+        - groupId: g1
+          outerAdapters:
+          - name: logger
+          - name: es7
+            key: es
+            hosts: elasticsearch-headless.es.svc.cluster.local:9200
+            properties:
+              mode: rest
+              security.auth: elastic:aGlE3w56z0abFNFflIs5
+              cluster.name: pt-es-cluster
+

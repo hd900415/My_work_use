@@ -15,12 +15,20 @@ spec:
     spec:
       containers:
       - name: canal-adapter
-        #image: canal/client-adapter:v1.1.7
-        image: registry.cn-hangzhou.aliyuncs.com/canal/canal-adapter:v1.1.7
+        image: harbor.pttech.cc/canal/canal-adapter:1.1.8
+        ports:
+        - containerPort: 8081
         volumeMounts:
-        - name: config
-          mountPath: /opt/canal-adapter/conf
+        - name: canal-adapter-config-volume
+          mountPath: /opt/canal-adapter/conf/application.yml
+          subPath: application.yml
+        - name: canal-adapter-es-volume
+          mountPath: /opt/canal-adapter/conf/es7/mytest_user.yml
+          subPath: mytest_user.yml
       volumes:
-      - name: config
+      - name: canal-adapter-config-volume
         configMap:
           name: canal-adapter-config
+      - name: canal-adapter-es-volume
+        configMap:
+          name: canal-adapter-config-es
