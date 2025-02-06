@@ -5,13 +5,36 @@ metadata:
   namespace: es
 data:
   mytest_user.yml: |
-    dataSourceKey: defaultDS
+    dataSourceKey: defaultDS  # 数据源名称，与 application.yml 中定义的名称一致
     destination: mysql8-to-es-pt-member
-    outerAdapterKey: es7
     groupId: g1
     esMapping:
-      _index: mysql8-to-es-pt-member
-      _id: id
-      upsert: true
-      sql: "SELECT id, id as _id, user_no, account_type, source_currency, source_amount, exchange_rate, currency_type, currency, change_amount, before_amount, after_amount, agent_id, channel_id, transaction_no, income_type, main_change_type, sub_change_type, third_main_transaction_no, third_sub_transaction_no, remark, create_time, update_time FROM mem_account_change"
-      commitBatch: 3000
+      _index: mem_account_change  # Elasticsearch 索引名称，与 application.yml 中定义的名称一致
+      _type: _doc  # Elasticsearch 类型名称，与 application.yml 中定义的名称一致
+      _id: id  # Elasticsearch 文档 ID，通常使用 MySQL 表的主键
+      upsert: true  # 如果文档不存在，则插入；如果文档存在，则更新
+      sql: "SELECT id, user_no, account_type, source_currency, source_amount, exchange_rate, currency_type, currency, change_amount, before_amount, after_amount, agent_id, channel_id, transaction_no, income_type, main_change_type, sub_change_type, third_main_transaction_no, third_sub_transaction_no, remark, create_time, update_time FROM mem_account_change"  # SQL 查询语句，用于从 MySQL 表中读取数据
+      commitBatch: 1  # 批量提交大小，可以根据实际情况调整
+      fieldMapping: # 字段映射，可以自定义字段名称和类型
+        id: {name: id, type: long}
+        user_no: {name: user_no, type: integer}
+        account_type: {name: account_type, type: integer}
+        source_currency: {name: source_currency, type: keyword}
+        source_amount: {name: source_amount, type: double}
+        exchange_rate: {name: exchange_rate, type: double}
+        currency_type: {name: currency_type, type: integer}
+        currency: {name: currency, type: keyword}
+        change_amount: {name: change_amount, type: double}
+        before_amount: {name: before_amount, type: double}
+        after_amount: {name: after_amount, type: double}
+        agent_id: {name: agent_id, type: integer}
+        channel_id: {name: channel_id, type: integer}
+        transaction_no: {name: transaction_no, type: long}
+        income_type: {name: income_type, type: integer}
+        main_change_type: {name: main_change_type, type: integer}
+        sub_change_type: {name: sub_change_type, type: integer}
+        third_main_transaction_no: {name: third_main_transaction_no, type: keyword}
+        third_sub_transaction_no: {name: third_sub_transaction_no, type: keyword}
+        remark: {name: remark, type: text}
+        create_time: {name: create_time, type: date, format: "yyyy-MM-dd HH:mm:ss"}
+        update_time: {name: update_time, type: date, format: "yyyy-MM-dd HH:mm:ss"}

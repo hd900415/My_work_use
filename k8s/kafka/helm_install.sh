@@ -11,3 +11,4 @@ helm upgrade --install canal-kafka --namespace es  bitnami/kafka --version 31.3.
 --set replicaCount=3 \
 --set global.defaultStorageClass="nfs-storageclass" \
 --set kraft.enabled=true 
+--set brokerConfig.auto.create.topics.enable=true \
