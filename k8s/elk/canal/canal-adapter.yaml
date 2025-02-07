@@ -23,8 +23,8 @@ spec:
           mountPath: /opt/canal-adapter/conf/application.yml
           subPath: application.yml
         - name: canal-adapter-es-volume
-          mountPath: /opt/canal-adapter/conf/es7/mytest_user.yml
-          subPath: mytest_user.yml
+          mountPath: /opt/canal-adapter/conf/es7/pt-member.yml
+          subPath: pt-member.yml
       volumes:
       - name: canal-adapter-config-volume
         configMap:

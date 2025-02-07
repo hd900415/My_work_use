@@ -4,7 +4,7 @@ metadata:
   name: canal-adapter-config-es
   namespace: es
 data:
-  mytest_user.yml: |
+  pt-member.yml: |
     dataSourceKey: defaultDS
     destination: mysql8-to-es-pt-member
     groupId: g1
@@ -12,8 +12,9 @@ data:
     esMapping:
       _index: mem_account_change
       _type: _doc
+      _id: id
       upsert: true
-      sql: "SELECT id, user_no, account_type, source_currency, source_amount, exchange_rate, currency_type, currency, change_amount, before_amount, after_amount, agent_id, channel_id, transaction_no, income_type, main_change_type, sub_change_type, third_main_transaction_no, third_sub_transaction_no, remark, create_time, update_time FROM mem_account_change"  # SQL 查询语句，用于从 MySQL 表中读取数据
+      sql: "SELECT id, user_no, account_type, source_currency, source_amount, exchange_rate, currency_type, currency, change_amount, before_amount, after_amount, agent_id, channel_id, transaction_no, income_type, main_change_type, sub_change_type, third_main_transaction_no, third_sub_transaction_no, remark, create_time, update_time FROM mem_account_change"
       commitBatch: 1
       fieldMapping:
         id: {name: id, type: long}
@@ -36,5 +37,5 @@ data:
         third_main_transaction_no: {name: third_main_transaction_no, type: keyword}
         third_sub_transaction_no: {name: third_sub_transaction_no, type: keyword}
         remark: {name: remark, type: text}
-        create_time: {name: create_time, type: date, format: "yyyy-MM-dd HH:mm:ss"}
-        update_time: {name: update_time, type: date, format: "yyyy-MM-dd HH:mm:ss"}
+        create_time: {name: create_time, type: date, format: "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd'T'HH:mm:ss.SSSZ||yyyy-MM-dd'T'HH:mm:ssZ||yyyy-MM-dd'T'HH:mm:ssZZ||yyyy-MM-dd'T'HH:mm:ssZ||epoch_millis"}
+        update_time: {name: update_time, type: date, format: "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd'T'HH:mm:ss.SSSZ||yyyy-MM-dd'T'HH:mm:ssZ||yyyy-MM-dd'T'HH:mm:ssZZ||yyyy-MM-dd'T'HH:mm:ssZ||epoch_millis"}

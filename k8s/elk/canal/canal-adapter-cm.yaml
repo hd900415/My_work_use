@@ -22,8 +22,8 @@ data:
       accessKey:
       secretKey:
       consumerProperties:
-        canal.tcp.server.host: canal-server-headless.es.svc.cluster.local:11110
-        canal.tcp.zookeeper.hosts: canal-zookeeper-headless.es.svc.cluster.local:2181
+        canal.tcp.server.host: canal-server-headless.es.svc.cluster.local:11111
+        canal.tcp.zookeeper.hosts:
         canal.tcp.batch.size: 500
         canal.tcp.username:
         canal.tcp.password:
