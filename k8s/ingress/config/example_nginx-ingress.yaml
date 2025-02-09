@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ww2-pttech-ingress
+  namespace: default
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-dns"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - ww2.pttech.cc
+    secretName: ww2-pttech-tls
+  rules:
+  - host: ww2.pttech.cc
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx-svc
+            port:
+              number: 80

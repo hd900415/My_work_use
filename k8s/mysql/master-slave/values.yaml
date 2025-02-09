@@ -1,0 +1,55 @@
+architecture: replication  # 使用主从复制架构
+
+auth:
+  rootPassword: yCCTFRdkfTFRdkfuwioaly # 设置 root 用户密码
+  replicationUser: rsync_user  # 同步用户
+  replicationPassword: yCCTFRdkfTFRdkfuwioaly  # 同步用户密码
+
+image:
+  repository: bitnami/mysql
+  tag: 8.0.35  # 使用正确的镜像标签
+  pullPolicy: IfNotPresent
+primary:
+  persistence:
+    enabled: true
+    storageClass: nfs-storageclass  # 使用指定存储类
+    size: 40Gi  # 主节点存储卷大小
+  extraVolumeMounts:
+    - name: mysql-custom-config
+      mountPath: /bitnami/mysql/conf/my_custom.cnf
+      subPath: mysql-config.cnf
+  extraVolumes:
+    - name: mysql-custom-config
+      configMap:
+        name: mysql-config
+
+secondary:
+  replicas: 1  # 从节点数量设置为 1
+  persistence:
+    enabled: true
+    storageClass: nfs-storageclass  # 使用指定存储类
+    size: 40Gi  # 从节点存储卷大小
+  extraVolumeMounts:
+    - name: mysql-custom-config
+      mountPath: /bitnami/mysql/conf/my_custom.cnf
+      subPath: mysql-config.cnf
+  extraVolumes:
+    - name: mysql-custom-config
+      configMap:
+        name: mysql-config
+
+resources:
+  primary:
+    requests:
+      memory: 8G
+      cpu: 2500m
+    limits:
+      memory: 16G
+      cpu: 5000m
+  secondary:
+    requests:
+      memory: 8G
+      cpu: 2500m
+    limits:
+      memory: 16G
+      cpu: 5000m

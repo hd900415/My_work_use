@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cloudflare-api-key
+  namespace: cert-manager
+stringData:
+  api-key: "6682d03446523f4076b169aafedbd9281201e"
+# 创建CF API密钥的Secret对象，用于访问Cloudflare API
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-dns
+  namespace: cert-manager
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: hd900415@gmail.com
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+    - dns01:
+        cloudflare:
+          email: imfx003@gmail.com
+          apiKeySecretRef:
+            name: cloudflare-api-key
+            key: api-key

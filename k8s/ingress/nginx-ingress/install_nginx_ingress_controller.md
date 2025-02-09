@@ -1,55 +1,3 @@
-NAME: nginx-ingress
-LAST DEPLOYED: Mon Nov  6 16:27:24 2023
-NAMESPACE: nginx-ingress
-STATUS: deployed
-REVISION: 1
-TEST SUITE: None
-NOTES:
-CHART NAME: nginx-ingress-controller
-CHART VERSION: 9.9.2
-APP VERSION: 1.9.3
-
-** Please be patient while the chart is being deployed **
-
-The nginx-ingress controller has been installed.
-
-Get the application URL by running these commands:
-
- NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-        You can watch its status by running 'kubectl get --namespace nginx-ingress svc -w nginx-ingress-nginx-ingress-controller'
-
-    export SERVICE_IP=$(kubectl get svc --namespace nginx-ingress nginx-ingress-nginx-ingress-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-    echo "Visit http://${SERVICE_IP} to access your application via HTTP."
-    echo "Visit https://${SERVICE_IP} to access your application via HTTPS."
-
-An example Ingress that makes use of the controller:
-
-  apiVersion: networking.k8s.io/v1
-  kind: Ingress
-  metadata:
-    name: example
-    namespace: nginx-ingress
-  spec:
-    ingressClassName: nginx
-    rules:
-      - host: www.example.com
-        http:
-          paths:
-            - backend:
-                service:
-                  name: example-service
-                  port:
-                    number: 80
-              path: /
-              pathType: Prefix
-    # This section is only required if TLS is to be enabled for the Ingress
-    tls:
-        - hosts:
-            - www.example.com
-          secretName: example-tls
-
-If TLS is enabled for the Ingress, a Secret containing the certificate and key must also be provided:
-
   apiVersion: v1
   kind: Secret
   metadata:
@@ -154,3 +102,18 @@ helm install ingress-nginx --namespace ingress-nginx --create-namespace --debug 
    --set rbac.create="true"   \
    --set serviceAccount.create="true"   \
    --set podSecurityPolicy.enabled="true"
+
+
+
+
+## 简单通过bitnami安装
+helm upgrade --install nginx-ingress-controller bitnami/nginx-ingress-controller --namespace nginx-ingress  --create-namespace  \
+--set controller.service.type="LoadBalancer" \
+--set controller.ingressClassResource.name="nginx" \
+--set controller.ingressClassResource.enable="true" \
+--set controller.ingressClassResource.default="false" \
+--set controller.replicaCount="3" \
+--set controller.service.enableHttps="true" \
+--set controller.service.nodePorts.http="80" \
+--set controller.service.nodePorts.https="443" \
+--set controller.service.loadBalancerIP="192.168.1.200"
