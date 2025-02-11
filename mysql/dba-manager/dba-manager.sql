@@ -62,3 +62,7 @@ SHOW PROCEDURE STATUS;
 -- 8. 返回异常信息
 -- 9. 事务结束
 -- 10. 关闭连接
+
+
+
+# 参考文档 https://blog.csdn.net/qq_33417321/article/details/120388208
