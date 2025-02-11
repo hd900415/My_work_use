@@ -1,0 +1,42 @@
+apiVersion: pxc.percona.com/v1
+kind: PerconaXtraDBCluster
+metadata:
+  name: cluster1
+  namespace: pxc
+spec:
+  crVersion: 1.9.0
+  secretsName: my-cluster-secrets
+  sslSecretName: my-cluster-ssl
+  vaultSecretName: my-cluster-vault
+  pxc:
+    size: 3
+    image: percona/percona-xtradb-cluster:8.0.26-16.1
+    resources:
+      requests:
+        memory: 2Gi
+        cpu: 600m
+      limits:
+        memory: 2Gi
+        cpu: 600m
+  haproxy:
+    size: 3
+    image: percona/percona-xtradb-cluster-operator:1.9.0-haproxy
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 100m
+      limits:
+        memory: 256Mi
+        cpu: 100m
+  proxysql:
+    size: 3
+    image: percona/percona-xtradb-cluster-operator:1.9.0-proxysql
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 100m
+      limits:
+        memory: 256Mi
+        cpu: 100m
+  backup:
+    image: percona/percona-xtradb-cluster-operator:1.9.0-backup
