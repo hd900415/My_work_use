@@ -1,0 +1,325 @@
+pipeline {
+    agent any
+    environment {
+        GIT_URL = 'https://gitlab.ai9.me/mt5/mt5-java.git'
+        MVN_HOME = '/usr/local/apache-maven-3.3.9'
+        JAR_DIR = '/var/jenkins_home/jarfile/devJarFile/'
+        APP_NAME = 'MT5-AdminServer'
+        //HOST_IP = '43.255.105.1'
+        SSH_KEY = '/var/jenkins_home/sshfile/devops-dev.pem'
+        //nacosServer = '127.0.0.1'
+        //activeProfile = 'sit'
+        //nameSpace = '2e03f35f-13ff-45a6-a35f-204e8b52222c'
+        REMOTE_DIR = '/data' // 远程目录路径
+        STARTUP_SCRIPT = 'startup.sh'
+    }
+    stages {
+        stage('开始前清理工作目录') {
+            steps {
+                echo '清理工作目录...'
+                deleteDir()
+            }
+        }
+        stage('选择分支和环境') {
+            steps {
+                script {
+                    //定义环境和IP映射
+                    def environments = [
+                        'BESTONFX': '114.119.181.154',
+                        'Fpmarkets': '124.243.187.28',
+                        'MAXAIN': '49.0.205.66',
+                        'MultibankGroup': '190.92.216.77',
+                        'TDXGLOBAL': '159.138.85.226',
+                        'WINGO': '190.92.201.153',
+                        'CentFX': '119.13.108.117',
+                        'forex.com': '190.92.211.197',
+                        'MT5-AdminServer': '127.0.0.1'
+                    ]
+                    withCredentials([usernamePassword(credentialsId: '692d7b05-6dee-43c3-88fc-46ee35a87909', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        // 获取分支列表
+                        def branches = sh(
+                            script: """
+                                git ls-remote --heads https://${USERNAME}:${PASSWORD}@gitlab.ai9.me/mt5/mt5-java.git | awk '{print \$2}' | sed 's|refs/heads/||'
+                            """,
+                            returnStdout: true
+                        ).trim().split("\n")
+
+                        if (branches.size() == 0) {
+                            error "未能获取分支列表，请检查仓库地址和权限！"
+                        }
+                        // 选择分支
+                        def inputChoice = input(
+                            message: '请选择部署分支和环境',
+                            parameters: [
+                                choice(name: 'BRANCH', choices: branches.join('\n'), description: '请选择要部署的分支'), 
+                                choice(name: 'ENVIRONMENT', choices: environments.keySet().join('\n'), description: '请选择要部署的环境')
+                            ]
+                        )
+                        // 设置选择的分支和环境变量
+                        env.SELECTED_BRANCH = inputChoice['BRANCH']
+                        env.SELECTED_ENV = inputChoice['ENVIRONMENT']
+                        env.HOST_IP = environments[env.SELECTED_ENV]
+                        
+                        echo "选择的分支: ${env.SELECTED_BRANCH}"
+                        echo "选择的环境: ${env.SELECTED_ENV}"
+                        echo "部署的IP地址: ${env.HOST_IP}"
+                    }
+                }
+            }
+        }
+        stage('拉取代码') {
+            steps {
+                echo "选择的分支是: ${env.SELECTED_BRANCH}"
+                checkout scmGit(
+                    branches: [[name: "${env.SELECTED_BRANCH}"]],
+                    userRemoteConfigs: [[
+                        credentialsId: '692d7b05-6dee-43c3-88fc-46ee35a87909',
+                        url: "${GIT_URL}"
+                    ]]
+                )
+            }
+        }
+        stage('编译打包') {
+            steps {
+                script {
+                    echo "构建应用: ${env.APP_NAME}"
+                    sh "${MVN_HOME}/bin/mvn clean install -Dmaven.test.skip=true -U"
+                }
+            }
+        }
+        stage('提取构建包') {
+            steps {
+                script {
+                    def jarPath = "MT5-AdminServer/target/${env.APP_NAME}.jar"
+                    def destDir = "${env.JAR_DIR}/${env.APP_NAME}"
+                    echo "保存 ${env.APP_NAME} 的构建包..."
+                    if (fileExists(jarPath)) {
+                        sh "mkdir -p ${destDir}"
+                        sh "cp ${jarPath} ${destDir}/"
+                        echo "构建包已保存到: ${destDir}/"
+                    } else {
+                        error "未找到 JAR 文件: ${jarPath}"
+                    }
+                }
+            }
+        }
+        stage('检查构建包') {
+            steps {
+                script {
+                    def jarPath = "${env.JAR_DIR}/${env.APP_NAME}/${env.APP_NAME}.jar"
+                    echo "Jar Path: ${jarPath}"
+                    if (!fileExists(jarPath)) {
+                        error "JAR 文件未找到: ${jarPath}. 请确认构建是否已完成！"
+                    }
+                    env.JAR_PATH = jarPath
+                }
+            }
+        }
+        stage('部署应用到服务器') {
+            steps {
+                script {
+                    def jarPath = "${env.JAR_DIR}/${env.APP_NAME}/${env.APP_NAME}.jar"
+                    def startupScript = """
+#!/bin/bash
+APP_NAME="${env.APP_NAME}"
+JAR_PATH="${env.REMOTE_DIR}/${env.APP_NAME}/${env.APP_NAME}.jar"
+NACOS_SERVER="${env.nacosServer}"
+ACTIVE_PROFILE="${env.activeProfile}"
+NAMESPACE="${env.nameSpace}"
+
+echo "检查是否有正在运行的进程..."
+pid=\$(ps -ef | grep "[j]ava.*\${APP_NAME}" | awk '{print \$2}')
+if [ -n "\$pid" ]; then
+    echo "发现正在运行的进程，PID: \$pid，准备停止..."
+    kill -9 \$pid
+    echo "进程已停止。"
+else
+    echo "未发现运行中的进程。"
+fi
+
+echo "启动新的进程..."
+mkdir -p ${env.REMOTE_DIR}/\${APP_NAME}
+nohup java -jar -Duser.timezone=America/New_York \${JAR_PATH} --spring.config.name=application --spring.config.location=${env.REMOTE_DIR}/${env.APP_NAME}/config/  > ${env.REMOTE_DIR}/\${APP_NAME}/nohup.out 2>&1 &
+
+sleep 15
+pid=\$(ps -ef | grep "[j]ava.*\${APP_NAME}" | awk '{print \$2}')
+if [ -n "\$pid" ]; then
+    echo "进程启动成功，PID: \$pid"
+else
+    echo "进程启动失败，请检查日志文件：${env.REMOTE_DIR}/\${APP_NAME}/nohup.out"
+    exit 1
+fi
+"""
+                    writeFile file: env.STARTUP_SCRIPT, text: startupScript
+                    sh """
+                    ssh -i ${env.SSH_KEY} -o StrictHostKeyChecking=no root@${env.HOST_IP} "mkdir -p ${env.REMOTE_DIR}/${env.APP_NAME}"
+                    scp -i ${env.SSH_KEY} -o StrictHostKeyChecking=no ${jarPath} root@${env.HOST_IP}:${env.REMOTE_DIR}/${env.APP_NAME}/
+                    scp -i ${env.SSH_KEY} -o StrictHostKeyChecking=no ${env.STARTUP_SCRIPT} root@${env.HOST_IP}:${env.REMOTE_DIR}/${env.APP_NAME}/startup.sh
+                    ssh -i ${env.SSH_KEY} -o StrictHostKeyChecking=no root@${env.HOST_IP} "chmod +x ${env.REMOTE_DIR}/${env.APP_NAME}/startup.sh"
+                    ssh -i ${env.SSH_KEY} -o StrictHostKeyChecking=no root@${env.HOST_IP} "${env.REMOTE_DIR}/${env.APP_NAME}/startup.sh"
+                    """
+                }
+            }
+        }
+    }
+    post {
+        success {
+            script {
+                def duration = currentBuild.duration
+                def successMsg = """
+                {
+                    "msg_type": "post",
+                    "content": {
+                        "post": {
+                            "zh_cn": {
+                                "title": "Jenkins部署通知",
+                                "content": [
+                                    [
+                                        {
+                                            "tag": "text",
+                                            "text": "📋 任务名称："
+                                        },
+                                        {
+                                            "tag": "a",
+                                            "text": "${JOB_NAME}",
+                                            "href": "${JOB_URL}"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "tag": "text",
+                                            "text": "\\n🔢 构建编号："
+                                        },
+                                        {
+                                            "tag": "a",
+                                            "text": "${BUILD_DISPLAY_NAME}",
+                                            "href": "${BUILD_URL}"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "tag": "text",
+                                            "text": "\\n🌟 构建状态：成功"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "tag": "text",
+                                            "text": "\\n🚀 部署分支：${env.SELECTED_BRANCH}"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "tag": "text",
+                                            "text": "\\n🎯 部署环境：${env.SELECTED_ENV}"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "tag": "text",
+                                            "text": "\\n🖥️ 部署IP：${env.HOST_IP}"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "tag": "text",
+                                            "text": "\\n🕐 构建用时：${duration} ms"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "tag": "at",
+                                            "user_id": "all"
+                                        }
+                                    ]
+                                ]
+                            }
+                        }
+                    }
+                }"""
+                
+                sh """
+                    curl -X POST -H 'Content-Type: application/json' \
+                    -d '${successMsg}' \
+                    'https://open.larksuite.com/open-apis/bot/v2/hook/1f8eee66-d855-4b81-ba6e-c375a583fcb4'
+                """
+            }
+        }
+        failure {
+            script {
+                def duration = currentBuild.duration
+                def failureMsg = """
+                {
+                    "msg_type": "post",
+                    "content": {
+                        "post": {
+                            "zh_cn": {
+                                "title": "Jenkins部署通知",
+                                "content": [
+                                    [
+                                        {
+                                            "tag": "text",
+                                            "text": "📋 任务名称："
+                                        },
+                                        {
+                                            "tag": "a",
+                                            "text": "${JOB_NAME}",
+                                            "href": "${JOB_URL}"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "tag": "text",
+                                            "text": "\\n🔢 构建编号："
+                                        },
+                                        {
+                                            "tag": "a",
+                                            "text": "${BUILD_DISPLAY_NAME}",
+                                            "href": "${BUILD_URL}"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "tag": "text",
+                                            "text": "\\n❌ 构建状态：失败"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "tag": "text",
+                                            "text": "\\n🚀 部署分支：${env.SELECTED_BRANCH}"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "tag": "text",
+                                            "text": "\\n🎯 部署环境：${env.SELECTED_ENV}"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "tag": "text",
+                                            "text": "\\n🕐 构建用时：${duration} ms"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "tag": "at",
+                                            "user_id": "all"
+                                        }
+                                    ]
+                                ]
+                            }
+                        }
+                    }
+                }"""
+                
+                sh """
+                    curl -X POST -H 'Content-Type: application/json' \
+                    -d '${failureMsg}' \
+                    'https://open.larksuite.com/open-apis/bot/v2/hook/1f8eee66-d855-4b81-ba6e-c375a583fcb4'
+                """
+            }
+        }
+    }
+}
