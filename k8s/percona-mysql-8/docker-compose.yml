@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  percona-master:
+    image: percona:8.0
+    container_name: percona-master
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    volumes:
+      - percona-master-data:/var/lib/mysql
+      - ./master.cnf:/etc/my.cnf.d/master.cnf
+    ports:
+      - "3306:3306"
+    networks:
+      - percona-network
+
+  percona-slave:
+    image: percona:8.0
+    container_name: percona-slave
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    volumes:
+      - percona-slave-data:/var/lib/mysql
+      - ./slave.cnf:/etc/my.cnf.d/slave.cnf
+    ports:
+      - "3307:3306"
+    networks:
+      - percona-network
+    depends_on:
+      - percona-master
+
+networks:
+  percona-network:
+    driver: bridge
+
+volumes:
+  percona-master-data:
+  percona-slave-data: 
