@@ -37,7 +37,7 @@ docker run -d --name mysql8_nacos \
     -v /data/mysql/conf:/etc/mysql/conf.d \
     -e TZ=Asia/Shanghai \
     mysql:8.0.35
-percona/percona-server:8.0
+
 
 docker run -d --name mysql \
 --restart always  \
@@ -48,4 +48,7 @@ docker run -d --name mysql \
 -v /data/docker/mysql/data:/var/lib/mysql \
 -v /data/docker/mysql/conf/my.cnf:/etc/mysql/conf.d/my.cnf \
 mysql:8.0.35
-percona/percona-server:8.0
+
+
+
+

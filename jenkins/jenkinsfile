@@ -4,16 +4,27 @@ pipeline {
         GIT_URL = 'https://gitlab.ai9.me/mt5/mt5-java.git'
         MVN_HOME = '/usr/local/apache-maven-3.3.9'
         JAR_DIR = '/var/jenkins_home/jarfile/devJarFile/'
+        BACKUP_DIR = '/var/jenkins_home/backup/${APP_NAME}'
         APP_NAME = 'MT5-AdminServer'
-        //HOST_IP = '43.255.105.1'
         SSH_KEY = '/var/jenkins_home/sshfile/devops-dev.pem'
-        //nacosServer = '127.0.0.1'
-        //activeProfile = 'sit'
-        //nameSpace = '2e03f35f-13ff-45a6-a35f-204e8b52222c'
-        REMOTE_DIR = '/data' // 远程目录路径
+        REMOTE_DIR = '/data'
         STARTUP_SCRIPT = 'startup.sh'
+        IS_ROLLBACK = 'false'
     }
     stages {
+        stage('选择操作类型') {
+            steps {
+                script {
+                    def operation = input(
+                        message: '请选择操作类型',
+                        parameters: [
+                            choice(name: 'OPERATION', choices: ['新部署', '回滚到之前版本'], description: '选择要执行的操作')
+                        ]
+                    )
+                    env.IS_ROLLBACK = (operation == '回滚到之前版本').toString()
+                }
+            }
+        }
         stage('开始前清理工作目录') {
             steps {
                 echo '清理工作目录...'
@@ -115,10 +126,53 @@ pipeline {
                 }
             }
         }
+        stage('回滚版本选择') {
+            when { expression { return env.IS_ROLLBACK == 'true' } }
+            steps {
+                script {
+                    // 获取备份目录中的版本列表
+                    def backupVersions = sh(
+                        script: "ls -t ${env.BACKUP_DIR} | grep .jar || true",
+                        returnStdout: true
+                    ).trim().split("\n")
+                    
+                    if (backupVersions.size() == 0) {
+                        error "没有找到可用的回滚版本！"
+                    }
+                    
+                    def selectedVersion = input(
+                        message: '请选择要回滚到的版本',
+                        parameters: [
+                            choice(name: 'VERSION', choices: backupVersions, description: '选择要回滚到的版本')
+                        ]
+                    )
+                    
+                    env.ROLLBACK_JAR = "${env.BACKUP_DIR}/${selectedVersion}"
+                }
+            }
+        }
+        stage('备份当前版本') {
+            when { expression { return env.IS_ROLLBACK == 'false' } }
+            steps {
+                script {
+                    def timestamp = new Date().format('yyyyMMdd_HHmmss')
+                    def jarPath = "${env.JAR_DIR}/${env.APP_NAME}/${env.APP_NAME}.jar"
+                    def backupPath = "${env.BACKUP_DIR}/${env.APP_NAME}-${env.SELECTED_BRANCH}-${timestamp}.jar"
+                    
+                    sh """
+                        mkdir -p ${env.BACKUP_DIR}
+                        cp ${jarPath} ${backupPath}
+                    """
+                    echo "当前版本已备份到: ${backupPath}"
+                }
+            }
+        }
         stage('部署应用到服务器') {
             steps {
                 script {
-                    def jarPath = "${env.JAR_DIR}/${env.APP_NAME}/${env.APP_NAME}.jar"
+                    def jarPath = env.IS_ROLLBACK == 'true' ? 
+                        env.ROLLBACK_JAR : 
+                        "${env.JAR_DIR}/${env.APP_NAME}/${env.APP_NAME}.jar"
                     def startupScript = """
 #!/bin/bash
 APP_NAME="${env.APP_NAME}"
