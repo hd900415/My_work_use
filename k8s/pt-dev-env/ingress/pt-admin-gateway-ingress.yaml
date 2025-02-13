@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: admin-gateway-pttech-ingress
+  namespace: pt
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-dns"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - admin-gateway.pttech.cc
+    secretName: admin-gateway-pttech-tls
+  rules:
+  - host: admin-gateway.pttech.cc
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: pt-component-gateway-admin-svc
+            port:
+              number: 8080

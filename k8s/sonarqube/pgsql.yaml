@@ -9,7 +9,7 @@ spec:
   storageClassName: "nfs-storageclass"
   resources:
     requests:
-      storage: 2Gi
+      storage: 4Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -54,7 +54,7 @@ metadata:
   labels:
     app: postgres-sonar
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
   - name: postgres-sonar
     port: 5432

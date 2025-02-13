@@ -24,22 +24,18 @@ data:
             - app.kubernetes.io/instance
             - app.kubernetes.io/component
             - app.kubernetes.io/name
-          include_annotations:
-            - logs_path
-          # matchers: 
-          #   - logs_path:
-          #       logs_path: "/var/log/pods/"
-      # - drop_event:
-      #     when:
-      #       not:
-      #         equals:
-      #           kubernetes.namespace: "pt"
-
+            - pod-template-hash
+          #include_annotations:
+          #  - logs_path
+      - drop_event:
+          when:
+            not:
+              equals:
+                kubernetes.namespace: "pt"
     setup.template.name: "filebeat-k8s-template"
     setup.template.pattern: "filebeat-k8s-*"
     setup.ilm.enabled: false
     setup.template.overwrite: true
-    
 
     output.elasticsearch:
       hosts: ['http://elasticsearch:9200']
