@@ -1,30 +1,122 @@
 pipeline {
     agent any
-    parameters {
-        gitParameter(
-            name: 'BRANCH',
-            type: 'PT_BRANCH',
-            defaultValue: 'origin/master',
-            description: 'Select the branch to build',
-            useRepository: 'https://gitlab.ai9.me/zonghepan/web-api.git',
-            branchFilter: 'origin/(.*)'
-            Lark_webhook: ""
-        )
-    }
     environment {
         GIT_URL = 'https://gitlab.ai9.me/zonghepan/web-api.git'
+        GITLAB_CRED = '692d7b05-6dee-43c3-88fc-46ee35a87909'
         MVN_HOME = '/usr/local/apache-maven-3.3.9'
         JAR_DIR = '/var/jenkins_home/jarfile/ZHP_Prod_File'
         APP_NAME = 'web-api'
-        HOST_IP = '43.255.105.1'
         SSH_KEY = '/var/jenkins_home/sshfile/devops-dev.pem'
-        NACOS_SERVER = '127.0.0.1'
-        ACTIVE_PROFILE = 'sit'
-        NAMESPACE = '2e03f35f-13ff-45a6-a35f-204e8b52222c'
         REMOTE_DIR = '/data'
         STARTUP_SCRIPT = 'startup.sh'
+        
+        // SIT环境配置
+        SIT_HOSTS = '43.255.105.1,43.255.105.2'
+        SIT_NAMES = 'sit-server1,sit-server2'
+        SIT_NACOS = '127.0.0.1'
+        SIT_PROFILE = 'sit'
+        SIT_NAMESPACE = '2e03f35f-13ff-45a6-a35f-204e8b52222c'
+        
+        // UAT环境配置
+        UAT_HOSTS = '43.255.106.1,43.255.106.2'
+        UAT_NAMES = 'uat-server1,uat-server2'
+        UAT_NACOS = '127.0.0.2'
+        UAT_PROFILE = 'uat'
+        UAT_NAMESPACE = '3e03f35f-13ff-45a6-a35f-204e8b52223c'
+        
+        // PROD环境配置
+        PROD_HOSTS = '43.255.107.1,43.255.107.2'
+        PROD_NAMES = 'prod-server1,prod-server2'
+        PROD_NACOS = '127.0.0.3'
+        PROD_PROFILE = 'prod'
+        PROD_NAMESPACE = '4e03f35f-13ff-45a6-a35f-204e8b52224c'
     }
     stages {
+        stage('参数选择') {
+            steps {
+                script {
+                    // 获取分支列表
+                    def branches = []
+                    withCredentials([usernamePassword(credentialsId: env.GITLAB_CRED, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                        def encodedPassword = URLEncoder.encode(GIT_PASSWORD, 'UTF-8')
+                        def gitUrl = "https://${GIT_USERNAME}:${encodedPassword}@gitlab.ai9.me/zonghepan/web-api.git"
+                        def result = sh(script: "git ls-remote --heads ${gitUrl} | cut -d'/' -f3-", returnStdout: true).trim()
+                        branches = result.split('\n')
+                    }
+                    
+                    // 如果分支列表为空，添加默认分支
+                    if (branches.size() == 0) {
+                        branches = ['master']
+                    }
+                    
+                    // 将分支列表转换为字符串
+                    def branchChoices = branches.join('\n')
+                    
+                    // 选择分支
+                    env.SELECTED_BRANCH = input(
+                        message: '请选择要部署的分支',
+                        parameters: [
+                            choice(
+                                name: 'BRANCH',
+                                choices: branchChoices,
+                                description: '选择要部署的代码分支'
+                            )
+                        ]
+                    )
+                    
+                    // 选择环境
+                    env.SELECTED_ENV = input(
+                        message: '请选择部署环境',
+                        parameters: [
+                            choice(
+                                name: 'DEPLOY_ENV',
+                                choices: 'SIT\nUAT\nPROD',
+                                description: '选择部署环境'
+                            )
+                        ]
+                    )
+                    
+                    // 根据选择的环境获取服务器列表
+                    def serverChoices = ['ALL']
+                    def envNames
+                    switch(env.SELECTED_ENV) {
+                        case 'SIT':
+                            envNames = env.SIT_NAMES.split(',')
+                            break
+                        case 'UAT':
+                            envNames = env.UAT_NAMES.split(',')
+                            break
+                        case 'PROD':
+                            envNames = env.PROD_NAMES.split(',')
+                            break
+                    }
+                    envNames.each { name ->
+                        serverChoices.add(name.split('-')[1])  // 添加 server1, server2 等选项
+                    }
+                    
+                    // 将服务器列表转换为字符串
+                    def serverChoicesStr = serverChoices.join('\n')
+                    
+                    // 选择目标服务器
+                    env.SELECTED_SERVERS = input(
+                        message: '请选择目标服务器',
+                        parameters: [
+                            choice(
+                                name: 'TARGET_SERVERS',
+                                choices: serverChoicesStr,
+                                description: '选择要部署的目标服务器（选择ALL则部署到所有服务器）'
+                            )
+                        ]
+                    )
+                    
+                    echo "已选择的配置："
+                    echo "分支: ${env.SELECTED_BRANCH}"
+                    echo "环境: ${env.SELECTED_ENV}"
+                    echo "目标服务器: ${env.SELECTED_SERVERS}"
+                }
+            }
+        }
+
         stage('清理工作目录') {
             steps {
                 echo '清理 Jenkins 工作目录...'
@@ -34,15 +126,23 @@ pipeline {
 
         stage('拉取代码') {
             steps {
-                echo "拉取代码分支: ${params.BRANCH}"
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: "${params.BRANCH}"]],
-                    userRemoteConfigs: [[
-                        credentialsId: '692d7b05-6dee-43c3-88fc-46ee35a87909',
-                        url: "${env.GIT_URL}"
-                    ]]
-                ])
+                script {
+                    echo "拉取代码分支: ${env.SELECTED_BRANCH}"
+                    
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: "${env.SELECTED_BRANCH}"]],
+                        doGenerateSubmoduleConfigurations: false,
+                        extensions: [
+                            [$class: 'CleanBeforeCheckout'],
+                            [$class: 'CloneOption', noTags: false, shallow: true, depth: 1]
+                        ],
+                        userRemoteConfigs: [[
+                            credentialsId: env.GITLAB_CRED,
+                            url: env.GIT_URL
+                        ]]
+                    ])
+                }
             }
         }
 
@@ -75,20 +175,86 @@ pipeline {
         stage('部署到服务器') {
             steps {
                 script {
+                    def hosts
+                    def names
+                    def nacos
+                    def profile
+                    def namespace
+                    def allHosts
+                    def allNames
+                    
+                    // 获取环境配置
+                    switch(env.SELECTED_ENV) {
+                        case 'SIT':
+                            allHosts = env.SIT_HOSTS.split(',')
+                            allNames = env.SIT_NAMES.split(',')
+                            nacos = env.SIT_NACOS
+                            profile = env.SIT_PROFILE
+                            namespace = env.SIT_NAMESPACE
+                            break
+                        case 'UAT':
+                            allHosts = env.UAT_HOSTS.split(',')
+                            allNames = env.UAT_NAMES.split(',')
+                            nacos = env.UAT_NACOS
+                            profile = env.UAT_PROFILE
+                            namespace = env.UAT_NAMESPACE
+                            break
+                        case 'PROD':
+                            allHosts = env.PROD_HOSTS.split(',')
+                            allNames = env.PROD_NAMES.split(',')
+                            nacos = env.PROD_NACOS
+                            profile = env.PROD_PROFILE
+                            namespace = env.PROD_NAMESPACE
+                            break
+                        default:
+                            error "未知的部署环境: ${env.SELECTED_ENV}"
+                    }
+
+                    // 根据用户选择过滤服务器
+                    if (env.SELECTED_SERVERS == 'ALL') {
+                        hosts = allHosts
+                        names = allNames
+                    } else {
+                        def targetServer = env.SELECTED_SERVERS  // server1 或 server2
+                        hosts = []
+                        names = []
+                        for (int i = 0; i < allNames.length; i++) {
+                            if (allNames[i].endsWith(targetServer)) {
+                                hosts.add(allHosts[i])
+                                names.add(allNames[i])
+                            }
+                        }
+                    }
+                    
+                    if (hosts.size() == 0) {
+                        error "没有找到匹配的服务器进行部署"
+                    }
+
+                    echo "选择的环境: ${env.SELECTED_ENV}"
+                    echo "目标服务器: ${names.join(', ')}"
+
                     def jarPath = "${env.JAR_DIR}/${env.APP_NAME}/${env.APP_NAME}.jar"
                     if (!fileExists(jarPath)) {
                         error "JAR 文件未找到: ${jarPath}. 请检查是否成功打包！"
                     }
 
-                    def startupScriptContent = """
+                    // 遍历选中的服务器进行部署
+                    for (int i = 0; i < hosts.size(); i++) {
+                        def host = hosts[i]
+                        def name = names[i]
+                        
+                        echo "开始部署到服务器: ${name} (${host})"
+
+                        def startupScriptContent = """
 #!/bin/bash
 APP_NAME="${env.APP_NAME}"
-JAR_PATH="${env.REMOTE_DIR}/${env.APP_NAME}/${env.APP_NAME}.jar"
-NACOS_SERVER="${env.NACOS_SERVER}"
-ACTIVE_PROFILE="${env.ACTIVE_PROFILE}"
+SERVER_NAME="${name}"
+JAR_PATH="${env.REMOTE_DIR}/${env.APP_NAME}/\${SERVER_NAME}/${env.APP_NAME}.jar"
+NACOS_SERVER="${nacos}"
+ACTIVE_PROFILE="${profile}"
 
 echo "检查是否有正在运行的进程..."
-pid=\$(ps -ef | grep "[j]ava.*\${APP_NAME}" | awk '{print \$2}')
+pid=\$(ps -ef | grep "[j]ava.*\${APP_NAME}.*\${SERVER_NAME}" | awk '{print \$2}')
 if [ -n "\$pid" ]; then
     echo "停止正在运行的进程，PID: \$pid"
     kill -9 \$pid
@@ -98,28 +264,32 @@ else
 fi
 
 echo "启动新的进程..."
-mkdir -p ${env.REMOTE_DIR}/\${APP_NAME}
-nohup java -jar -Dspring.profiles.active=\${ACTIVE_PROFILE} \${JAR_PATH} > ${env.REMOTE_DIR}/\${APP_NAME}/nohup.out 2>&1 &
+mkdir -p ${env.REMOTE_DIR}/\${APP_NAME}/\${SERVER_NAME}
+nohup java -jar -Dspring.profiles.active=\${ACTIVE_PROFILE} \\
+    -Dserver.name=\${SERVER_NAME} \\
+    -Dspring.cloud.nacos.discovery.namespace=${namespace} \\
+    \${JAR_PATH} > ${env.REMOTE_DIR}/\${APP_NAME}/\${SERVER_NAME}/nohup.out 2>&1 &
 
 sleep 10
-pid=\$(ps -ef | grep "[j]ava.*\${APP_NAME}" | awk '{print \$2}')
+pid=\$(ps -ef | grep "[j]ava.*\${APP_NAME}.*\${SERVER_NAME}" | awk '{print \$2}')
 if [ -n "\$pid" ]; then
     echo "进程启动成功，PID: \$pid"
 else
-    echo "进程启动失败，请检查日志文件：${env.REMOTE_DIR}/\${APP_NAME}/nohup.out"
+    echo "进程启动失败，请检查日志文件：${env.REMOTE_DIR}/\${APP_NAME}/\${SERVER_NAME}/nohup.out"
     exit 1
 fi
 """
-                    writeFile file: env.STARTUP_SCRIPT, text: startupScriptContent
+                        writeFile file: "${env.STARTUP_SCRIPT}_${name}", text: startupScriptContent
 
-                    echo "上传 JAR 包和启动脚本到服务器..."
-                    sh """
-                    ssh -i ${env.SSH_KEY} -o StrictHostKeyChecking=no root@${env.HOST_IP} "mkdir -p ${env.REMOTE_DIR}/${env.APP_NAME}"
-                    scp -i ${env.SSH_KEY} -o StrictHostKeyChecking=no ${jarPath} root@${env.HOST_IP}:${env.REMOTE_DIR}/${env.APP_NAME}/
-                    scp -i ${env.SSH_KEY} -o StrictHostKeyChecking=no ${env.STARTUP_SCRIPT} root@${env.HOST_IP}:${env.REMOTE_DIR}/${env.APP_NAME}/
-                    ssh -i ${env.SSH_KEY} -o StrictHostKeyChecking=no root@${env.HOST_IP} "chmod +x ${env.REMOTE_DIR}/${env.APP_NAME}/startup.sh"
-                    ssh -i ${env.SSH_KEY} -o StrictHostKeyChecking=no root@${env.HOST_IP} "${env.REMOTE_DIR}/${env.APP_NAME}/startup.sh"
-                    """
+                        echo "上传 JAR 包和启动脚本到服务器 ${name}..."
+                        sh """
+                        ssh -i ${env.SSH_KEY} -o StrictHostKeyChecking=no root@${host} "mkdir -p ${env.REMOTE_DIR}/${env.APP_NAME}/${name}"
+                        scp -i ${env.SSH_KEY} -o StrictHostKeyChecking=no ${jarPath} root@${host}:${env.REMOTE_DIR}/${env.APP_NAME}/${name}/
+                        scp -i ${env.SSH_KEY} -o StrictHostKeyChecking=no ${env.STARTUP_SCRIPT}_${name} root@${host}:${env.REMOTE_DIR}/${env.APP_NAME}/${name}/startup.sh
+                        ssh -i ${env.SSH_KEY} -o StrictHostKeyChecking=no root@${host} "chmod +x ${env.REMOTE_DIR}/${env.APP_NAME}/${name}/startup.sh"
+                        ssh -i ${env.SSH_KEY} -o StrictHostKeyChecking=no root@${host} "${env.REMOTE_DIR}/${env.APP_NAME}/${name}/startup.sh"
+                        """
+                    }
                 }
             }
         }
