@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: centrifugo-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/websocket-services: "centrifugo-service"
+spec:
+  rules:
+  - host: centrifugo.example.com  # 将域名替换为你的实际域名
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: centrifugo-service
+            port:
+              number: 80

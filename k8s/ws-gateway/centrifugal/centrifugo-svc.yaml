@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: centrifugo-service
+spec:
+  selector:
+    app: centrifugo
+  ports:
+  - protocol: TCP
+    port: 80       # 集群内的访问端口
+    targetPort: 8000  # 容器内 Centrifugo 监听的端口
+  type: ClusterIP  # 如需对外暴露可以改为 NodePort 或 LoadBalancer

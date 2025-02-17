@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: centrifugo
+spec:
+  replicas: 2  # 根据需要调整副本数
+  selector:
+    matchLabels:
+      app: centrifugo
+  template:
+    metadata:
+      labels:
+        app: centrifugo
+    spec:
+      containers:
+      - name: centrifugo
+        image: centrifugo/centrifugo:v2.8.1  # 根据实际情况选择版本
+        ports:
+        - containerPort: 8000  # Centrifugo 默认监听端口
+        args: ["-c", "/centrifugo/config/centrifugo.json"]  # 使用配置文件启动
+        volumeMounts:
+        - name: centrifugo-config-volume
+          mountPath: /centrifugo/config
+      volumes:
+      - name: centrifugo-config-volume
+        configMap:
+          name: centrifugo-config
