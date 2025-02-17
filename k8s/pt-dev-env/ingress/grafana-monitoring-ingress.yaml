@@ -1,24 +1,24 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: nacos-ingress
-  namespace: pt
+  name: loki-grafana-pttech-ingress
+  namespace: monitoring
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-dns"
 spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - nacos.pttech.cc
-    secretName: nacos-pttech-tls
+    - grafana.pttech.cc
+    secretName: grafana-pttech-tls
   rules:
-  - host: nacos.pttech.cc
+  - host: grafana.pttech.cc
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: nacos-server-svc
+            name: grafana
             port:
-              number: 8848
+              number: 3000

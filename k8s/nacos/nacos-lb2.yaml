@@ -2,23 +2,18 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: nacos-ingress
-  namespace: pt
+  namespace: pt-dev
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-dns"
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
-  ingressClassName: nginx
-  tls:
-  - hosts:
-    - nacos.pttech.cc
-    secretName: nacos-pttech-tls
   rules:
-  - host: nacos.pttech.cc
+  - host: gcp-nacos.pttech.cc
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: nacos-server-svc
+            name: nacos-lb
             port:
               number: 8848

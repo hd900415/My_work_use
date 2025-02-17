@@ -1,0 +1,27 @@
+# eks-cluster.yaml
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: new-eks-cluster
+  region: ap-east-1
+  version: "1.28"
+vpc:
+  id: vpc-xxxxxx  # 替换为手动创建的 VPC ID 或删除此字段使用自动创建
+  subnets:
+    private:
+      ap-east-1a: subnet-xxxxx1
+      ap-east-1b: subnet-xxxxx2
+      ap-east-1c: subnet-xxxxx3
+    public:
+      ap-east-1a: subnet-xxxxx4
+      ap-east-1b: subnet-xxxxx5
+      ap-east-1c: subnet-xxxxx6
+managedNodeGroups:
+  - name: ng-private
+    instanceType: m5.large
+    minSize: 1
+    maxSize: 5
+    privateNetworking: true  # 强制节点在私有子网
+    ssh:
+      allow: true
+      publicKeyName: mingshengzhishang
