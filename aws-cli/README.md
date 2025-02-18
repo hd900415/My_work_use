@@ -126,4 +126,22 @@ aws ec2 authorize-security-group-ingress --group-id sg-0c99a5c3f16d5d2df \
 --protocol all --source-group sg-0c99a5c3f16d5d2df
 ```
 
+# 获取实例和私有IP
+aws ec2 describe-instances --query "Reservations[].Instances[].{InstanceId:InstanceId, PrivateIp:PrivateIpAddress, Name:Tags[?Key=='Name'].Value | [0], Type:InstanceType, PublicIp:PublicIpAddress}" --output table
++----------------------+-----------------+
+|            DescribeInstances           |
++----------------------+-----------------+
+|      InstanceId      |    PrivateIp    |
++----------------------+-----------------+
+|  i-0bae790b884cde390 |  172.31.36.83   |
+|  i-0c534f01c19b9214d |  172.31.19.233  |
+|  i-0a0d244bb4cfd08af |  10.0.48.145    |
+|  i-02329553c3900b02a |  10.0.51.49     |
+|  i-0d2c4d2e87e39be21 |  10.0.72.250    |
+|  i-011f6b70f195fe94e |  172.31.20.180  |
+|  i-083f2da874403ee80 |  10.0.29.87     |
+|  i-03df448a451d5b2a5 |  10.0.9.61      |
++----------------------+-----------------+
+# 获取实例和对应的安全组 
+aws ec2 describe-instances --query "Reservations[].Instances[].{InstanceId:InstanceId, SecurityGroups:SecurityGroups[*].GroupId}" --output table
 

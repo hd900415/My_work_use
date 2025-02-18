@@ -1,24 +1,8 @@
-apiVersion: v1
-kind: persistentVolume
-metadata:
-  name: zentao
-  labels:
-    app: zentao
-  namespace: zentao
-spec:
-  resources::
-    requests:
-      storage: 10Gi
-  accessModes:
-  - ReadWriteOnce
-  storageClassName: nfs-storageclass
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  labels:
-    app: zentao
   name: zentao
+  namespace: zentao
 spec:
   replicas: 1
   selector:
@@ -29,39 +13,49 @@ spec:
       labels:
         app: zentao
     spec:
+      initContainers:
+        - name: init-zentao
+          image: easysoft/zentao:21.4
+          command: ["sh", "-c", "cp -r /opt/zbox/* /opt/zbox-data"]
+          volumeMounts:
+            - name: zentao-data
+              mountPath: /opt/zbox
       containers:
-      - env:
-        - name: MYSQL_INTERNAL
-          value: "true"
-        image: hub.zentao.net/app/zentao:18.8
-        imagePullPolicy: Always
-        name: zentao
-        ports:
-        - containerPort: 80
-        resources: {}
-        volumeMounts:
         - name: zentao
-          mountPath: /data
+          image: easysoft/zentao:21.4
+          ports:
+            - containerPort: 80
+          env:
+            - name: MYSQL_HOST
+              value: "mysql"
+            - name: MYSQL_PORT
+              value: "3306"
+            - name: MYSQL_USER
+              value: "zentao"
+            - name: MYSQL_PASSWORD
+              value: "zentao123123"
+            - name: MYSQL_DATABASE
+              value: "zentao"
+            - name: REDIS_HOST
+              value: "redis"
+            - name: REDIS_PORT
+              value: "6379"
+          volumeMounts:
+            - name: zentao-data
+              mountPath: /opt/zbox
       volumes:
-      - name: zentao
-        nfs:
-          server: 192.168.3.61
-          path: /zentao
-status: {}
+        - name: zentao-data
+          persistentVolumeClaim:
+            claimName: zentao-data-pvc
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    run: zentao
-  name: zentao-service
+  name: zentao
+  namespace: zentao
 spec:
-  ports:
-  - port: 80
-    protocol: TCP
-    targetPort: 80
   selector:
-    run: zentao
-  type: ClusterIP
-
- 
+    app: zentao
+  ports:
+    - port: 80
+      targetPort: 80

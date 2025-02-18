@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: gp3-pvc
+    namespace: devops
+spec:
+    storageClassName: gp3
+    accessModes:
+        - ReadWriteOnce
+    resources:
+        requests:
+            storage: 10Gi

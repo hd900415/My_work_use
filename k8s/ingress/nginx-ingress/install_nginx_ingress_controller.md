@@ -117,3 +117,4 @@ helm upgrade --install nginx-ingress-controller bitnami/nginx-ingress-controller
 --set controller.service.nodePorts.http="80" \
 --set controller.service.nodePorts.https="443" \
 --set controller.service.loadBalancerIP="192.168.1.200"
+

@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jenkins-changyan-ingress
+  namespace: devops
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-dns"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - jenkins.changyan.co
+      secretName: jenkins-changyan-tls
+  rules:
+    - host: jenkins.changyan.co
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: jenkins
+                port:
+                  number: 8080

@@ -1,0 +1,114 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins
+  namespace: devops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins-server
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: jenkins-server
+    spec:
+      containers:
+        - image: harbor.pttech.cc/devops/jenkins:lts-jdk17
+          imagePullPolicy: Always
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /login
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 90
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          name: jenkins
+          ports:
+            - containerPort: 8080
+              name: httpport
+              protocol: TCP
+            - containerPort: 50000
+              name: jnlpport
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /login
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources:
+            limits:
+              cpu: "5"
+              memory: 8Gi
+            requests:
+              cpu: 500m
+              memory: 500Mi
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /var/jenkins_home
+              name: jenkins-data
+            - mountPath: /run/docker.sock
+              name: docker
+            - mountPath: /usr/bin/docker
+              name: docker-home
+            - mountPath: /usr/local/apache-maven-3.9.9/conf/settings.xml
+              name: mvn-settings
+              subPath: settings.xml
+            - mountPath: /etc/docker/daemon.json
+              name: daemon
+              subPath: daemon.json
+            - mountPath: /usr/bin/kubectl
+              name: kubectl
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+        - name: harbor-secret
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: jenkins
+      serviceAccountName: jenkins
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - hostPath:
+            path: /usr/bin/kubectl
+            type: ""
+          name: kubectl
+        - name: jenkins-data
+          persistentVolumeClaim:
+            claimName: jenkins
+        - hostPath:
+            path: /run/docker.sock
+            type: ""
+          name: docker
+        - hostPath:
+            path: /usr/bin/docker
+            type: ""
+          name: docker-home
+        - configMap:
+            defaultMode: 420
+            items:
+              - key: settings.xml
+                path: settings.xml
+            name: mvn-settings
+          name: mvn-settings
+        - hostPath:
+            path: /etc/docker/
+            type: ""
+          name: daemon

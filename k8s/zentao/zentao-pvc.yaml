@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-data-pvc
+  namespace: zentao
+  labels:
+    app.kubernetes.io/name: zentao-mysql
+spec:
+    accessModes:
+      - ReadWriteMany
+    resources:
+      requests:
+        storage: 20Gi
+    storageClassName: nfs-storageclass
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zentao-data-pvc
+  namespace: zentao
+  labels:
+    app.kubernetes.io/name: zentao-data
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: nfs-storageclass
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zentao-redis-pvc
+  namespace: zentao
+  labels:
+    app.kubernetes.io/name: zentao-redis
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: nfs-storageclass
+  
