@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mszs-tsdd-server
+  namespace: mszs
+  labels:
+    name: mszs-tsdd-server
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector: 
+    matchLabels:
+      name: mszs-tsdd-server
+  template:
+    metadata:
+      labels:
+        name: mszs-tsdd-server
+    spec:
+      containers:
+      - name: mszs-tsdd-server
+        image: haidao900/tsdd-server:mszsv5
+        imagePullPolicy: Always  
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "2000M"
+        ports:
+        - containerPort: 8090
+          name: http
+        - containerPort: 6979
+          name: webhook
+        volumeMounts:
+        - mountPath: /home/tsdd/tsdd.yaml
+          name: tsdd-config
+          subPath: tsdd.yaml  
+      volumes:
+      - name: tsdd-config
+        configMap:
+          name: tsdd-config
+          items:
+          - key: tsdd.yaml
+            path: tsdd.yaml
+      restartPolicy: Always

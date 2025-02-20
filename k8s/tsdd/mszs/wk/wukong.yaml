@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mszs-wk
+  namespace: mszs
+  labels:
+    name: mszs-wk
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:  # 需要添加 selector，否则会报错
+    matchLabels:
+      name: mszs-wk
+  template:
+    metadata:
+      labels:
+        name: mszs-wk
+    spec:
+      containers:
+      - name: mszs-wk
+        image: registry.cn-shanghai.aliyuncs.com/wukongim/wukongim:v1.2.6
+        imagePullPolicy: Always  # **这里放对位置**
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "2000M"
+        ports:
+        - containerPort: 5001
+          name: http
+        - containerPort: 5100
+          name: app
+        - containerPort: 5200
+          name: websocket
+        - containerPort: 5300
+          name: grpc
+        volumeMounts:
+        - mountPath: /home/wukongim
+          name: data
+        - name: wkim-config
+          mountPath: /root/wukongim/wk.yaml
+          subPath: wk.yaml  # **重要，避免 ConfigMap 覆盖整个目录**
+      volumes:
+      - name: data
+        emptyDir: {}
+      - name: wkim-config
+        configMap:
+          name: wkim-config
+          items:
+          - key: wk.yaml
+            path: wk.yaml
+      restartPolicy: Always

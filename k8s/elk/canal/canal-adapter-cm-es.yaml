@@ -39,3 +39,125 @@ data:
         remark: {name: remark, type: text}
         create_time: {name: create_time, type: date, format: "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd'T'HH:mm:ss.SSSZ||yyyy-MM-dd'T'HH:mm:ssZ||yyyy-MM-dd'T'HH:mm:ssZZ||yyyy-MM-dd'T'HH:mm:ssZ||epoch_millis"}
         update_time: {name: update_time, type: date, format: "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd'T'HH:mm:ss.SSSZ||yyyy-MM-dd'T'HH:mm:ssZ||yyyy-MM-dd'T'HH:mm:ssZZ||yyyy-MM-dd'T'HH:mm:ssZ||epoch_millis"}
+
+  pt-game.yml: |
+    dataSourceKey: defaultDS
+    destination: mysql8-to-es-pt-game
+    groupId: g1
+    outerAdapterKey: es
+    esMapping:
+      _index: ga_game
+      _type: _doc
+      _id: id
+      upsert: true
+      sql: "SELECT * FROM ga_game"
+      commitBatch: 1
+      fieldMapping:
+        id: {name: id, type: long}
+        code: {name: code, type: keyword}
+        name: {name: name, type: keyword}
+        name_en: {name: name_en, type: keyword}
+        vendor_id: {name: vendor_id, type: integer}
+        vendor_name: {name: vendor_name, type: keyword}
+        logo: {name: logo, type: keyword}
+        h5_logo: {name: h5_logo, type: keyword}
+        type_id: {name: type_id, type: integer}
+        categoris: {name: categoris, type: keyword}
+        jump_game_id: {name: jump_game_id, type: integer}
+        special_jump: {name: special_jump, type: keyword}
+        return_rate: {name: return_rate, type: double}
+        max_multiplier: {name: max_multiplier, type: double}
+        reel_resign: {name: reel_resign, type: keyword}
+        hit_rate: {name: hit_rate, type: double}
+        lucky_spin: {name: lucky_spin, type: integer}
+        volatility: {name: volatility, type: integer}
+        win_ways: {name: win_ways, type: integer}
+        stakes_range: {name: stakes_range, type: double}
+        collect_count: {name: collect_count, type: integer}
+        real_collect_count: {name: real_collect_count, type: integer}
+        like_count: {name: like_count, type: integer}
+        real_like_count: {name: real_like_count, type: integer}
+        online_count: {name: online_count, type: integer}
+        real_online_count: {name: real_online_count, type: integer}
+        maintenance_status: {name: maintenance_status, type: integer}
+        front_show: {name: front_show, type: integer}
+        status: {name: status, type: integer}
+        create_by: {name: create_by, type: keyword}
+        create_time: {name: create_time, type: date, format: "yyyy-MM-dd HH:mm:ss"}
+        update_by: {name: update_by, type: keyword}
+        update_time: {name: update_time, type: date, format: "yyyy-MM-dd HH:mm:ss"}
+
+  pt-bet-record.yml: |
+    dataSourceKey: defaultDS
+    destination: mysql8-to-es-pt-bet
+    groupId: g1
+    outerAdapterKey: es
+    esMapping:
+      _index: bet_bet_record
+      _type: _doc
+      _id: id
+      upsert: true
+      sql: "SELECT * FROM bet_bet_record"
+      commitBatch: 1
+      fieldMapping:
+        id: {name: id, type: long}
+        bet_no: {name: bet_no, type: long}
+        agent_id: {name: agent_id, type: integer}
+        channel_id: {name: channel_id, type: integer}
+        game_id: {name: game_id, type: integer}
+        game_name: {name: game_name, type: keyword}
+        vendor_id: {name: vendor_id, type: integer}
+        vendor_name: {name: vendor_name, type: keyword}
+        third_game_id: {name: third_game_id, type: integer}
+        third_game_name: {name: third_game_name, type: keyword}
+        third_vendor_id: {name: third_vendor_id, type: integer}
+        third_vendor_name: {name: third_vendor_name, type: keyword}
+        user_no: {name: user_no, type: integer}
+        bet_time: {name: bet_time, type: date, format: "yyyy-MM-dd HH:mm:ss"}
+        wallet_currenty: {name: wallet_currenty, type: keyword}
+        wallet_currency_rate: {name: wallet_currency_rate, type: double}
+        wallet_currency_type: {name: wallet_currency_type, type: integer}
+        bet_amount: {name: bet_amount, type: double}
+        win_amount: {name: win_amount, type: double}
+        wagering_amount: {name: wagering_amount, type: double}
+        settled_status: {name: settled_status, type: integer}
+        third_currency: {name: third_currency, type: keyword}
+        third_currency_rate: {name: third_currency_rate, type: double}
+        third_currency_type: {name: third_currency_type, type: integer}
+        exchange_rate: {name: exchange_rate, type: double}
+        third_bet_amount: {name: third_bet_amount, type: double}
+        third_win_amount: {name: third_win_amount, type: double}
+        third_transaction_id: {name: third_transaction_id, type: keyword}
+        third_round_id: {name: third_round_id, type: keyword}
+        third_bet_id: {name: third_bet_id, type: keyword}
+        settled_time: {name: settled_time, type: date, format: "yyyy-MM-dd HH:mm:ss"}
+
+  pt-settled-record.yml: |
+    dataSourceKey: defaultDS
+    destination: mysql8-to-es-pt-settled
+    groupId: g1
+    outerAdapterKey: es
+    esMapping:
+      _index: bet_settled_record
+      _type: _doc
+      _id: id
+      upsert: true
+      sql: "SELECT * FROM bet_settled_record"
+      commitBatch: 1
+      fieldMapping:
+        id: {name: id, type: long}
+        settled_no: {name: settled_no, type: long}
+        bet_no: {name: bet_no, type: long}
+        third_transaction_id: {name: third_transaction_id, type: keyword}
+        third_currency: {name: third_currency, type: keyword}
+        third_currency_rate: {name: third_currency_rate, type: double}
+        third_currency_type: {name: third_currency_type, type: integer}
+        exchange_rate: {name: exchange_rate, type: double}
+        third_win_amount: {name: third_win_amount, type: double}
+        third_round_id: {name: third_round_id, type: keyword}
+        third_bet_id: {name: third_bet_id, type: keyword}
+        win_amount: {name: win_amount, type: double}
+        wallet_currenty: {name: wallet_currenty, type: keyword}
+        wallet_currency_rate: {name: wallet_currency_rate, type: double}
+        wallet_currency_type: {name: wallet_currency_type, type: integer}
+        settled_time: {name: settled_time, type: date, format: "yyyy-MM-dd HH:mm:ss"}
