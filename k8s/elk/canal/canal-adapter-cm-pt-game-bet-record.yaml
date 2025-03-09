@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: canal-adapter-config-es-pt-game-bet-record
+  namespace: es
+data:
+  pt-bet-record.yml: |
+    dataSourceKey: gameDS
+    destination: mysql8-to-es-pt-game
+    groupId: g1
+    outerAdapterKey: es
+    esMapping:
+      _index: ga_bet_record
+      _type: _doc
+      _id: id
+      pk: id
+      upsert: true
+      sql: "
+        SELECT
+          id,
+          bet_no,
+          agent_id,
+          channel_id,
+          game_id,
+          game_name,
+          vendor_id,
+          vendor_name,
+          third_game_id,
+          third_game_name,
+          third_vendor_id,
+          third_vendor_name,
+          user_no,
+          bet_time,
+          wallet_type,
+          wallet_currency,
+          wallet_currency_rate,
+          wallet_currency_type,
+          wallet_currency_accuracy,
+          third_request_currency,
+          win_multiple,
+          bet_amount,
+          win_amount,
+          wagering_amount,
+          settled_status,
+          third_wallet_type,
+          third_currency,
+          third_currency_rate,
+          third_currency_type,
+          third_currency_accuracy,
+          COALESCE(exchange_rate, 0) AS exchange_rate,
+          third_bet_amount,
+          COALESCE(third_win_amount, 0) AS third_win_amount,
+          third_external_transaction_id,
+          third_transaction_id,
+          third_round_id,
+          third_bet_id,
+          DATE_FORMAT(COALESCE(settled_time, NOW()), '%Y-%m-%d %H:%i:%s') AS settled_time 
+        FROM
+          ga_bet_record t
+      "
+      commitBatch: 1000

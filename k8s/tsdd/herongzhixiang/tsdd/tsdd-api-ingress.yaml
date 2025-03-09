@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-hrzx-ingress
+  namespace: hrzx
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: api.zhongyihui.me
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: hrzx-tsdd-svc
+            port:
+              number: 8090

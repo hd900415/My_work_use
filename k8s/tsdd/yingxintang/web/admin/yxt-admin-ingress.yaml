@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: yxt-admin
+  namespace: yingxintang
+  # annotations:
+  #   cert-manager.io/cluster-issuer: "letsencrypt-dns"
+spec:
+  ingressClassName: nginx
+  # tls:
+  # - hosts:
+  #   - admin.856gd.vip
+  #   secretName: yingxintang-admin-tls
+  rules:
+  - host: admin.856gd.vip
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: yingxintang-admin
+            port:
+              number: 80

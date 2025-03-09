@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-yingxintang-cc-ingress
+  namespace: yingxintang
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-dns"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - api.yingxintang.cc
+    secretName: api-yingxintang-tls
+  rules:
+  - host: api.yingxintang.cc
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: yingxintang-wk-http-5001
+            port:
+              number: 5001

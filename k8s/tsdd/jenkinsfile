@@ -1,0 +1,107 @@
+pipeline {
+    agent {
+        label 'docker-go-kubectl' // 使用支持 Docker、Go 和 kubectl 的代理
+    }
+
+    environment {
+        DOCKERHUB_CRED = credentials('docker-password') // Docker Hub 凭据
+        GITLAB_TOKEN = credentials('gitlab-token')     // GitLab 凭据
+        DOCKER_IMAGE_BASE = 'haidao900/tsdd-server'    // Docker 镜像基础名称
+        GO_PATH = '/var/jenkins_home/tools/go/bin'     // Go 可执行文件路径
+    }
+
+    stages {
+        stage('Select Branches') {
+            steps {
+                script {
+                    // 获取 tangsengdaodaoserver 的远程分支列表
+                    def serverBranches = sh(script: "git ls-remote --heads https://gitlab.com/tangsengdaodao/tangsengdaodaoserver.git | cut -d '/' -f3", returnStdout: true).trim().split('\n')
+                    // 获取 tangsengdaodaoserverlib 的远程分支列表
+                    def libBranches = sh(script: "git ls-remote --heads https://gitlab.com/tangsengdaodao/tangsengdaodaoserverlib.git | cut -d '/' -f3", returnStdout: true).trim().split('\n')
+
+                    // 在一个步骤中让用户选择两个分支
+                    def userInput = input message: '请选择分支', 
+                        parameters: [
+                            choice(name: 'SERVER_BRANCH', choices: serverBranches, description: '选择 tangsengdaodaoserver 的分支'),
+                            choice(name: 'LIB_BRANCH', choices: libBranches, description: '选择 tangsengdaodaoserverlib 的分支')
+                        ]
+
+                    // 设置环境变量
+                    env.SERVER_BRANCH = userInput['SERVER_BRANCH']
+                    env.LIB_BRANCH = userInput['LIB_BRANCH']
+
+                    // 根据 server 分支确定 Namespace
+                    def nsMap = [
+                        'yxt': 'yingxintang',
+                        'v2': 'mszs',
+                        'v2_herongzhixiang': 'hrzx'
+                    ]
+                    env.NS = nsMap[env.SERVER_BRANCH] ?: env.SERVER_BRANCH
+                    env.VERSION = "v${env.BUILD_NUMBER}"
+                    env.DOCKER_TAG = "${env.NS}${env.VERSION}"
+                    env.STS_NAME = "${env.NS}-tsdd-server"
+                }
+            }
+        }
+
+        stage('Checkout Code') {
+            steps {
+                script {
+                    // 拉取 tangsengdaodaoserver 代码
+                    git branch: env.SERVER_BRANCH, credentialsId: 'gitlab-token', url: 'https://gitlab.com/tangsengdaodao/tangsengdaodaoserver.git'
+
+                    // 拉取 tangsengdaodaoserverlib 代码到同级目录
+                    dir('../tangsengdaodaoserverlib') {
+                        git branch: env.LIB_BRANCH, credentialsId: 'gitlab-token', url: 'https://gitlab.com/tangsengdaodao/tangsengdaodaoserverlib.git'
+                    }
+                }
+            }
+        }
+
+        stage('Build Go Binary') {
+            steps {
+                script {
+                    // 设置 Go 环境变量
+                    env.PATH = "${env.GO_PATH}:${env.PATH}"
+                    sh 'go version'                         // 验证 Go 版本
+                    sh 'go build -o TangSengDaoDaoServer .' // 编译 Go 程序
+                    sh 'test -f TangSengDaoDaoServer || exit 1' // 检查编译结果
+                }
+            }
+        }
+
+        stage('Build and Push Docker Image') {
+            steps {
+                script {
+                    // 构建 Docker 镜像
+                    def dockerImage = docker.build("${DOCKER_IMAGE_BASE}:${env.DOCKER_TAG}", "-f Dockerfile .")
+                    // 推送镜像到 Docker Hub
+                    docker.withRegistry('https://index.docker.io/v1/', 'docker-password') {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                // 更新 Kubernetes StatefulSet 镜像并检查部署状态
+                sh "kubectl set image statefulset/${env.STS_NAME} ${env.NS}-tsdd-server=${DOCKER_IMAGE_BASE}:${env.DOCKER_TAG} -n ${env.NS} --record"
+                sh "kubectl rollout status statefulset/${env.STS_NAME} -n ${env.NS}"
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Pipeline 执行完成"
+            cleanWs() // 清理工作空间
+        }
+        success {
+            echo "成功部署 ${DOCKER_IMAGE_BASE}:${env.DOCKER_TAG} 到 ${env.NS}!"
+        }
+        failure {
+            echo "Pipeline 执行失败!"
+        }
+    }
+}

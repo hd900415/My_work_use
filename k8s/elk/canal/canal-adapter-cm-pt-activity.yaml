@@ -1,0 +1,250 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: canal-adapter-config-es-pt-activity
+  namespace: es
+data:
+  pt-activity-day-rebate.yml: |
+    dataSourceKey: activityDS
+    destination: mysql8-to-es-pt-activity-day-rebate
+    groupId: g1
+    outerAdapterKey: es
+    esMapping:
+      _index: ac_activity_record_day_rebate
+      _type: _doc
+      _id: id
+      upsert: true
+      sql: "
+        SELECT
+          id,
+          user_no,
+          order_no,
+          activity_id,
+          activity_name,
+          mem_level,
+          vip_level,
+          agent_id,
+          channel_id,
+          claim_status,
+          customer_lose_amount,
+          rewards_wallet_type,
+          rewards_currency,
+          distribution_time,
+          expire_time,
+          claim_time,
+          claim_amount,
+          wagering_multiplier
+        FROM
+          ac_activity_record_day_rebate t
+      "
+      commitBatch: 1000
+
+  pt-activity-week-rebate.yml: |
+    dataSourceKey: activityDS
+    destination: mysql8-to-es-pt-activity-week-rebate
+    groupId: g1
+    outerAdapterKey: es
+    esMapping:
+      _index: ac_activity_record_week_rebate
+      _type: _doc
+      _id: id
+      upsert: true
+      sql: "
+        SELECT
+          id,
+          user_no,
+          order_no,
+          activity_id,
+          activity_name,
+          mem_level,
+          vip_level,
+          agent_id,
+          channel_id,
+          claim_status,
+          customer_lose_amount,
+          rewards_wallet_type,
+          rewards_currency,
+          distribution_time,
+          expire_time,
+          claim_time,
+          claim_amount,
+          wagering_multiplier
+        FROM
+          ac_activity_record_week_rebate t
+      "
+      commitBatch: 1000
+
+  pt-activity-month-rebate.yml: |
+    dataSourceKey: activityDS
+    destination: mysql8-to-es-pt-activity-month-rebate
+    groupId: g1
+    outerAdapterKey: es
+    esMapping:
+      _index: ac_activity_record_month_rebate
+      _type: _doc
+      _id: id
+      upsert: true
+      sql: "
+        SELECT
+          id,
+          user_no,
+          order_no,
+          activity_id,
+          activity_name,
+          mem_level,
+          vip_level,
+          agent_id,
+          channel_id,
+          claim_status,
+          customer_lose_amount,
+          rewards_wallet_type,
+          rewards_currency,
+          distribution_time,
+          expire_time,
+          claim_time,
+          claim_amount,
+          wagering_multiplier
+        FROM
+          ac_activity_record_month_rebate t
+      "
+      commitBatch: 1000
+
+  pt-activity-promote.yml: |
+    dataSourceKey: activityDS
+    destination: mysql8-to-es-pt-activity-promote
+    groupId: g1
+    outerAdapterKey: es
+    esMapping:
+      _index: ac_activity_record_promote
+      _type: _doc
+      _id: id
+      upsert: true
+      sql: "
+        SELECT
+          id,
+          user_no,
+          order_no,
+          activity_id,
+          activity_name,
+          mem_level,
+          vip_level,
+          agent_id,
+          channel_id,
+          claim_status,
+          bet_amount AS customer_lose_amount,
+          rewards_wallet_type,
+          rewards_currency,
+          distribution_time,
+          expire_time,
+          claim_time,
+          claim_amount,
+          wagering_multiplier
+        FROM
+          ac_activity_record_promote t
+      "
+      commitBatch: 1000
+
+  pt-activity-red-envelope.yml: |
+    dataSourceKey: activityDS
+    destination: mysql8-to-es-pt-activity-red-envelope
+    groupId: g1
+    outerAdapterKey: es
+    esMapping:
+      _index: ac_activity_record_red_envelope
+      _type: _doc
+      _id: id
+      upsert: true
+      sql: "
+        SELECT
+          id,
+          user_no,
+          order_no,
+          activity_id,
+          activity_name,
+          mem_level,
+          vip_level,
+          agent_id,
+          channel_id,
+          claim_status,
+          customer_lose_amount,
+          rewards_wallet_type,
+          rewards_currency,
+          distribution_time,
+          expire_time,
+          claim_time,
+          claim_amount,
+          wagering_multiplier
+        FROM
+          ac_activity_record_red_envelope t
+      "
+      commitBatch: 1000
+
+  pt-activity-four-pay.yml: |
+    dataSourceKey: activityDS
+    destination: mysql8-to-es-pt-activity-four-pay
+    groupId: g1
+    outerAdapterKey: es
+    esMapping:
+      _index: ac_activity_record_four_pay
+      _type: _doc
+      _id: id
+      upsert: true
+      sql: "
+        SELECT
+          id,
+          user_no,
+          order_no,
+          activity_id,
+          activity_name,
+          mem_level,
+          vip_level,
+          agent_id,
+          channel_id,
+          claim_status,
+          pay_amount AS customer_lose_amount,
+          rewards_wallet_type,
+          rewards_currency,
+          distribution_time,
+          expire_time,
+          claim_time,
+          claim_amount,
+          wagering_multiplier
+        FROM
+          ac_activity_record_four_pay t
+      "
+      commitBatch: 1000
+
+  pt-activity-limit-time-first-pay.yml: |
+    dataSourceKey: activityDS
+    destination: mysql8-to-es-pt-activity-limit-time-first-pay
+    groupId: g1
+    outerAdapterKey: es
+    esMapping:
+      _index: ac_activity_record_limit_time_first_pay
+      _type: _doc
+      _id: id
+      upsert: true
+      sql: "
+        SELECT
+          id,
+          user_no,
+          order_no,
+          activity_id,
+          activity_name,
+          mem_level,
+          vip_level,
+          agent_id,
+          channel_id,
+          claim_status,
+          pay_amount AS customer_lose_amount,
+          rewards_wallet_type,
+          rewards_currency,
+          distribution_time,
+          expire_time,
+          claim_time,
+          claim_amount,
+          wagering_multiplier
+        FROM
+          ac_activity_record_limit_time_first_pay t
+      "
+      commitBatch: 1000

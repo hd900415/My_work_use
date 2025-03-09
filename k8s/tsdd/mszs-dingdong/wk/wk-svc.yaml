@@ -1,0 +1,28 @@
+# services-cluster-ip.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mszs-wk-svc
+  namespace: mszs
+spec:
+  type: ClusterIP
+  selector:
+    name: mszs-wk
+  ports:
+    - name: http
+      port: 5001
+      targetPort: 5001
+      protocol: TCP
+    - name: app-tcp
+      port: 5100
+      targetPort: 5100
+      protocol: TCP
+    - name: websocket
+      port: 5200
+      targetPort: 5200
+      protocol: TCP
+    - name: grpc
+      port: 5210
+      targetPort: 5210
+      protocol: TCP

@@ -1,0 +1,165 @@
+apiVersion: v1
+data:
+  tsdd.yaml: |
+    # #################### 基础配置 ####################
+    mode: "release" #   运行模式 debug or release
+    adminpwd: "********" # 管理员密码
+    addr: ":8090" # api监听地址
+    grpcAddr: "0.0.0.0:6979" # webhook grpc监听地址 给悟空IM提供的
+    appName: "核融智享" # 项目名称
+    #rootDir: "tsdddata" # 数据根目录
+    #messageSaveAcrossDevice: true # 消息是否跨设备保存（换设备登录消息是否还能同步到老消息）
+    #welcomeMessage: "欢迎使用{{appName}}" # 欢迎消息
+    #phoneSearchOff: true # 关闭手机号搜索用户功能
+    #onlineStatusOn: true # 开启在线状态功能
+    groupUpgradeWhenMemberCount: 5000 # 群组人数达到多少人时，群组自动升级为超级群组
+    groupMaxMemberCount: 5000 # 群组成员限制，普通群与超级群受此配置限制，添加群成员时如超出限制则不允许添加
+    group:
+      sameDayCreateMaxCount: 100 # 同一天创建群的最大数量
+      createGroupVerifyFriendOn: true # 建群是否开启好友验证
+    #eventPoolSize: 100 # 事件池大小
+    ##################### 悟空IM配置 ####################
+    wukongIM:
+      apiURL: "http://hrzx-wk-svc.hrzx.svc.cluster.local:5001" # 悟空IM的api地址 格式： http://xx.xx.xx.xx:5001
+      managerToken: "" # 悟空IM的管理者token 悟空IM配置了就需要填写，没配置就不需要
+    ##################### owt配置 ####################
+    owt:
+      url: "https://43.198.184.86:3000"
+      serviceID: "66660e3647969b02f3eb447d"
+      serviceKey: "********" # 已脱敏
+    ##################### db ####################
+    db:
+      mysqlAddr: "admin:********@tcp(mysql-db-aurora-8.cluster-c36i0qk2wwym.ap-east-1.rds.amazonaws.com)/hrzx?charset=utf8mb4&parseTime=true" # mysql连接地址
+      readMysqlAddr: [ "admin:********@tcp(mysql-db-aurora-8.cluster-ro-c36i0qk2wwym.ap-east-1.rds.amazonaws.com)/hrzx?charset=utf8mb4&parseTime=true" ] # mysql连接地址
+    #  sqlDir: "assets/sql" # 数据库脚本路径
+    #  migration: true #  是否合并数据库
+      redisAddr: "redis-master.redis.svc.cluster.local:6379" # redis地址
+      redisPass: "********" # redis密码
+      redisDB: 2
+    #  asynctaskRedisAddr: "" # 异步任务的redis地址 不写默认为RedisAddr的地址
+    ##################### 外网配置 ####################
+    external:
+      ip: "ac14798a72d534ae691b6c31ea2b0ad5-bce0fad476e5dcea.elb.ap-east-1.amazonaws.com" # 外网ip
+        #baseURL: "https://api-ms.mszs.cyou" # 外网访问地址 例如 http://10.2.3.1:8090
+        # webLoginURL: "yueyan.online" # web im的登录地址 例如 https://web.tangsengdaodao.com
+    ##################### 日志配置 ####################
+    logger:
+      level: 3 # 日志级别 0:未配置,将根据mode属性判断 1:debug 2:info 3:warn 4:error
+      dir: "./logs" # 日志目录
+      lineNum: true # 是否打印行号
+    ##################### 短信配置 ####################
+    smsCode: "******" # 测试短信验证码， 如果不为空，则短信验证码为该值。
+    #smsProvider: "aliyun" # 短信服务商. 例如: aliyun or unisms
+    #aliyunSMS:
+    #  accessKeyID: "" # 阿里云短信accessKeyID
+    #  accessSecret: "" # 阿里云短信accessSecret
+    #  templateCode: "" # 阿里云短信模板code 验证码变量名为code
+    #  signName: "" # 阿里云短信签名
+    #aliyunInternationalSMS: # 阿里云国际短信，如果配置了该项，遇到国际区号的手机号，将使用该配置发送短信
+    #  accessKeyID: "" # 阿里云国际短信accessKeyID
+    #  accessSecret: "" # 阿里云国际短信accessSecret
+    #uniSMS:
+    #  accessKeyID: "" # unisms accessKeyID
+    #  signature: "" # unisms signature
+    #  accessKeySecret: "" # unisms accessKeySecret 简易模式可以为空
+    #  templateId: "" # unisms TemplateId 验证码变量名为code
+    ##################### 文件服务 ####################
+    fileService: "aliyunOSS" # 文件服务 minio or aliyunOSS or seaweedFS
+    minio: # minio配置
+      url: "http://18.166.226.18:9000" # minio地址 格式：http://xx.xx.xx.xx:9000
+      accessKeyID: "********" # minio accessKeyID
+      secretAccessKey: "********"  # minio secretAccessKey
+    oss:  # aliyun oss配置
+      endpoint: "oss-cn-hongkong.aliyuncs.com" # oss endpoint 例如 oss-cn-hangzhou.aliyuncs.com
+        #oss-accelerate.aliyuncs.com
+        #bucketURL: "https://images.856gd.cc" # oss bucketURL 例如 https://xxxx.oss-cn-hangzhou.aliyuncs.com
+      bucketURL: "https://oss.im.zhongyihui.cyou" # oss bucketURL 例如 https://xxxx.oss-cn-hangzhou.aliyuncs.com
+      bucketURL2: "https://minsheng-zs.oss-cn-hongkong.aliyuncs.com" # oss bucketURL 例如 https://xxxx.oss-cn-hangzhou.aliyuncs.com
+      #bucketURL: "https://weiyuim.oss-accelerate-overseas.aliyuncs.com" # oss bucketURL 例如 https://xxxx.oss-cn-hangzhou.aliyuncs.com
+      #bucketURL: "https://changyanim.oss-accelerate.aliyuncs.com" # oss bucketURL 例如 https://xxxx.oss-cn-hangzhou.aliyuncs.com
+      #https://yueyanim.oss-accelerate-overseas.aliyuncs.com/
+      accessKeyID: "********" # oss accessKeyID
+      accessKeySecret: "********" # oss accessKeySecret
+      #bucketName: "weiyuim-oss-hk-5158901911627941"
+      bucketName: "zhongyihuiim"
+    #seaweed: # seaweed配置
+    #  url: ""   # seaweed地址 格式：http://xx.xx.xx.xx:9000
+    ##################### 推送配置 ####################
+    push:
+      contentDetailOn: true # 推送内容是否显示详情
+      pushPoolSize: 100 # 推送池大小
+      jpush: # 苹果推送
+        packageName: "com.talk.zyh" # jpush推送包名
+        appKey: "********" # jpush推送appID
+        secretKey: "********" # jpush推送appSecret
+    #  apns: # 苹果推送
+    #    dev: false # 是否为开发环境
+    #    topic: "" # topic 例如： com.xinbida.tangsengdaodao
+    #    password: ""
+    #    cert: "" # apns证书路径 例如：configs/push/push.p12
+    #  hms: # 华为推送
+    #    packageName: "" # 华为推送包名 例如：com.xinbida.tangsengdaodao
+    #    appID: "" # 华为推送appID
+    #    appSecret: "" # 华为推送appSecret
+    #  mi: # 小米推送
+    #    packageName: "" # 小米推送包名 例如：com.xinbida.tangsengdaodao
+    #    appID: "" # 小米推送appID
+    #    appSecret: "" # 小米推送appSecret
+    #    channelID: "" # 小米推送channelID
+    #  vivo: # vivo推送
+    #    packageName: "" # vivo推送包名 例如：com.xinbida.tangsengdaodao
+    #    appID: "" # vivo推送appID
+    #    appKey: "" # vivo推送appKey
+    #    appSecret: "" # vivo推送appSecret
+    #  oppo: # oppo推送
+    #    packageName: "" # oppo推送包名 例如：com.xinbida.tangsengdaodao
+    #    appID: "" # oppo推送appID
+    #    appKey: "" # oppo推送appKey
+    #    appSecret: "" # oppo推送appSecret
+    #    masterSecret: "" # oppo推送masterSecret
+    ##################### 注册 ####################
+    register:
+      off: false # 是否关闭注册
+    #  onlyChina: false # 是否只允许中国手机号注册
+    #  stickerAddOff: false # 是否关闭注册添加表情
+    ##################### 内置账户配置 ####################
+    #account:
+    #  systemUID: "u_10000" # 系统账户uid
+    #  fileHelperUID: "fileHelper" # 文件助手uid
+    #  systemGroupID: "g_10000" # 系统群组id
+    #  systemGroupName: "意见反馈群" # 系统群组名称
+    #  adminUID: "admin" # 管理员uid
+    ##################### 头像 #####################
+    avatar:
+      defaultBaseURL: "https://api.dicebear.com/9.x/dylan/png?seed={avatar}" # 默认头像cdn地址
+    #  default: "assets/assets/avatar.png" # 默认头像
+    #  defaultCount: 900 # 默认头像数量
+    #  partition: 100 # 头像分区数量
+    ##################### 短号配置 ####################
+    shortNo:
+      numOn: false # 短号是否为纯数字
+      numLen: 14 # 短号长度
+      editOff: false # 是否允许修改短号
+    ##################### 机器人配置 ####################
+    #robot:
+    #  messageExpire: 7d # 机器人消息过期时间
+    #  inlineQueryTimeout: 10s # 机器人inline query超时时间
+    #  eventPoolSize: 100 # 事件池大小
+    #github:
+    #  oauthURL: "https://github.com/login/oauth/authorize" # github oauth url
+    #  clientID: "" # github client id
+    #  clientSecret: ""  # github client secret
+    # #################### 缓存配置 ####################
+    #cache:
+    #  tokenCachePrefix: "token:" # token缓存前缀
+    #  tokenExpire: 30d # token过期时间
+    #  loginDeviceCachePrefix: "login_device:" # 登录设备缓存前缀
+    #  loginDeviceCacheExpire: 5m # 登录设备缓存过期时间
+    #  uidTokenCachePrefix: "uidtoken:" # uid和token的缓存前缀
+    #  friendApplyTokenCachePrefix: "friend_token:" # 好友申请token缓存前缀
+    #  friendApplyExpire: 15d # 好友申请token过期时间
+    #  nameCacheExpire: 7d # 名称缓存过期时间
+kind: ConfigMap
+metadata:
+  name: tsdd-config
+  namespace: hrzx

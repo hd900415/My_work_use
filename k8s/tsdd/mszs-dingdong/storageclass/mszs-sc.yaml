@@ -1,0 +1,11 @@
+# efs-sc.yaml
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: efs-sc
+provisioner: efs.csi.aws.com
+parameters:
+  provisioningMode: efs-ap
+  fileSystemId: fs-03297cd26fa837f48  # 替换为您的 EFS 文件系统 ID
+  directoryPerms: "700"
+  basePath: "/wukong-data"      # 可选，EFS 中的子路径

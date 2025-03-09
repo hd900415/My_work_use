@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dingdong-admin
+  namespace: mszs
+  annotations:
+    nginx.ingress.kubernetes.io/whitelist-source-range: 103.241.103.253/32,86.99.165.213/32,117.174.64.83/32,101.44.82.92/32,
+  #   cert-manager.io/cluster-issuer: "letsencrypt-dns"
+spec:
+  ingressClassName: nginx
+  # tls:
+  # - hosts:
+  #   - admin.mszs.cyou
+  #   secretName: dingdong-admin-tls
+  rules:
+  - host: admin.mszs.cyou
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dingdong-admin
+            port:
+              number: 80

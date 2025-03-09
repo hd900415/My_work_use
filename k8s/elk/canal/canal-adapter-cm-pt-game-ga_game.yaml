@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pt-game-ga-game
+  namespace: es
+data:
+  pt-game.yml: |
+    dataSourceKey: gameDS
+    destination: mysql8-to-es-pt-game
+    groupId: g1
+    outerAdapterKey: es
+    esMapping:
+      _index: ga_game
+      _type: _doc
+      _id: id
+      pk: id
+      upsert: true
+      sql: "
+        SELECT
+          id,
+          code,
+          name,
+          name_en,
+          vendor_id,
+          vendor_name,
+          logo,
+          h5_logo,
+          type_id,
+          if(category_ids = '', null, replace(replace(category_ids, '[', ''), ']','')) category_ids,
+          replace(replace(category_names, '[', ''), ']','') category_names,
+          jump_game_id,
+          special_jump,
+          return_rate,
+          max_multiplier,
+          reel_resign,
+          hit_rate,
+          lucky_spin,
+          volatility,
+          win_ways,
+          stakes_range,
+          collect_count,
+          real_collect_count,
+          like_count,
+          real_like_count,
+          online_count,
+          real_online_count,
+          maintenance_status,
+          front_show,
+          status,
+          create_by,
+          create_time,
+          update_by,
+          update_time 
+        FROM
+          ga_game t
+      "
+      objFields:
+        category_ids: array:,
+        category_names: array:,
+      commitBatch: 10
+
+
+
+

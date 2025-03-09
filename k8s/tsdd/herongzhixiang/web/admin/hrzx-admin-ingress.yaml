@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hrzx-admin
+  namespace: hrzx
+  # annotations:
+  #   cert-manager.io/cluster-issuer: "letsencrypt-dns"
+spec:
+  ingressClassName: nginx
+  # tls:
+  # - hosts:
+  #   - admin.zhongyihui.me
+  #   secretName: hrzx-admin-tls
+  rules:
+  - host: admin.zhongyihui.me
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: hrzx-admin
+            port:
+              number: 80

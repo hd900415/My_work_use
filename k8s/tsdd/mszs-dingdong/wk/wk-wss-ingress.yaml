@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wss-mszs-cyou-ingress
+  namespace: mszs
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-dns"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - wss.mszs.cyou
+    secretName: wss-mszs-cyou-tls
+  rules:
+  - host: wss.mszs.cyou
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: mszs-wk-svc
+            port:
+              number: 5200

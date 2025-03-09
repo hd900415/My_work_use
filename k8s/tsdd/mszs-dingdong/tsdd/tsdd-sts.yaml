@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mszs-tsdd-server
+  namespace: mszs
+  labels:
+    name: mszs-tsdd-server
+spec:
+  serviceName: "mszs-tsdd-server"
+  replicas: 2
+  selector:
+    matchLabels:
+      name: mszs-tsdd-server
+  template:
+    metadata:
+      labels:
+        name: mszs-tsdd-server
+    spec:
+      containers:
+      - name: mszs-tsdd-server
+        image: haidao900/tsdd-server:mszs-mszs-v2-40-e82932b
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "2000M"
+          limits:
+            cpu: "500m"
+            memory: "4000M"
+        ports:
+        - containerPort: 8090
+          name: http
+        - containerPort: 6979
+          name: webhook
+        volumeMounts:
+        - mountPath: /home/tsdd/tsdd.yaml
+          name: tsdd-config
+          subPath: tsdd.yaml
+        - mountPath: /home/tsdd/tsdddata/logs
+          name: tsdd-logs
+          subPath: tsdd.log
+      volumes:
+      - name: tsdd-config
+        configMap:
+          name: tsdd-config
+          items:
+          - key: tsdd.yaml
+            path: tsdd.yaml
+  volumeClaimTemplates:
+  - metadata:
+      name: tsdd-logs
+    spec:
+      accessModes: 
+        - ReadWriteOnce
+      storageClassName: gp3
+      resources:
+        requests:
+          storage: 50Gi

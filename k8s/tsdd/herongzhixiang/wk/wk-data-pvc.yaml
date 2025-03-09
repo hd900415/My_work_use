@@ -1,0 +1,13 @@
+# efs-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: yingxintang-wk-data
+  namespace: yingxintang
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: gp3
+  resources:
+    requests:
+      storage: 50Gi  # EFS 不强制限制容量，可随意指定

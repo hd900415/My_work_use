@@ -28,3 +28,33 @@ eksctl get cluster --name=elk-cluster
 eksctl get nodegroup --cluster=elk-cluster
 # 获取集群配置
 eksctl utils write-kubeconfig --cluster=elk-cluster
+
+# 通过kubectl查看集群节点，并且使用ssh 
+kubectl get nodes
+# 调试模式有三种。legacy、pods、node
+# 进行调试了。general模式是默认的模式，它会在节点上创建一个新的容器，这个容器会运行
+# legacy模式是默认的模式，它会在节点上创建一个新的容器，这个容器会运行
+# ephemeral-debug-agent，这个容器会挂载节点的根目录，这样就可以在节点上进行调试
+# 一个类似于busybox的容器，这个容器会挂载节点的根目录，这样就可以在节点上
+kubectl debug  node/ip-10-0-29-87.ap-east-1.compute.internal -it --image=amazonlinux --profile=general
+# 安装软件
+yum -y install amazon-efs-utils nfs-utils
+# 更改时区
+ln -sf /host/usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+# 设置时区
+timedatectl set-timezone Asia/Shanghai
+# 查看某一个节点的ID 
+aws ec2 describe-instances  --filters "Name=private-dns-name,Values=ip-10-0-29-87.ap-east-1.compute.internal" --query "Reservations[*].Instances[*].InstanceId" --output table
+# 查看所有的节点的ID和名字
+aws ec2 describe-instances --query "Reservations[*].Instances[*].[InstanceId,PrivateDnsName]" --output table
+aws ec2 describe-instances --query "Reservations[*].Instances[*].InstanceId" --output table
+# 查看所有的节点的ID和自定义名称
+aws ec2 describe-instances --query "Reservations[*].Instances[*].[InstanceId,Tags[?Key=='Name'].Value]" --output table
+# 通过ssm连接到节点
+# 安装ssm-agent 插件
+curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm" -o "session-manager-plugin.rpm"
+yum install -y session-manager-plugin.rpm
+curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb"
+dpkg -i session-manager-plugin.deb
+# 通过ssm连接到节点
+aws ssm start-session --target i-083f2da874403ee80 --region ap-east-1

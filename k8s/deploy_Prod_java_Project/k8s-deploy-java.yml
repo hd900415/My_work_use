@@ -19,13 +19,21 @@ spec:
         - name: pt-client-member
           image: swr.ap-southeast-3.myhuaweicloud.com/pt-dev/pt-client-member:1.0
           imagePullPolicy: Always
+          resources:
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
           ports:
             - containerPort: 9309
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: "sit"
             - name: JAVA_OPTS
-              value: "-Xms128m -Xmx512m"
+              value: "-XX:MaxRAMPercentage=75.0"
+              #value: "-Xms128m -Xmx512m"
             - name: NACOS_ADDR
               value: nacos-server-svc.pt-dev.svc.cluster.local
 ---

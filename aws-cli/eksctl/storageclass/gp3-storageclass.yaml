@@ -4,12 +4,12 @@ metadata:
   name: gp3
   annotations:
     storageclass.kubernetes.io/is-default-class: "true"
-provisioner: kubernetes.io/aws-ebs
+provisioner: ebs.csi.aws.com
 parameters:
   type: gp3
   fsType: ext4
-  iopsPerGB: "500"        # gp3 允许配置 IOPS
-  throughput: "1250"      # 可选：gp3 允许自定义吞吐量（MiB/s）
+  iops: "10000"        # gp3 允许配置 IOPS
+  throughput: "500"      # 调整吞吐量为 1000 或更低
 reclaimPolicy: Delete
 volumeBindingMode: WaitForFirstConsumer
 allowVolumeExpansion: true

@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wss-hrzx-cyou-ingress
+  namespace: hrzx
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-dns"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - wss.hrzx.cyou
+    secretName: wss-hrzx-cyou-tls
+  rules:
+  - host: wss.hrzx.cyou
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: hrzx-wk-svc
+            port:
+              number: 5200
