@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: h5-pttech-ingress
+  namespace: pt
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-dns"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - h5.pttech.cc
+    secretName: h5-pttech-tls
+  rules:
+  - host: h5.pttech.cc
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: pt-web-h5
+            port:
+              number: 80
