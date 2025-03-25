@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tf-h5
+  namespace: tf
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: web.fuqidd.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: tf-h5
+            port:
+              number: 80

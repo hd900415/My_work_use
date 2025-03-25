@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: websocket-pttech-ingress
+  namespace: pt
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-dns"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - websocket.pttech.cc
+    secretName: websocket-pttech-tls
+  rules:
+  - host: websocket.pttech.cc
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: pt-client-websocket-svc
+            port:
+              number: 9312

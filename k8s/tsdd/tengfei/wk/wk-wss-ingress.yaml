@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wss-tf-cyou-ingress
+  namespace: tf
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-dns"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - wss.tf.cyou
+    secretName: wss-tf-cyou-tls
+  rules:
+  - host: wss.tf.cyou
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: tf-wk-svc
+            port:
+              number: 5200

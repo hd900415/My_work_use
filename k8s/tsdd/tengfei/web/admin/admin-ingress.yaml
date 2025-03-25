@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tf-admin
+  namespace: tf
+  # annotations:
+  #   cert-manager.io/cluster-issuer: "letsencrypt-dns"
+spec:
+  ingressClassName: nginx
+  # tls:
+  # - hosts:
+  #   - admin.zhongyihui.me
+  #   secretName: hrzx-admin-tls
+  rules:
+  - host: admin.fuqidd.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: tf-admin
+            port:
+              number: 80

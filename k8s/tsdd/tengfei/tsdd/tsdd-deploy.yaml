@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mszs-tsdd-server
-  namespace: mszs
+  name: tf-tsdd-server
+  namespace: tf
   labels:
-    name: mszs-tsdd-server
+    name: tf-tsdd-server
 spec:
   replicas: 1
   strategy:
@@ -14,15 +14,15 @@ spec:
     type: RollingUpdate
   selector: 
     matchLabels:
-      name: mszs-tsdd-server
+      name: tf-tsdd-server
   template:
     metadata:
       labels:
-        name: mszs-tsdd-server
+        name: tf-tsdd-server
     spec:
       containers:
-      - name: mszs-tsdd-server
-        image: haidao900/tsdd-server:mszsv8
+      - name: tf-tsdd-server
+        image: haidao900/tsdd-server:tfv1
         imagePullPolicy: IfNotPresent  
         resources:
           requests:
@@ -56,11 +56,11 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: tsdd-logs-pvc
-  namespace: mszs
+  namespace: tf
 spec:
   accessModes:
   - ReadWriteMany
   storageClassName: efs-sc
   resources:
     requests:
-      storage: 80Gi
+      storage: 50Gi

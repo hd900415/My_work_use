@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tf-wk
+  namespace: tf
+  labels:
+    name: tf-wk
+spec:
+  serviceName: "tf-wk"
+  replicas: 1  # 扩展为2个replicas
+  selector:
+    matchLabels:
+      name: tf-wk
+  template:
+    metadata:
+      labels:
+        name: tf-wk
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: tf-wk
+        image: registry.cn-shanghai.aliyuncs.com/wukongim/wukongim:v1.2.6
+        imagePullPolicy: Always  # **这里放对位置**
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "1000M"
+        ports:
+        - containerPort: 5001
+          name: http
+        - containerPort: 5100
+          name: app
+        - containerPort: 5200
+          name: ws
+        - containerPort: 5210
+          name: wss
+        volumeMounts:
+        - mountPath: /home/wukongim
+          name: tf-wk-data
+        - name: wkim-config
+          mountPath: /root/wukongim/wk.yaml
+          subPath: wk.yaml  # **重要，避免 ConfigMap 覆盖整个目录**
+      volumes:
+      - name: wkim-config
+        configMap:
+          name: wkim-config
+          items:
+          - key: wk.yaml
+            path: wk.yaml
+  volumeClaimTemplates:
+  - metadata:
+      name: tf-wk-data
+    spec:
+      accessModes: 
+        - ReadWriteOnce
+      storageClassName: gp3
+      resources:
+        requests:
+          storage: 80Gi
