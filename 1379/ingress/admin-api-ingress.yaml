@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: adminapi-ingress
+  namespace: pt-pre
+  annotations:
+    nginx.ingress.kubernetes.io/enable-real-ip: "true"
+    nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
+    nginx.ingress.kubernetes.io/compute-full-forwarded-for: "true"
+    nginx.ingress.kubernetes.io/real-ip-header: "X-Forwarded-For"
+    cert-manager.io/cluster-issuer: "letsencrypt-dns"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - adminapi.1379bet.com
+    secretName: adminapi-1379-tls
+  rules:
+  - host: adminapi.1379bet.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: pt-component-gateway-admin-svc
+            port:
+              number: 8080

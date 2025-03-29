@@ -1,0 +1,50 @@
+dataSourceKey: pt-game
+destination: example
+groupId: g1
+esMapping:
+  _index: ga_game
+  _id: id
+  upsert: true
+  pk: id
+  sql: "select 
+          t.id id, 
+          t.code, 
+          t.name, 
+          t.name_en, 
+          t.vendor_id, 
+          t.vendor_name, 
+          t.logo, 
+          t.h5_logo, 
+          t.type_id, 
+          if(t.category_ids = '', null, replace(replace(t.category_ids, '[', ''), ']','')) category_ids, 
+          replace(replace(replace(t.category_names, '[', ''), ']',''),'\"','') category_names, 
+          hot_flag,
+          t.jump_game_id, 
+          t.special_jump, 
+          t.return_rate, 
+          t.max_multiplier, 
+          t.reel_resign, 
+          t.hit_rate, 
+          t.lucky_spin, 
+          t.volatility, 
+          t.win_ways, 
+          t.stakes_range, 
+          t.collect_count, 
+          t.real_collect_count, 
+          t.like_count, 
+          t.real_like_count, 
+          t.online_count, 
+          t.real_online_count, 
+          t.maintenance_status, 
+          t.front_show, 
+          t.status, 
+          t.create_by, 
+          t.create_time, 
+          t.update_by, 
+          t.update_time 
+        from ga_game t"
+  objFields:
+    category_ids: array:,
+    category_names: array:,
+  #etlCondition: "where a.c_time>={}"
+  commitBatch: 1

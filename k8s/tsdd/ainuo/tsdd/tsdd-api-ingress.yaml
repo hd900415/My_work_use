@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-ainuo-ingress
+  namespace: ainuo
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: api.bjmwxh.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: ainuo-tsdd-svc
+            port:
+              number: 8090

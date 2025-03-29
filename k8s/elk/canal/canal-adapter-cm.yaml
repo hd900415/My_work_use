@@ -29,7 +29,7 @@ data:
         canal.tcp.password:
       srcDataSources:
         defaultDS:
-          url: jdbc:mysql://mysql-primary-headless.pt.svc.cluster.local:3306/pt-member?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true&autoReconnect=true&failOverReadOnly=false
+          url: jdbc:mysql://15e054ac55e349438b27783e7ca0ff95in01.internal.ap-southeast-3.mysql.rds.myhuaweicloud.com:3306/pt-member?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true&autoReconnect=true&failOverReadOnly=false
           username: root
           password: yCCTFRdkfTFRdkfuwioaly
           driverClassName: com.mysql.cj.jdbc.Driver
@@ -42,9 +42,9 @@ data:
           testOnBorrow: true
           testWhileIdle: true
         gameDS:
-          url: jdbc:mysql://mysql-primary-headless.pt.svc.cluster.local:3306/pt-game?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true&autoReconnect=true&failOverReadOnly=false
+          url: jdbc:mysql://15e054ac55e349438b27783e7ca0ff95in01.internal.ap-southeast-3.mysql.rds.myhuaweicloud.com:3306/pt-game?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true&autoReconnect=true&failOverReadOnly=false
           username: root
-          password: yCCTFRdkfTFRdkfuwioaly
+          password: q&2Lys%ygkhZ3wy
           driverClassName: com.mysql.cj.jdbc.Driver
           maxActive: 10
           initialSize: 2
@@ -55,9 +55,9 @@ data:
           testOnBorrow: true
           testWhileIdle: true
         activityDS:
-          url: jdbc:mysql://mysql-primary-headless.pt.svc.cluster.local:3306/pt-activity?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true&autoReconnect=true&failOverReadOnly=false
+          url: jdbc:mysql://15e054ac55e349438b27783e7ca0ff95in01.internal.ap-southeast-3.mysql.rds.myhuaweicloud.com:3306/pt-activity?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true&autoReconnect=true&failOverReadOnly=false
           username: root
-          password: yCCTFRdkfTFRdkfuwioaly
+          password: q&2Lys%ygkhZ3wy
           driverClassName: com.mysql.cj.jdbc.Driver
           maxActive: 10
           initialSize: 2
@@ -75,12 +75,12 @@ data:
           - name: logger
           - name: es7
             key: es
-            hosts: elasticsearch-headless.es.svc.cluster.local:9200
+            hosts: 192.168.0.191:9200
             properties:
               mode: rest
               type: _doc
-              security.auth: elastic:aGlE3w56z0abFNFflIs5
-              cluster.name: pt-es-cluster
+              # security.auth: elastic:aGlE3w56z0abFNFflIs5
+              cluster.name: pt-pre-es2
       - instance: mysql8-to-es-pt-game
         groups:
         - groupId: g1
@@ -88,12 +88,12 @@ data:
           - name: logger
           - name: es7
             key: es
-            hosts: elasticsearch-headless.es.svc.cluster.local:9200
+            hosts: 192.168.0.191:9200
             properties:
               mode: rest
               type: _doc
-              security.auth: elastic:aGlE3w56z0abFNFflIs5
-              cluster.name: pt-es-cluster
+              # security.auth: elastic:aGlE3w56z0abFNFflIs5
+              cluster.name: pt-pre-es2
       - instance: mysql8-to-es-pt-activity
         groups:
         - groupId: g1
@@ -101,9 +101,10 @@ data:
           - name: logger
           - name: es7
             key: es
-            hosts: elasticsearch-headless.es.svc.cluster.local:9200
+            hosts: 192.168.0.191:9200
             properties:
               mode: rest
               type: _doc
-              security.auth: elastic:aGlE3w56z0abFNFflIs5
-              cluster.name: pt-es-cluster
+              # security.auth: elastic:aGlE3w56z0abFNFflIs5
+              cluster.name: pt-pre-es2
+

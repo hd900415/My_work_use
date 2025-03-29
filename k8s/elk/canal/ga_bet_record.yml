@@ -1,0 +1,57 @@
+dataSourceKey: pt-game
+destination: example
+groupId: g1
+esMapping:
+  _index: ga_bet_record
+  _id: _id
+  upsert: true
+  pk: id
+  sql: "select 
+          t.id _id,
+          t.id,
+          t.bet_no,
+          t.account_type,
+          t.agent_id,
+          t.channel_id,
+          t.game_id,
+          t.game_name,
+          t.vendor_id,
+          t.vendor_name,
+          t.provider_id,
+          t.provider_name,
+          t.third_game_id,
+          t.third_game_name,
+          t.third_vendor_id,
+          t.third_vendor_name,
+          t.user_no,
+          t.bet_time,
+          t.wallet_type,
+          t.wallet_currency,
+          t.wallet_currency_rate,
+          t.wallet_currency_type,
+          t.wallet_currency_accuracy,
+          t.bet_amount,
+          t.win_amount,
+          t.win_multiple,
+          t.wagering_amount,
+          t.wagering_time,
+          t.refund_amount,
+          t.third_refund_amount,
+          t.settled_status,
+          t.third_wallet_type,
+          t.third_currency,
+          t.third_currency_rate,
+          t.third_currency_type,
+          t.third_currency_accuracy,
+          t.third_request_currency,
+          t.exchange_rate,
+          t.third_bet_amount,
+          t.third_win_amount,
+          t.third_external_transaction_id,
+          t.third_transaction_id,
+          t.third_round_id,
+          t.third_bet_id,
+          t.settled_time
+        from ga_bet_record t"
+  #etlCondition: "where a.c_time>={}"
+  commitBatch: 1

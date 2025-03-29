@@ -13,61 +13,63 @@ spec:
       labels:
         app: canal-adapter
     spec:
+      imagePullSecrets:
+        - name: harbor-secret
       containers:
       - name: canal-adapter
-        image: harbor.pttech.cc/canal/canal-adapter:1.1.8
+        image: swr.ap-southeast-3.myhuaweicloud.com/pt-pre/canal-adapter:1.1.8
         ports:
         - containerPort: 8081
         volumeMounts:
         - name: canal-adapter-config-volume
           mountPath: /opt/canal-adapter/conf/application.yml
           subPath: application.yml
-        - name: pt-activity
-          mountPath: /opt/canal-adapter/conf/es7/pt-activity
-          subPath: pt-activity
-        - name: pt-game-ga-game
-          mountPath: /opt/canal-adapter/conf/es7/pt-game.yml
-          subPath: pt-game.yml
-        - name: pt-game-bet-record
-          mountPath: /opt/canal-adapter/conf/es7/pt-bet-record.yml
-          subPath: pt-bet-record.yml
-        - name: pt-game-settled-record
-          mountPath: /opt/canal-adapter/conf/es7/pt-settled-record.yml
-          subPath: pt-settled-record.yml
-        - name: pt-member
-          mountPath: /opt/canal-adapter/conf/es7/pt-member.yml
-          subPath: pt-member.yml
+        # - name: pt-activity
+        #   mountPath: /opt/canal-adapter/conf/es7/pt-activity
+        #   subPath: pt-activity
+        # - name: pt-game-ga-game
+        #   mountPath: /opt/canal-adapter/conf/es7/pt-game.yml
+        #   subPath: pt-game.yml
+        # - name: pt-game-bet-record
+        #   mountPath: /opt/canal-adapter/conf/es7/pt-bet-record.yml
+        #   subPath: pt-bet-record.yml
+        # - name: pt-game-settled-record
+        #   mountPath: /opt/canal-adapter/conf/es7/pt-settled-record.yml
+        #   subPath: pt-settled-record.yml
+        # - name: pt-member
+        #   mountPath: /opt/canal-adapter/conf/es7/pt-member.yml
+        #   subPath: pt-member.yml
       volumes:
       - name: canal-adapter-config-volume
         configMap:
           name: canal-adapter-config
-      - name: pt-activity
-        configMap:
-          name: canal-adapter-config-es-pt-activity
-          items:
-          - key: pt-activity-day-rebate.yml
-            path: pt-activity-day-rebate.yml
-          - key: pt-activity-week-rebate.yml
-            path: pt-activity-week-rebate.yml
-          - key: pt-activity-month-rebate.yml
-            path: pt-activity-month-rebate.yml
-          - key: pt-activity-promote.yml
-            path: pt-activity-promote.yml
-          - key: pt-activity-red-envelope.yml
-            path: pt-activity-red-envelope.yml
-          - key: pt-activity-four-pay.yml
-            path: pt-activity-four-pay.yml
-          - key: pt-activity-limit-time-first-pay.yml
-            path: pt-activity-limit-time-first-pay.yml
-      - name: pt-game-ga-game
-        configMap:
-          name: pt-game-ga-game
-      - name: pt-game-bet-record
-        configMap:
-          name: canal-adapter-config-es-pt-game-bet-record
-      - name: pt-game-settled-record
-        configMap:
-          name: pt-game-bet-settled-record
-      - name: pt-member
-        configMap:
-          name: canal-adapter-config-es-pt-member
+      # - name: pt-activity
+      #   configMap:
+      #     name: canal-adapter-config-es-pt-activity
+      #     items:
+      #     - key: pt-activity-day-rebate.yml
+      #       path: pt-activity-day-rebate.yml
+      #     - key: pt-activity-week-rebate.yml
+      #       path: pt-activity-week-rebate.yml
+      #     - key: pt-activity-month-rebate.yml
+      #       path: pt-activity-month-rebate.yml
+      #     - key: pt-activity-promote.yml
+      #       path: pt-activity-promote.yml
+      #     - key: pt-activity-red-envelope.yml
+      #       path: pt-activity-red-envelope.yml
+      #     - key: pt-activity-four-pay.yml
+      #       path: pt-activity-four-pay.yml
+      #     - key: pt-activity-limit-time-first-pay.yml
+      #       path: pt-activity-limit-time-first-pay.yml
+      # - name: pt-game-ga-game
+      #   configMap:
+      #     name: pt-game-ga-game
+      # - name: pt-game-bet-record
+      #   configMap:
+      #     name: canal-adapter-config-es-pt-game-bet-record
+      # - name: pt-game-settled-record
+      #   configMap:
+      #     name: pt-game-bet-settled-record
+      # - name: pt-member
+      #   configMap:
+      #     name: canal-adapter-config-es-pt-member

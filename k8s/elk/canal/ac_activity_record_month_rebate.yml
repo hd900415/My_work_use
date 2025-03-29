@@ -1,0 +1,37 @@
+dataSourceKey: pt-activity
+destination: example
+groupId: g1
+esMapping:
+  _index: ac_activity_record
+  _id: _id
+  upsert: true
+  pk: id
+  sql: "select 
+          t.id _id,
+          t.id,
+          t.user_no,
+          t.account_type,
+          t.order_no,
+          t.activity_id,
+          t.activity_name,
+          t.type,
+          t.category,
+          t.sub_business_type,
+          t.mem_level,
+          t.vip_level,
+          t.agent_id,
+          t.channel_id,
+          t.claim_status,
+          t.customer_lose_amount,
+          t.rewards_wallet_type,
+          t.rewards_currency,
+          t.rewards_currency_rate,
+          t.rewards_currency_accuracy,
+          t.distribution_time,
+          t.expire_time,
+          t.claim_time,
+          t.claim_amount,
+          t.wagering_multiplier
+        from ac_activity_record_week_rebate t"
+  #etlCondition: "where a.c_time>={}"
+  commitBatch: 1

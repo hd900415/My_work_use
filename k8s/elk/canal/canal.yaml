@@ -15,16 +15,16 @@ spec:
     spec:
       containers:
       - name: canal
-        image: canal/canal-server:v1.1.7
+        image: canal/canal-server:v1.1.8
         ports:
         - containerPort: 11111
         env:
         - name: canal.instance.master.address
-          value: "mysql-primary-headless.pt.svc.cluster.local:3306"
+          value: "15e054ac55e349438b27783e7ca0ff95in01.internal.ap-southeast-3.mysql.rds.myhuaweicloud.com:3306"
         - name: canal.instance.dbUsername
           value: "root"
         - name: canal.instance.dbPassword
-          value: "yCCTFRdkfTFRdkfuwioaly"
+          value: "q&2Lys%ygkhZ3wy"
         - name: canal.instance.filter.regex
           value: "pt-member\\.mem_account_change"
 ---

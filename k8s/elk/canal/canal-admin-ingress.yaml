@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: canal-admin-ingress
+  namespace: es
+  labels:
+    app: canal-admin
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: "letsencrypt-dns"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - canal-admin.1379bet.com
+    secretName: es-tls-secret
+  rules:
+  - host: canal-admin.1379bet.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: canal-admin
+            port:
+              number: 8089

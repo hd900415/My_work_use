@@ -5,8 +5,13 @@ metadata:
   namespace: hrzx
   annotations:
     service.beta.kubernetes.io/aws-load-balancer-type: "nlb"  # 使用 NLB (Network Load Balancer)
+    service.beta.kubernetes.io/aws-load-balancer-internal: "false"  # 内部负载均衡器
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"  # 外部负载均衡器
 spec:
   type: LoadBalancer
+  externalTrafficPolicy: Local
+  internalTrafficPolicy: Cluster
+  loadBalancerClass: service.k8s.aws/nlb
   selector:
     name: hrzx-tsdd-server  # 与 Deployment 中的 Pod selector 匹配
   ports:

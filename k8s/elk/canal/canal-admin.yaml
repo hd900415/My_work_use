@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: canal-admin
-        image: canal/canal-admin:v1.1.7
+        image: canal/canal-admin:v1.1.8
         ports:
         - containerPort: 8089
         env:
@@ -38,4 +38,4 @@ spec:
     - protocol: TCP
       port: 8089
       targetPort: 8089
-  type: NodePort
+  type: ClusterIP

@@ -1,24 +1,24 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: wap-pttech-ingress
-  namespace: default
-  annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-dns"
+  name: admin-hrzx-java-ingress
+  namespace: hrzx
+  # annotations:
+  #   cert-manager.io/cluster-issuer: "letsencrypt-dns"
 spec:
   ingressClassName: nginx
-  tls:
-  - hosts:
-    - wap.pttech.cc
-    secretName: wap-pttech-tls
+  # tls:
+  # - hosts:
+  #   - admin.bzhjyl.com
+  #   secretName: wap-pttech-tls
   rules:
-  - host: wap.pttech.cc
+  - host: admin.bzhjyl.com
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: nginx-svc
+            name: hrzx-admin-java-svc
             port:
-              number: 80
+              number: 7070
