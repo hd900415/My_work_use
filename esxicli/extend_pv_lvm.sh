@@ -53,7 +53,7 @@ xfs_growfs /
 resize2fs /dev/mapper/rl-root
 
 
-
+yum install -y cloud-utils-growpart && echo 1 > /sys/class/block/sda/device/rescan  && growpart /dev/sda 3 &&  pvresize /dev/sda3 && lvextend -l +100%FREE /dev/rl/root  && xfs_growfs / 
 
 #  验证扩展结果
 # 使用以下命令检查根分区的容量是否已经增加：
