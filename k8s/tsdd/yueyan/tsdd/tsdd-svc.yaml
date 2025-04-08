@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: yueyan-tsdd-svc
+  namespace: yueyan
+spec:
+  type: ClusterIP
+  selector:
+    name: yueyan-tsdd-server
+  ports:
+    - name: webhook
+      port: 6979
+      targetPort: 6979
+      protocol: TCP
+    - name: http
+      port: 8090
+      targetPort: 8090
+      protocol: TCP
