@@ -1,0 +1,24 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: tsdd
+  namespace: tsdd
+  labels:
+    app: tsdd
+spec:
+  podSelector:
+    matchLabels:
+      app: tsdd
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: tsdd
+    ports:
+    - protocol: TCP
+      port: 80
+  egress:
+  - {}

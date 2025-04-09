@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-nacos-from-pt
+  namespace: pt
+spec:
+  podSelector:
+    matchLabels:
+      app: nacos-server
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchExpressions:
+        - key: app
+          operator: In
+          values:
+          - pt-client-activity
+          - pt-client-finance
+          - pt-client-game
+          - pt-client-member
+          - pt-client-report
+          - pt-client-system
+          - pt-client-websocket
+          - pt-admin-modules-activity
+          - pt-admin-modules-auth
+          - pt-admin-modules-bet
+          - pt-admin-modules-file
+          - pt-admin-modules-finance
+          - pt-admin-modules-game
+          - pt-admin-modules-gen
+          - pt-admin-modules-job
+          - pt-admin-modules-member
+          - pt-admin-modules-report
+          - pt-admin-modules-system
+    ports:
+    - protocol: TCP
+      port: 8848
