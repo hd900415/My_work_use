@@ -2,8 +2,15 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: skywalking-ingress
-  namespace: skywalking
+  namespace: observability
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    kubernetes.io/ingress.class: nginx
 spec:
+  tls:
+  - hosts:
+    - skywalking.pttech.cc
+    secretName: skywalking-tls
   ingressClassName: nginx
   rules:
   - host: skywalking.pttech.cc

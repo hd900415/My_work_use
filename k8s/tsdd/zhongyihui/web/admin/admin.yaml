@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name:  yueyan-admin
-  namespace: yueyan
+  name:  zyh-admin
+  namespace: zyh
   labels:
-    app:  yueyan-admin
+    app:  zyh-admin
 spec:
   selector:
     matchLabels:
-      app: yueyan-admin
+      app: zyh-admin
   replicas: 1
   strategy:
     rollingUpdate:
@@ -18,15 +18,15 @@ spec:
   template:
     metadata:
       labels:
-        app:  yueyan-admin
+        app:  zyh-admin
     spec:
       # initContainers:
         # Init containers are exactly like regular containers, except:
           # - Init containers always run to completion.
           # - Each init container must complete successfully before the next one starts.
       containers:
-      - name:  yueyan-admin
-        image:  haidao900/tsdd-server:yueyan-adminweb-v2-2-36da1f4
+      - name:  zyh-admin
+        image:  haidao900/tsdd-server:zyh-zyh-adminweb-v2-2-5581c00
         resources:
           requests:
             cpu: 100m
@@ -53,7 +53,7 @@ spec:
           periodSeconds: 10
         ports:
         - containerPort:  80
-          name:  yueyan-admin
+          name:  zyh-admin
         volumeMounts:
         - name: localtime
           mountPath: /etc/localtime
@@ -66,11 +66,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: yueyan-admin
-  namespace: yueyan
+  name: zyh-admin
+  namespace: zyh
 spec:
   selector:
-    app: yueyan-admin
+    app: zyh-admin
   type: ClusterIP
   sessionAffinity: None
   sessionAffinityConfig:
