@@ -1,0 +1,17 @@
+helm upgrade --install loki grafana/loki-stack \
+  --namespace loki \
+  --create-namespace \
+  --set grafana.enabled=true \
+  --set persistence.enabled=true \
+  --set persistence.size=100Gi \
+  --set global.storageClass=csi-disk \
+  --set loki.persistence.enabled=true \
+  --set loki.persistence.size=100Gi \
+  --set loki.persistence.storageClassName=csi-disk \
+  --set service.type=ClusterIP \
+    --set grafana.adminPassword=admin123 \
+  --set loki.config.limits_config.retention_period=7d \
+  --set loki.resources.requests.cpu=200m \
+  --set loki.resources.requests.memory=256Mi \
+  --set loki.resources.limits.cpu=1000m \
+  --set loki.resources.limits.memory=1Gi

@@ -4,10 +4,15 @@ metadata:
   name: ainuo-h5
   namespace: ainuo
   annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-cf"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - web.bjmwxh.com
+    secretName: web-bjmwxh-com-tls
   rules:
   - host: web.bjmwxh.com
     http:
@@ -26,10 +31,15 @@ metadata:
   name: ainuo-admin
   namespace: ainuo
   annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-cf"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - admin.bjmwxh.com
+    secretName: admin-bjmwxh-com-tls
   rules:
   - host: admin.bjmwxh.com
     http:
@@ -50,8 +60,13 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    cert-manager.io/cluster-issuer: "letsencrypt-cf"
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - api.bjmwxh.com
+    secretName: api-bjmwxh-com-tls
   rules:
   - host: api.bjmwxh.com
     http:
@@ -72,7 +87,12 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    cert-manager.io/cluster-issuer: "letsencrypt-cf"
 spec:
+  tls:
+  - hosts:
+    - wss.bjmwxh.com
+    secretName: wss-bjmwxh-com-tls
   ingressClassName: nginx
   rules:
   - host: wss.bjmwxh.com

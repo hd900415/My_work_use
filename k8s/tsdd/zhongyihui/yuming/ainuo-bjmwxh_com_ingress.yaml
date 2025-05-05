@@ -4,13 +4,17 @@ metadata:
   name: zyh-h5
   namespace: zyh
   annotations:
-    #cert-manager.io/cluster-issuer: "letsencrypt-dns"
+    cert-manager.io/cluster-issuer: "letsencrypt-cf"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
 spec:
   ingressClassName: nginx
+  tls:
+  - secretName: zyh-h5-tls-2
+    hosts:
+    - web.mu0527.com
   rules:
-  - host: web.jgread.com
+  - host: web.mu0527.com
     http:
       paths:
       - path: /
@@ -27,13 +31,17 @@ metadata:
   name: zyh-admin
   namespace: zyh
   annotations:
-    #cert-manager.io/cluster-issuer: "letsencrypt-dns"
+    cert-manager.io/cluster-issuer: "letsencrypt-cf"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
 spec:
   ingressClassName: nginx
+  tls:
+  - secretName: zyh-admin-tls-2
+    hosts:
+    - admin.mu0527.com
   rules:
-  - host: admin.jgread.com
+  - host: admin.mu0527.com
     http:
       paths:
       - path: /
@@ -50,13 +58,17 @@ metadata:
   name: api-zyh-ingress
   namespace: zyh
   annotations:
-    #cert-manager.io/cluster-issuer: "letsencrypt-dns"
+    cert-manager.io/cluster-issuer: "letsencrypt-cf"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
 spec:
   ingressClassName: nginx
+  tls:
+  - secretName: zyh-api-tls-2
+    hosts:
+    - api.mu0527.com
   rules:
-  - host: api.jgread.com
+  - host: api.mu0527.com
     http:
       paths:
       - path: /
@@ -73,13 +85,17 @@ metadata:
   name: zyh-wss-ingress
   namespace: zyh
   annotations:
-    #cert-manager.io/cluster-issuer: "letsencrypt-dns"
+    cert-manager.io/cluster-issuer: "letsencrypt-cf"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
 spec:
   ingressClassName: nginx
+  tls:
+  - secretName: zyh-wss-tls-2
+    hosts:
+    - wss.mu0527.com
   rules:
-  - host: wss.jgread.com
+  - host: wss.mu0527.com
     http:
       paths:
       - path: /

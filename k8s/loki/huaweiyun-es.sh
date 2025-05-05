@@ -1,0 +1,12 @@
+helm upgrade --install filebeat elastic/filebeat \
+  --namespace logging \
+  --create-namespace \
+  --set daemonset.enabled=true \
+  --set filebeat.config.modules.enabled=false \
+  --set filebeat.autodiscover.providers[0].type=kubernetes \
+  --set filebeat.autodiscover.providers[0].node="'"$(kubectl get node -o jsonpath="{.items[0].metadata.name}")"'" \
+  --set filebeat.autodiscover.providers[0].hints.enabled=true \
+  --set output.elasticsearch.hosts="http://172.172.0.205:9200" \
+  --set output.elasticsearch.ssl.verification_mode=none \
+  --set output.elasticsearch.ssl.certificateAuthorities={} \
+  --set output.elasticsearch.index="k8s-%{[kubernetes.namespace]}-%{+yyyy.MM.dd}"

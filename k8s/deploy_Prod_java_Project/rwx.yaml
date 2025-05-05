@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: skywalking-agent-pvc
+  namespace: pt-pre
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ssd
+  resources:
+    requests:
+      storage: 5Gi

@@ -9,7 +9,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-    cert-manager.io/cluster-issuer: "letsencrypt-dns"
+    cert-manager.io/cluster-issuer: "letsencrypt-cf"
 spec:
   ingressClassName: nginx
   tls:
@@ -39,7 +39,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-    cert-manager.io/cluster-issuer: "letsencrypt-dns"
+    cert-manager.io/cluster-issuer: "letsencrypt-cf"
 spec:
   ingressClassName: nginx
   tls:
@@ -64,7 +64,7 @@ metadata:
   name: wss-ainuo-ingress
   namespace: ainuo
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-dns"
+    cert-manager.io/cluster-issuer: "letsencrypt-cf"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
 spec:
@@ -91,7 +91,7 @@ metadata:
   name: api-ainuo-ingress-2
   namespace: ainuo
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-dns"
+    cert-manager.io/cluster-issuer: "letsencrypt-cf"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
 spec:

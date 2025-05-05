@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: skywalking-oap
+  namespace: skywalking
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: skywalking-oap
+  template:
+    metadata:
+      labels:
+        app: skywalking-oap
+    spec:
+      containers:
+        - name: oap
+          image: apache/skywalking-oap-server:9.5.0
+          ports:
+            - containerPort: 11800  # gRPC
+            - containerPort: 12800  # REST API / UI
+          env:
+            - name: SW_STORAGE
+              value: elasticsearch
+            - name: SW_STORAGE_ES_CLUSTER_NODES
+              value: elasticsearch.es.svc.cluster.local:9200
+            - name: SW_ES_USER
+              value: elastic
+            - name: SW_ES_PASSWORD
+              value: aGlE3w56z0abFNFflIs5
+          livenessProbe:
+            httpGet:
+              path: /healthCheck
+              port: 12800
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthCheck
+              port: 12800
+            initialDelaySeconds: 15
+            periodSeconds: 5
