@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  namesrv:
+    image: apache/rocketmq:5.1.4
+    container_name: rmqnamesrv
+    ports:
+      - 9876:9876
+    volumes:
+      - ./data/namesrv/logs:/home/rocketmq/logs
+      - ./data/namesrv/store:/home/rocketmq/store
+    environment:
+      - JAVA_OPT_EXT=-server -Xms512m -Xmx512m -Xmn256m
+    networks:
+      - rocketmq
+    command: sh mqnamesrv
+
+  broker-a:
+    image: apache/rocketmq:5.1.4
+    container_name: rmqbroker-a
+    ports:
+      - 10909:10909
+      - 10911:10911
+    volumes:
+      - ./data/broker-a/logs:/home/rocketmq/logs
+      - ./data/broker-a/store:/home/rocketmq/store
+      - ./broker-a.conf:/opt/rocketmq-5.1.4/conf/broker.conf
+    environment:
+      - NAMESRV_ADDR=namesrv:9876
+      - JAVA_OPT_EXT=-server -Xms1g -Xmx1g -Xmn512m
+    depends_on:
+      - namesrv
+    networks:
+      - rocketmq
+    command: sh mqbroker -c /opt/rocketmq-5.1.4/conf/broker.conf
+
+  broker-b:
+    image: apache/rocketmq:5.1.4
+    container_name: rmqbroker-b
+    ports:
+      - 10919:10909
+      - 10921:10911
+    volumes:
+      - ./data/broker-b/logs:/home/rocketmq/logs
+      - ./data/broker-b/store:/home/rocketmq/store
+      - ./broker-b.conf:/opt/rocketmq-5.1.4/conf/broker.conf
+    environment:
+      - NAMESRV_ADDR=namesrv:9876
+      - JAVA_OPT_EXT=-server -Xms1g -Xmx1g -Xmn512m
+    depends_on:
+      - namesrv
+    networks:
+      - rocketmq
+    command: sh mqbroker -c /opt/rocketmq-5.1.4/conf/broker.conf
+
+  dashboard:
+    image: apacherocketmq/rocketmq-dashboard:latest
+    container_name: rocketmq-dashboard
+    ports:
+      - 8080:8080
+    environment:
+      - JAVA_OPTS=-Drocketmq.namesrv.addr=namesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false
+    depends_on:
+      - namesrv
+      - broker-a
+      - broker-b
+    networks:
+      - rocketmq
+
+networks:
+  rocketmq:
+    driver: bridge
