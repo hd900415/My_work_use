@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pt-new-h5
+  namespace: pt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pt-new-h5
+  template:
+    metadata:
+      labels:
+        app: pt-new-h5
+    spec:
+      imagePullSecrets:
+        - name: harbor-secret
+      containers:
+        - name: pt-new-h5
+          image: harbor.pttech.cc/dev/pt-new-h5:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/nginx/conf.d
+              readOnly: true
+
+      volumes:
+        - name: config-volume
+          configMap:
+            name: pt-new-h5-nginx-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pt-new-h5
+  namespace: pt
+spec:
+  selector:
+    app: pt-new-h5
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: new-h5-pttech-ingress
+  namespace: pt
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-dns
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - new-h5.pttech.cc
+      secretName: new-h5-pttech-tls
+  rules:
+    - host: new-h5.pttech.cc
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: pt-new-h5
+                port:
+                  number: 80
