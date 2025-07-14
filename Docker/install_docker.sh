@@ -11,9 +11,9 @@ sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/dock
 sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 sudo docker compose
 
-cat <EOF >/etc/docker/daemon.json
+cat <<EOF >/etc/docker/daemon.json
 {
-  "userns-remap": "default",      // 启用用户命名空间隔离
+  "userns-remap": "default",      
   "log-driver": "json-file",
   "log-opts": {
     "max-size": "10m",
@@ -26,8 +26,8 @@ cat <EOF >/etc/docker/daemon.json
       "Soft": 20000
     }
   },
-  "live-restore": true,          // 保持容器在Docker重启后存活
-  "icc": false                   // 禁用容器间网络通信（默认）
+  "live-restore": true,
+  "icc": false
 }
 EOF
 sudo systemctl start docker
