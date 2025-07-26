@@ -1,0 +1,192 @@
+pipeline {
+    agent any
+
+    environment {
+        MVN_HOME = '/usr/local/apache-maven-3.9.9'
+        GIT_REPO = 'gitlab.9pt.me/business/pt-admin.git'
+        DOCKER_REGISTRY = 'swr.ap-southeast-3.myhuaweicloud.com/pt-dev'
+        CREDENTIALS_ID = '	4cedc493-2f65-4d0e-b309-86b51370076c'
+        DOCKER_CREDENTIALS_ID = 'fe0d6614-bafa-433b-af6a-2f5531d6d63f'
+        KUBERNETES_FILE_ID = 'eef6aa2e-9c01-4f43-8d02-94cf87c04d2c'
+        LARK_WEBHOOK = "https://open.larksuite.com/open-apis/bot/v2/hook/1f105b8d-8cb7-4215-bf7f-2afcb9754579"
+        UAT_NAMESPACE = 'uat'
+        PRE_NAMESPACE = 'pre'
+    }
+
+    stages {
+        stage('构建前清理工作目录') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('拉取所有分支') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: "${CREDENTIALS_ID}", usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                        env.GIT_USERNAME = GIT_USERNAME
+                        env.GIT_PASSWORD = GIT_PASSWORD
+                        sh "git ls-remote --heads https://${GIT_USERNAME}:${GIT_PASSWORD}@${GIT_REPO}"
+                    }
+                }
+            }
+        }
+        stage('参数初始化') {
+            steps {
+                script {
+                    // 使用Jenkins预定义的参数
+                    env.DEPLOY_ENV = params.ENV
+                    env.SELECTED_MODULES = params.APP_NAME
+                    
+                    // 设置命名空间
+                    if (env.DEPLOY_ENV == 'pt-pre') {
+                        env.K8S_NAMESPACE = env.PRE_NAMESPACE
+                    } else if (env.DEPLOY_ENV == 'uat') {
+                        env.K8S_NAMESPACE = env.UAT_NAMESPACE
+                    }
+                    
+                    echo "选择的环境: ${env.DEPLOY_ENV} (命名空间: ${env.K8S_NAMESPACE})"
+                    echo "选择的模块: ${env.SELECTED_MODULES}"
+                }
+            }
+        }
+        stage('拉取代码') {
+            steps {
+                script {
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: "*/main"]],
+                        userRemoteConfigs: [[
+                            credentialsId: "${CREDENTIALS_ID}",
+                            url: "https://${GIT_REPO}"
+                        ]]
+                    ])
+                }
+            }
+        }
+        stage('初始化') {
+            steps {
+                script {
+                    env.BUILD_VERSION = "1.0-${new Date().format('yyyyMMddHHmm')}.${sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()}"
+                    echo "动态版本号已生成: ${env.BUILD_VERSION}"
+                }
+            }
+        }
+        stage('构建 Jar 文件') {
+            steps {
+                script {
+                    def selectedModules = env.SELECTED_MODULES.split(',')
+                    echo "开始构建选中的模块: ${selectedModules.join(', ')}"
+                    
+                    // 构建所有选中的模块
+                    def modulesList = selectedModules.collect { "pt-admin-modules/${it}" }.join(',')
+                    sh "${MVN_HOME}/bin/mvn clean install -pl ${modulesList} -amd -Dmaven.test.skip=true -U"
+                }
+            }
+        }
+        stage('构建 Docker 镜像') {
+            steps {
+                script {
+                    def modules = env.SELECTED_MODULES.split(',')
+                    echo "开始构建 Docker 镜像，选中的模块: ${modules.join(', ')}"
+
+                    modules.each { module ->
+                        def imageName = "${DOCKER_REGISTRY}/${module}:${env.BUILD_VERSION}"
+                        echo "正在构建 Docker 镜像: ${imageName}"
+                        withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                            sh """
+                            alias docker=podman
+                            docker build -t ${imageName} ${WORKSPACE}/pt-admin-modules/${module}
+                            docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} ${DOCKER_REGISTRY}
+                            docker push ${imageName}
+                            """
+                        }
+                    }
+                }
+            }
+        }
+        stage('部署到 Kubernetes') {
+            steps {
+                script {
+                    def modules = env.SELECTED_MODULES.split(',')
+                    echo "开始部署到 Kubernetes 环境: ${env.DEPLOY_ENV} (命名空间: ${env.K8S_NAMESPACE})"
+                    echo "部署模块: ${modules.join(', ')}"
+
+                    modules.each { module ->
+                        echo "部署模块到 Kubernetes: ${module}"
+                        def imageName = "${DOCKER_REGISTRY}/${module}:${env.BUILD_VERSION}"
+                        
+                        withCredentials([file(credentialsId: "${KUBERNETES_FILE_ID}", variable: 'KUBECONFIG')]) {
+                            sh """
+                            export KUBECONFIG=${KUBECONFIG}
+                            kubectl set image deployment/${module} ${module}=${imageName} -n ${env.K8S_NAMESPACE}
+                            kubectl rollout status deployment/${module} -n ${env.K8S_NAMESPACE} --timeout=300s
+                            unset KUBECONFIG
+                            """
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                def buildStatus = currentBuild.currentResult ?: 'SUCCESS'
+                def modules = env.SELECTED_MODULES ? env.SELECTED_MODULES.split(',') : []
+
+                def images = modules.collect { module ->
+                    "${DOCKER_REGISTRY}/${module}:${env.BUILD_VERSION}"
+                }
+
+                def buildMessage = """
+                {
+                    "msg_type": "interactive",
+                    "card": {
+                        "config": {
+                            "wide_screen_mode": true
+                        },
+                        "header": {
+                            "title": {
+                                "tag": "plain_text",
+                                "content": "Jenkins Build Notification"
+                            },
+                            "template": "${buildStatus == 'SUCCESS' ? 'green' : 'red'}"
+                        },
+                        "elements": [
+                            {
+                                "tag": "div",
+                                "text": {
+                                    "tag": "plain_text",
+                                    "content": "Project: ${env.JOB_NAME}\\nBuild NO: #${env.BUILD_NUMBER}\\nStatus: ${buildStatus}\\nEnvironment: ${env.DEPLOY_ENV ?: 'N/A'}\\nNamespace: ${env.K8S_NAMESPACE ?: 'N/A'}\\nDetails: ${env.BUILD_URL}"
+                                }
+                            },
+                            {
+                                "tag": "div",
+                                "text": {
+                                    "tag": "plain_text",
+                                    "content": "Image Name:\\n${images.join('\\n')}"
+                                }
+                            },
+                            {
+                                "tag": "div",
+                                "text": {
+                                    "tag": "plain_text",
+                                    "content": "Version:\\n${env.BUILD_VERSION}"
+                                }
+                            }
+                        ]
+                    }
+                }
+                """
+
+                sh """
+                curl -X POST \
+                  -H "Content-Type: application/json" \
+                  -d '${buildMessage}' \
+                  "${env.LARK_WEBHOOK}"
+                """
+            }
+        }
+    }
+}

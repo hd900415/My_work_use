@@ -6,7 +6,7 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: hd900415@gmail.com
+    email: Imfx003@gmail.com
     privateKeySecretRef:
       name: letsencrypt-prod
     solvers:
@@ -15,21 +15,7 @@ spec:
           class: nginx
 # 创建ClusterIssuer对象，用于配置ACME DNS01解析器，以便使用Cloudflare API进行DNS挑战
 # 该ClusterIssuer对象使用Cloudflare API密钥Secret对象，以及Let's Encrypt的生产环境API地址和电子邮件地址
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: harbor-cert
-  namespace: harbor-system
-spec:
-  secretName: harbor-cert-tls
-  issuerRef:
-    name: letsencrypt-issuer
-    kind: ClusterIssuer
-  commonName: "harbor.galaxymeeting.live"
-  dnsNames:
-  - harbor.galaxymeeting.live
-  - galaxymeeting.live
+
 
 
 # helm repo add jetstack https://charts.jetstack.io
