@@ -1,8 +1,8 @@
-apiVersion: v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: jenkins
-  namespace: jenkins
+  namespace: devops
 spec:
   replicas: 1
   selector:
@@ -18,10 +18,10 @@ spec:
       serviceAccountName: jenkins
       containers:
         - name: jenkins
-          image: harbor.pt.tech/dev/jenkins:lts-jdk17
+          image: haidao900/devops:jenkins-lts-17-mvn399
           imagePullPolicy: IfNotPresent
           securityContext:
-            privileged: "true"
+            privileged: true
             runAsUser: 0 
           resources:
             limits:
@@ -54,37 +54,37 @@ spec:
           volumeMounts:
             - name: jenkins-data
               mountPath: /var/jenkins_home 
-            - name: docker
-              mountPath: /run/docker.sock
-            - name: docker-home
-              mountPath: /usr/bin/docker
+            # - name: docker
+            #   mountPath: /run/docker.sock
+            # - name: docker-home
+            #   mountPath: /usr/bin/docker
             - name: mvn-settings
               mountPath: /usr/local/appache-maven-3.9.9/conf/settings.xml
               subPath: settings.xml
-            - name: daemon
-              mountPath: /etc/docker/daemon.json
-              subPath: daemon.json
-            - name: kubectl
-              mountPath: /usr/bin/kubectl
+            # - name: daemon
+            #   mountPath: /etc/docker/daemon.json
+            #   subPath: daemon.json
+            # - name: kubectl
+            #   mountPath: /usr/bin/kubectl
       volumes:
-        - name: kubectl
-          hostPath:
-            path: /usr/bin/kubectl
+        # - name: kubectl
+        #   hostPath:
+        #     path: /usr/bin/kubectl
         - name: jenkins-data
           persistentVolumeClaim:
-              claimName: jenkins
-        - name: docker
-          hostPath:
-            path: /run/docker.sock
-        - name: docker-home
-          hostPath:
-            path: /usr/bin/docker
+              claimName: devops-pvc
+        # - name: docker
+        #   hostPath:
+        #     path: /run/docker.sock
+        # - name: docker-home
+        #   hostPath:
+        #     path: /usr/bin/docker
         - name: mvn-settings
-          ConfigMap:
+          configMap:
             name: mvn-settings
             items:
             - key: settings.xml
               path: settings.xml
-        - name: daemon
-          hostPath:
-            path: /etc/docker/
+        # - name: daemon
+        #   hostPath:
+        #     path: /etc/docker/
