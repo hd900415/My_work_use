@@ -2,15 +2,16 @@ pipeline {
     agent any
 
     environment {
+        APP_NAME = 'pt-client-activity'
         MVN_HOME = '/usr/local/apache-maven-3.9.9'
-        GIT_REPO = 'gitlab.9pt.me/business/pt-admin.git'
-        DOCKER_REGISTRY = 'swr.ap-southeast-3.myhuaweicloud.com/pt-dev'
+        GIT_REPO = 'gitlab.9pt.me/business/pt-client-activity.git'
+        DOCKER_REGISTRY = 'swr.ap-southeast-3.myhuaweicloud.com/pt-pre'
         CREDENTIALS_ID = '4cedc493-2f65-4d0e-b309-86b51370076c'
         DOCKER_CREDENTIALS_ID = 'fe0d6614-bafa-433b-af6a-2f5531d6d63f'
         KUBERNETES_FILE_ID = 'eef6aa2e-9c01-4f43-8d02-94cf87c04d2c'
         LARK_WEBHOOK = "https://open.larksuite.com/open-apis/bot/v2/hook/1f105b8d-8cb7-4215-bf7f-2afcb9754579"
         UAT_NAMESPACE = 'uat'
-        PRE_NAMESPACE = 'pre'
+        PRE_NAMESPACE = 'pt-pre'
     }
 
     stages {
@@ -33,9 +34,8 @@ pipeline {
         stage('参数初始化') {
             steps {
                 script {
-                    // 使用Jenkins预定义的参数
+                    // 只使用环境参数
                     env.DEPLOY_ENV = params.ENV
-                    env.SELECTED_MODULES = params.APP_NAME
                     
                     // 设置命名空间
                     if (env.DEPLOY_ENV == 'pt-pre') {
@@ -45,7 +45,6 @@ pipeline {
                     }
                     
                     echo "选择的环境: ${env.DEPLOY_ENV} (命名空间: ${env.K8S_NAMESPACE})"
-                    echo "选择的模块: ${env.SELECTED_MODULES}"
                 }
             }
         }
@@ -74,47 +73,49 @@ pipeline {
         stage('构建 Jar 文件') {
             steps {
                 script {
-                    def selectedModules = env.SELECTED_MODULES.split(',')
-                    echo "开始构建选中的模块: ${selectedModules.join(', ')}"
-                    
-                    // 构建所有选中的模块
-                    def modulesList = selectedModules.collect { "pt-admin-modules/${it}" }.join(',')
-                    sh "${MVN_HOME}/bin/mvn clean install -pl ${modulesList} -amd -Dmaven.test.skip=true -U"
+                    echo "开始构建项目: ${APP_NAME}"
+                    sh "${MVN_HOME}/bin/mvn clean install -Dmaven.test.skip=true -U"
                 }
             }
         }
+        
         stage('构建 Docker 镜像') {
             steps {
                 script {
-                    def modules = env.SELECTED_MODULES.split(',')
-                    echo "开始构建 Docker 镜像，选中的模块: ${modules.join(', ')}"
-
-                    modules.each { module ->
-                        def imageName = "${DOCKER_REGISTRY}/${module}:${env.BUILD_VERSION}"
-                        def moduleDir = "pt-admin-modules/${module}"
-                        echo "正在构建 Docker 镜像: ${imageName}"
-                        
-                        withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                            sh """
-                                podman login -u "\$DOCKER_USERNAME" -p "\$DOCKER_PASSWORD" ${DOCKER_REGISTRY}
-                                cd ${moduleDir} && podman build --no-cache -t ${imageName} . --from swr.ap-southeast-3.myhuaweicloud.com/pt-pre/openjdk17-geoip-alpine:v5
-                                podman push ${imageName}
-                            """
-                        }
+                    def imageName = "${DOCKER_REGISTRY}/${APP_NAME}:${env.BUILD_VERSION}"
+                    echo "正在构建 Docker 镜像: ${imageName}"
+                    
+                    withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh """
+                            podman login -u "\$DOCKER_USERNAME" -p "\$DOCKER_PASSWORD" ${DOCKER_REGISTRY}
+                            podman build --no-cache -t ${imageName} . --from swr.ap-southeast-3.myhuaweicloud.com/pt-pre/openjdk17-geoip-alpine:v5
+                            podman push ${imageName}
+                        """
                     }
                 }
             }
         }
+        
         stage('部署到 Kubernetes') {
             steps {
                 script {
-                    def modules = env.SELECTED_MODULES.split(',')
                     echo "开始部署到 Kubernetes 环境: ${env.DEPLOY_ENV} (命名空间: ${env.K8S_NAMESPACE})"
-                    echo "部署模块: ${modules.join(', ')}"
+                    def imageName = "${DOCKER_REGISTRY}/${APP_NAME}:${env.BUILD_VERSION}"
+                    
+                    withCredentials([file(credentialsId: "${KUBERNETES_FILE_ID}", variable: 'KUBECONFIG')]) {
+                        sh """
+                        export KUBECONFIG=${KUBECONFIG}
+                        kubectl set image deployment/${APP_NAME} ${APP_NAME}=${imageName} -n ${env.K8S_NAMESPACE}
+                        kubectl rollout status deployment/${APP_NAME} -n ${env.K8S_NAMESPACE} --timeout=300s
+                        unset KUBECONFIG
+                        """
+                    }
+                }
+            }
+        }
+    }
 
-                    modules.each { module ->
-                        echo "部署模块到 Kubernetes: ${module}"
-                        def imageName = "${DOCKER_REGISTRY}/${module}:${env.BUILD_VERSION}"
+}
                         
                         withCredentials([file(credentialsId: "${KUBERNETES_FILE_ID}", variable: 'KUBECONFIG')]) {
                             sh """
