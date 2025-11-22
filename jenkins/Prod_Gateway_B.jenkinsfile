@@ -1,0 +1,119 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = 'pt-component-gateway-admin'
+        MVN_HOME = '/usr/local/apache-maven-3.9.9'
+        GIT_REPO = 'gitlab.9pt.me/component/pt-component.git'
+        DOCKER_REGISTRY = 'swr.sa-brazil-1.myhuaweicloud.com/pt-prod'
+        CREDENTIALS_ID = '4cedc493-2f65-4d0e-b309-86b51370076c'
+        DOCKER_CREDENTIALS_ID = '954f8f35-f070-411d-a5a0-c8898134b109'
+        KUBERNETES_FILE_ID = 'b1b6b235-a860-4177-a27c-bb2949e2cf15'
+        LARK_WEBHOOK = "https://open.larksuite.com/open-apis/bot/v2/hook/1f105b8d-8cb7-4215-bf7f-2afcb9754579"
+    }
+
+    stages {
+        stage('构建前清理工作目录') {
+            steps {
+                cleanWs()
+            }
+        }
+        // stage('拉取所有分支') {
+        //     steps {
+        //         script {
+        //             withCredentials([usernamePassword(credentialsId: "${CREDENTIALS_ID}", usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+        //                 env.GIT_USERNAME = GIT_USERNAME
+        //                 env.GIT_PASSWORD = GIT_PASSWORD
+        //                 sh "git ls-remote --heads https://${GIT_USERNAME}:${GIT_PASSWORD}@${GIT_REPO}"
+        //             }
+        //         }
+        //     }
+        // }
+        stage('参数初始化') {
+            steps {
+                script {
+                    // 只使用环境参数
+                    env.DEPLOY_ENV = params.ENV
+                    
+                    // 设置命名空间
+                    if (env.DEPLOY_ENV == 'pt-pre') {
+                        env.K8S_NAMESPACE = env.PRE_NAMESPACE
+                    } else if (env.DEPLOY_ENV == 'uat') {
+                        env.K8S_NAMESPACE = env.UAT_NAMESPACE
+                    }
+                    
+                    echo "选择的环境: ${env.DEPLOY_ENV} (命名空间: ${env.ENV})"
+                }
+            }
+        }
+        stage('拉取代码') {
+            steps {
+                script {
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: "${BRANCH}"]],  // 修复变量引用语法
+                        userRemoteConfigs: [[
+                            credentialsId: "${CREDENTIALS_ID}",
+                            url: "https://${GIT_REPO}"
+                        ]]
+                    ])
+                }
+            }
+        }
+        stage('初始化') {
+            steps {
+                script {
+                    env.BUILD_VERSION = "1.0-${new Date().format('yyyyMMddHHmm')}.${sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()}"
+                    echo "动态版本号已生成: ${env.BUILD_VERSION}"
+                }
+            }
+        }
+        stage('构建 Jar 文件') {
+            steps {
+                script {
+                    echo "开始构建项目: ${APP_NAME}"
+                    sh "${MVN_HOME}/bin/mvn clean install -Dmaven.test.skip=true -U"
+                }
+            }
+        }
+        
+        stage('构建 Docker 镜像') {
+            steps {
+                script {
+                    def imageName = "${DOCKER_REGISTRY}/${APP_NAME}:${ENV}-${env.BUILD_VERSION}"
+                    echo "正在构建 Docker 镜像: ${imageName}"
+                    
+                    withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh """
+                            cd "${APP_NAME}"
+                            podman login -u "\$DOCKER_USERNAME" -p "\$DOCKER_PASSWORD" ${DOCKER_REGISTRY}
+                            podman build --no-cache -t ${imageName} . --from swr.ap-southeast-3.myhuaweicloud.com/pt-pre/openjdk17-geoip-alpine:v5
+                            podman push ${imageName}
+                        """
+                    }
+                }
+            }
+        }
+        
+        stage('部署到 Kubernetes') {
+            steps {
+                script {
+                    echo "开始部署到 Kubernetes 环境: ${env.DEPLOY_ENV} (命名空间: ${env.ENV})"
+                    def imageName = "${DOCKER_REGISTRY}/${APP_NAME}:${ENV}-${env.BUILD_VERSION}"
+                    
+                    withCredentials([file(credentialsId: "${KUBERNETES_FILE_ID}", variable: 'KUBECONFIG')]) {
+                        sh """
+                        export KUBECONFIG=${KUBECONFIG}
+                        kubectl set image deployment/${APP_NAME} ${APP_NAME}=${imageName} -n ${env.ENV}
+                        kubectl rollout status deployment/${APP_NAME} -n ${env.ENV} --timeout=300s
+                        unset KUBECONFIG
+                        """
+                    }
+                }
+            }
+        }
+    }
+
+}
+                        
+
