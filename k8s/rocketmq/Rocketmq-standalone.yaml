@@ -1,0 +1,270 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: u70-uat-mq
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rocketmq-namesrv
+  namespace: u70-uat-mq
+spec:
+  type: ClusterIP
+  selector:
+    app: rocketmq
+    component: namesrv
+  ports:
+    - name: namesrv
+      port: 9876
+      targetPort: 9876
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rocketmq-namesrv
+  namespace: u70-uat-mq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rocketmq
+      component: namesrv
+  template:
+    metadata:
+      labels:
+        app: rocketmq
+        component: namesrv
+    spec:
+      containers:
+        - name: namesrv
+          image: apache/rocketmq:5.3.4
+          imagePullPolicy: IfNotPresent
+          command: ["sh","mqnamesrv"]
+          ports:
+            - containerPort: 9876
+          readinessProbe:
+            tcpSocket:
+              port: 9876
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 9876
+            initialDelaySeconds: 30
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rocketmq-broker
+  namespace: u70-uat-mq
+spec:
+  type: ClusterIP
+  selector:
+    app: rocketmq
+    component: broker
+  ports:
+    - name: broker
+      port: 10911
+      targetPort: 10911
+    - name: ha
+      port: 10912
+      targetPort: 10912
+    - name: fast-remoting
+      port: 10909
+      targetPort: 10909
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rocketmq-broker-conf
+  namespace: u70-uat-mq
+data:
+  broker.conf.tpl: |
+    brokerClusterName=rmq-standalone
+    brokerName=${POD_NAME}
+    brokerId=0
+    brokerRole=ASYNC_MASTER
+    flushDiskType=ASYNC_FLUSH
+
+    storePathRootDir=/home/rocketmq/store
+    storePathCommitLog=/home/rocketmq/store/commitlog
+
+    namesrvAddr=${NAMESRV_ADDR}
+
+    autoCreateTopicEnable=true
+    autoCreateSubscriptionGroup=true
+    deleteWhen=04
+    fileReservedTime=48
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rocketmq-broker
+  namespace: u70-uat-mq
+spec:
+  serviceName: rocketmq-broker
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rocketmq
+      component: broker
+  template:
+    metadata:
+      labels:
+        app: rocketmq
+        component: broker
+    spec:
+      terminationGracePeriodSeconds: 60
+      securityContext:
+        fsGroup: 3000
+      initContainers:
+        - name: render-broker-conf
+          image: apache/rocketmq:5.3.4
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NAMESRV_ADDR
+              value: "rocketmq-namesrv:9876"
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              cp /cm/broker.conf.tpl /work/broker.conf
+              sed -i "s|\${POD_NAME}|${POD_NAME}|g" /work/broker.conf
+              sed -i "s|\${NAMESRV_ADDR}|${NAMESRV_ADDR}|g" /work/broker.conf
+          volumeMounts:
+            - name: broker-cm
+              mountPath: /cm
+            - name: broker-conf
+              mountPath: /work
+
+      containers:
+        - name: broker
+          image: apache/rocketmq:5.3.4
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: JAVA_OPT_EXT
+              value: "-Xms1g -Xmx1g -XX:MaxDirectMemorySize=1g"
+          command: ["sh", "mqbroker", "-c", "/home/rocketmq/conf/broker.conf"]
+          ports:
+            - containerPort: 10911
+            - containerPort: 10912
+            - containerPort: 10909
+          readinessProbe:
+            tcpSocket:
+              port: 10911
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 10911
+            initialDelaySeconds: 60
+            periodSeconds: 20
+          volumeMounts:
+            - name: broker-store
+              mountPath: /home/rocketmq/store
+            - name: broker-conf
+              mountPath: /home/rocketmq/conf
+      volumes:
+        - name: broker-conf
+          emptyDir: {}
+        - name: broker-cm
+          configMap:
+            name: rocketmq-broker-conf
+            items:
+  volumeClaimTemplates:
+    - metadata:
+        name: broker-store
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: gp3
+        resources:
+          requests:
+            storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rocketmq-dashboard
+  namespace: u70-uat-mq
+spec:
+  type: ClusterIP
+  selector:
+    app: rocketmq
+    component: dashboard
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rocketmq-dashboard
+  namespace: u70-uat-mq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rocketmq
+      component: dashboard
+  template:
+    metadata:
+      labels:
+        app: rocketmq
+        component: dashboard
+    spec:
+      containers:
+        - name: dashboard
+          image: apacherocketmq/rocketmq-dashboard:2.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: JAVA_OPTS
+              value: "-Drocketmq.config.namesrvAddr=rocketmq-namesrv:9876"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 20
+--- 
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rocketmq-dashboard-ingress
+  namespace: u70-uat-mq
+  annotations:
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-southeast-1:311456830418:certificate/ded5fb5e-abec-4c18-a192-1b019796a52a
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/target-type: ip
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/inbound-cidrs: 123.20.82.199/32,18.142.150.168/32
+spec:
+  ingressClassName: alb
+  rules:
+    - host: rocketmqdashboard-nwuat.newworld-uat.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rocketmq-dashboard
+                port:
+                  number: 8080
